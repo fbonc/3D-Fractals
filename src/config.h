@@ -1,4 +1,4 @@
 #pragma once
 #include <iostream>
-//glfw3
-//glad
+#include <GLFW/glfw3.h>
+//glad 
