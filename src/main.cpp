@@ -1,6 +1,14 @@
 #include "config.h"
 
 int main() {
-    std::cout << "Hello world" << std::endl;
+    GLFWwindow* window;
+
+    if (!glfwInit()){
+        std::cout << "GLFW couldn't start" << std::endl;
+        return -1;
+    }
+
+    window = glfwCreateWindow(640, 480, "Frac", NULL, NULL);
+    
     return 0;
 }
