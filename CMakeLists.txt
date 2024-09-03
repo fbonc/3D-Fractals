@@ -3,7 +3,9 @@ project(NEA VERSION 1.0.0)
 
 find_package(OpenGL REQUIRED)
 
-add_executable(NEA src/config.h src/main.cpp)
+add_executable(NEA src/config.h 
+    src/main.cpp
+    src/glad.c)
 
 target_include_directories(NEA PRIVATE dependencies)
 
