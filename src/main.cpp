@@ -1,51 +1,33 @@
 #include "config.h"
-// #include <iostream>
-// #include <glad/glad.h>
-// #include <GLFW/glfw3.h>
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
 
 
-int main()
-{
-    if (!glfwInit())
-    {
-        std::cout << "Failed to initialize GLFW" << std::endl;
-        return -1;
-    }
+int main() {
+	
+	GLFWwindow* window;
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	if (!glfwInit()) {
+		return -1;
+	}
+	
+	window = glfwCreateWindow(640, 480, "Fractalator", NULL, NULL);
+	glfwMakeContextCurrent(window);
 
-    GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "Frac", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to open GLFW window" << std::endl;
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cout << "Couldn't load opengl" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+	glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
 
-    glViewport(0, 0, 800, 600);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
 
-    while(!glfwWindowShouldClose(window))
-    {
-        glfwSwapBuffers(window);
-        glfwPollEvents();    
-    }
+		glClear(GL_COLOR_BUFFER_BIT);
 
-    glfwTerminate();
-    return 0;
+		glfwSwapBuffers(window);
+	}
+
+	glfwTerminate();
+	return 0;
 }
