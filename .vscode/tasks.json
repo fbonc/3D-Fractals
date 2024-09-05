@@ -8,8 +8,8 @@
             "args": [
                 "-g",
                 "-std=c++17",
-                "-I${workspaceFolder}/dependencies",
-                "-L${workspaceFolder}/dependencies/lib",
+                "-I${workspaceFolder}/include",
+                "-L${workspaceFolder}/include/lib",
                 "${workspaceFolder}/src/main.cpp",
                 "${workspaceFolder}/src/glad.c",
                 "-lglfw3dll",
