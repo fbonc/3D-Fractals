@@ -3,6 +3,15 @@
 
 int main() {
 	
+	std::ifstream file;
+	std::string line;
+
+	file.open("src/shaders/vertex.vert");
+	while (std::getline(file, line)) {
+		std::cout << line << std::endl;
+	}
+
+
 	GLFWwindow* window;
 
 	if (!glfwInit()) {
