@@ -23,7 +23,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "ZMMR", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "Frac", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to open GLFW window" << std::endl;
