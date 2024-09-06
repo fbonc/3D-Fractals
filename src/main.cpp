@@ -9,6 +9,7 @@ unsigned int make_module(const std::string& filepath, unsigned int module_type) 
 
 	file.open(filepath);
 	while (std::getline(file, line)) {
+		//std::cout << line << '\n' << std::endl
 		bufferedLines << line << "\n";
 	}
 
@@ -27,6 +28,12 @@ unsigned int make_module(const std::string& filepath, unsigned int module_type) 
 		char errorLog[1024];
 		glGetShaderInfoLog(shaderModule, 1024, NULL, errorLog);
 		std::cout << "Shader module compilation error:\n" << errorLog << std::endl;
+
+		// if (module_type == GL_VERTEX_SHADER) {
+        //     std::cerr << "Vertex shader compilation error (" << filepath << "):\n" << errorLog << std::endl;
+        // } else if (module_type == GL_FRAGMENT_SHADER) {
+        //     std::cerr << "Fragment shader compilation error (" << filepath << "):\n" << errorLog << std::endl;
+        // }
 
 	}
 
@@ -49,7 +56,7 @@ unsigned int make_shader(const std::string& vertex_filepath, const std::string& 
 	glLinkProgram(shader);
 
 	int success;
-	glGetShaderiv(shader, GL_LINK_STATUS, &success);
+	glGetProgramiv(shader, GL_LINK_STATUS, &success);
 	if (!success) {
 		char errorLog[1024];
 		glGetProgramInfoLog(shader, 1024, NULL, errorLog);
@@ -90,6 +97,11 @@ int main() {
 		"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",
 		"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
 	);
+
+	// unsigned int shader = make_shader(
+	// 	"src/shaders/vertex.vert",
+	// 	"src/shaders/fragment.frag"
+	// );
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
