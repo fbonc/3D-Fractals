@@ -12,6 +12,7 @@
                 "-L${workspaceFolder}/include/lib",
                 "${workspaceFolder}/src/main.cpp",
                 "${workspaceFolder}/src/glad.c",
+                "${workspaceFolder}/src/config.h",
                 "-lglfw3dll",
                 "-o",
                 "${workspaceFolder}/fracgen.exe"
