@@ -73,7 +73,7 @@ int main() {
 		return -1;
 	}
 	
-	window = glfwCreateWindow(1920, 1080, "Fractalator", NULL, NULL);
+	window = glfwCreateWindow(640, 480, "Fractalator", NULL, NULL);
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -87,8 +87,8 @@ int main() {
 	TriangleMesh* triangle = new TriangleMesh();
 
 	unsigned int shader = make_shader(
-		"src/shaders/vertex.vert",
-		"src/shaders/fragment.frag"
+		"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",
+		"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
 	);
 
 	while (!glfwWindowShouldClose(window)) {
