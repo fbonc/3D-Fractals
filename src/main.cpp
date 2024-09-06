@@ -31,3 +31,30 @@ int main() {
 	glfwTerminate();
 	return 0;
 }
+
+
+
+unsigned int make_module(const std::string& filepath, unsigned int module_type) {
+	std::ifstream file;
+	std::stringstream bufferedLines;
+	std::string line;
+
+	file.open(filepath);
+	while (std::getline(file, line)) {
+		bufferedLines << line << "\n";
+	}
+
+	std::string shaderSource = bufferedLines.str();
+	const char* shaderSrc = shaderSource.c_str();
+	bufferedLines.str("");
+	file.close();
+
+	unsigned int shaderModule = glCreateShader(module_type);
+	glShaderSource(shaderModule, 1, &shaderSrc, NULL);
+	glCompileShader(shaderModule);
+
+	int success;
+	glGetShaderiv(shaderModule, GL_COMPILE_STATUS, &status);
+	
+
+}
