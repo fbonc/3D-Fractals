@@ -10,9 +10,9 @@
                 "-std=c++17",
                 "-I${workspaceFolder}/include",
                 "-L${workspaceFolder}/include/lib",
-                "${workspaceFolder}/src/main.cpp",
+                "${workspaceFolder}/src/*.cpp",
                 "${workspaceFolder}/src/glad.c",
-                "${workspaceFolder}/src/config.h",
+                "${workspaceFolder}/src/*.h",
                 "-lglfw3dll",
                 "-o",
                 "${workspaceFolder}/fracgen.exe"

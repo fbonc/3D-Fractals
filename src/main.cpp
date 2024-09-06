@@ -1,6 +1,8 @@
 #include "config.h"
+#include "triangle_mesh.h"
 
 unsigned int make_module(const std::string& filepath, unsigned int module_type) {
+
 	std::ifstream file;
 	std::stringstream bufferedLines;
 	std::string line;
@@ -29,6 +31,7 @@ unsigned int make_module(const std::string& filepath, unsigned int module_type) 
 	}
 
 	return shaderModule;
+
 }
 
 
@@ -58,9 +61,8 @@ unsigned int make_shader(const std::string& vertex_filepath, const std::string& 
 	}
 
 	return shader;
+
 }
-
-
 
 
 int main() {
@@ -71,7 +73,7 @@ int main() {
 		return -1;
 	}
 	
-	window = glfwCreateWindow(640, 480, "Fractalator", NULL, NULL);
+	window = glfwCreateWindow(1920, 1080, "Fractalator", NULL, NULL);
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -82,9 +84,11 @@ int main() {
 
 	glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
 
+	TriangleMesh* triangle = new TriangleMesh();
+
 	unsigned int shader = make_shader(
-		"../src/shaders/vertex.vert",
-		"../src/shaders/fragment.frag"
+		"src/shaders/vertex.vert",
+		"src/shaders/fragment.frag"
 	);
 
 	while (!glfwWindowShouldClose(window)) {
@@ -92,11 +96,12 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(shader);
+		triangle->draw();
 		glfwSwapBuffers(window);
 	}
-
 
 	glDeleteProgram(shader);
 	glfwTerminate();
 	return 0;
+
 }
