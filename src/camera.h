@@ -3,7 +3,7 @@
 
 class Camera {
 public:
-    Camera(float fov, float aspectRation, float nearPlane, float farPlane);
+    Camera(float fov, float aspectRatio, float nearPlane, float farPlane);
 
     void setPosition(const Eigen::Vector3f& position);
 
