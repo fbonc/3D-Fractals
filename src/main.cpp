@@ -1,80 +1,13 @@
 #include "config.h"
+#include "shader_manager.h"
 #include "triangle_mesh.h"
 
-unsigned int make_module(const std::string& filepath, unsigned int module_type) {
-
-	std::ifstream file;
-	std::stringstream bufferedLines;
-	std::string line;
-
-	file.open(filepath);
-	while (std::getline(file, line)) {
-		//std::cout << line << '\n' << std::endl
-		bufferedLines << line << "\n";
-	}
-
-	std::string shaderSource = bufferedLines.str();
-	const char* shaderSrc = shaderSource.c_str();
-	bufferedLines.str("");
-	file.close();
-
-	unsigned int shaderModule = glCreateShader(module_type);
-	glShaderSource(shaderModule, 1, &shaderSrc, NULL);
-	glCompileShader(shaderModule);
-
-	int success;
-	glGetShaderiv(shaderModule, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		char errorLog[1024];
-		glGetShaderInfoLog(shaderModule, 1024, NULL, errorLog);
-		std::cout << "Shader module compilation error:\n" << errorLog << std::endl;
-
-		// if (module_type == GL_VERTEX_SHADER) {
-        //     std::cerr << "Vertex shader compilation error (" << filepath << "):\n" << errorLog << std::endl;
-        // } else if (module_type == GL_FRAGMENT_SHADER) {
-        //     std::cerr << "Fragment shader compilation error (" << filepath << "):\n" << errorLog << std::endl;
-        // }
-
-	}
-
-	return shaderModule;
-
-}
-
-
-unsigned int make_shader(const std::string& vertex_filepath, const std::string& fragment_filepath) {
-
-	std::vector<unsigned int> modules;
-	modules.push_back(make_module(vertex_filepath, GL_VERTEX_SHADER));
-	modules.push_back(make_module(fragment_filepath, GL_FRAGMENT_SHADER));
-
-	unsigned int shader = glCreateProgram();
-	for (unsigned int shaderModule : modules) {
-		glAttachShader(shader, shaderModule);
-	}
-
-	glLinkProgram(shader);
-
-	int success;
-	glGetProgramiv(shader, GL_LINK_STATUS, &success);
-	if (!success) {
-		char errorLog[1024];
-		glGetProgramInfoLog(shader, 1024, NULL, errorLog);
-		std::cout << "Shader Linking error:\n" << errorLog << std::endl;
-	}
-
-	for (unsigned int shaderModule : modules) {
-		glDeleteShader(shaderModule);
-	}
-
-	return shader;
-
-}
 
 
 int main() {
 	
 	GLFWwindow* window;
+	ShaderManager shaderManager;
 
 	if (!glfwInit()) {
 		return -1;
@@ -90,12 +23,15 @@ int main() {
 	}
 
 	glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
+	int w,h;
+	glfwGetFramebufferSize(window, &w, &h);
+	glViewport(0,0,w,h);
 
 	TriangleMesh* triangle = new TriangleMesh();
 
-	unsigned int shader = make_shader(
-		"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",
-		"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
+	unsigned int shader = shaderManager.make_shader(
+		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",
+		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
 	);
 
 	// unsigned int shader = make_shader(
