@@ -27,7 +27,7 @@ int main() {
 	glfwGetFramebufferSize(window, &w, &h);
 	glViewport(0,0,w,h);
 
-	TriangleMesh* triangle = new TriangleMesh();
+	//TriangleMesh* triangle = new TriangleMesh();
 
 	unsigned int shader = shaderManager.make_shader(
 		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",
