@@ -1,7 +1,7 @@
 #include "config.h"
 #include "shader_manager.h"
 #include "camera.h"
-#include "triangle_mesh.h"
+//#include "triangle_mesh.h"
 
 
 
@@ -15,7 +15,7 @@ int main() {
 		return -1;
 	}
 	
-	window = glfwCreateWindow(640, 480, "Fractalator", NULL, NULL);
+	window = glfwCreateWindow(1920, 1080, "Fractalator", NULL, NULL);
 	if (!window) {
 		std::cout << "Failed to create GFLW window" << std::endl;
 		glfwTerminate();
@@ -65,27 +65,62 @@ int main() {
 
 	Camera camera (45.0f * M_PI / 180.0f, 640.0f / 480.0f, 0.1f, 100.0f);
 
-	int projectionLocation = glGetUniformLocation(shader, "projection");
-	int viewLocation = glGetUniformLocation(shader, "view");
 	int cameraPosLocation = glGetUniformLocation(shader, "cameraPos");
 
-	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, camera.getProjectionMatrix().data()); //pass the projection matrix to the shader
+
+	float quadVertices[] = {
+        -1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        -1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+         1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+         1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f
+    };
+
+    unsigned int VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
 
 	// MAIN RENDER LOOP
 
+	float rotationSpeed = 0.5f;
+	float angle = 0.0f;
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		float time = glfwGetTime();
-		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 3.0f);
 
-		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, camera.getViewMatrix().data()); // send viewmatrix to shader
-		glUniform3f(cameraPosLocation, camera.getViewMatrix()(0, 3), camera.getViewMatrix()(1, 3), camera.getViewMatrix()(2, 3)); // send camerapos to shader
+		float deltaTime = 0.01f;
+		angle += deltaTime * rotationSpeed;
 
+		if (angle > 2.0f * M_PI) {
+			angle -= 2.0f * M_PI;
+		}
+
+
+		camera.rotateAroundPoint(angle, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 3.0f);
+
+		Eigen::Vector3f cameraPos = camera.getPosition();
+
+		glUniform3f(cameraPosLocation, cameraPos.x(), cameraPos.y(), cameraPos.z());
+
+		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
 
 		glfwSwapBuffers(window);
 
@@ -93,6 +128,8 @@ int main() {
 
 
 	glDeleteProgram(shader);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 	glfwTerminate();
 	return 0;
 
