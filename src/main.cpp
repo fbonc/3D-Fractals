@@ -44,7 +44,7 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(shader);
-		triangle->draw();
+		//triangle->draw();
 		glfwSwapBuffers(window);
 	}
 
