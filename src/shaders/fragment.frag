@@ -3,6 +3,8 @@
 out vec4 screenColor;
 
 uniform vec3 cameraPos;
+uniform vec3 target;
+uniform vec2 resolution;
 
 
 //Cube SDF
@@ -17,11 +19,23 @@ float sdf_cube(vec3 p, vec3 size) {
 
 //Ray marcher
 
-vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution) {
+vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
 
-    vec2 xy = fragCoord - resolution * 0.5;
-    float z = resolution.y / tan(radians(fov) / 2.0);
-    return normalize(vec3(xy, -z));
+    vec2 ndc = (fragCoord / resolution) * 2.0f - 1.0f;
+
+    ndc.y = -ndc.y;
+
+    float aspectRatio = resolution.x / resolution.y;
+
+    float z = 1.0/tan(radians(fov) / 2.0f);
+
+    vec3 forward = normalize(target - cameraPos);
+
+    vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));
+    vec3 up = cross(right, forward);
+
+    vec3 rayDir = normalize(ndc.x * right * aspectRatio + ndc.y * up + z * forward);
+    return rayDir;
 
 }
 
@@ -58,12 +72,12 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint) {
 
 
 void main() {
-    
+
     vec2 fragCoord = gl_FragCoord.xy;
-    vec2 resolution = vec2(640, 480);
+    vec2 resolution = vec2(resolution.x, resolution.y);
     
     //Get ray direction
-    vec3 rayDir = ray_direction(45.0, fragCoord, resolution);
+    vec3 rayDir = ray_direction(45.0f, fragCoord, resolution, cameraPos, target);
     vec3 rayOrigin = cameraPos;
 
     vec3 hitPoint;

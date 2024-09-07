@@ -3,7 +3,7 @@
 
 Camera::Camera(float fov, float aspectRatio, float nearPlane, float farPlane) {
 
-    position = Eigen::Vector3f(0.0f, 0.0f, 3.0f);
+    position = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
 
 }
 
@@ -24,7 +24,9 @@ void Camera::rotateAroundPoint(float angle, const Eigen::Vector3f& point, float 
 }
 
 const Eigen::Vector3f& Camera::getPosition() const {
+
     return position;
+    
 }
 
 

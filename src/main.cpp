@@ -1,7 +1,6 @@
 #include "config.h"
 #include "shader_manager.h"
 #include "camera.h"
-//#include "triangle_mesh.h"
 
 
 
@@ -10,12 +9,15 @@ int main() {
 	GLFWwindow* window;
 	ShaderManager shaderManager;
 
+	const int resolutionX = 1920;
+	const int resolutionY = 1080;
+
 	if (!glfwInit()) {
 		std::cout << "Failed to initialize GLFW" << std::endl;
 		return -1;
 	}
 	
-	window = glfwCreateWindow(1920, 1080, "Fractalator", NULL, NULL);
+	window = glfwCreateWindow(resolutionX, resolutionY, "Fractalator", NULL, NULL);
 	if (!window) {
 		std::cout << "Failed to create GFLW window" << std::endl;
 		glfwTerminate();
@@ -31,12 +33,10 @@ int main() {
 
 	
 	glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
-	int w,h;
-	glfwGetFramebufferSize(window, &w, &h);
-	glViewport(0,0,w,h);
+	// int w,h;
+	// glfwGetFramebufferSize(window, &w, &h);
+	// glViewport(0,0,w,h);
 
-
-	//TriangleMesh* triangle = new TriangleMesh();
 
 	unsigned int shader = shaderManager.make_shader(
 		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",
@@ -50,22 +50,14 @@ int main() {
 	// 	"src/shaders/fragment.frag"
 	// );
 
-	// while (!glfwWindowShouldClose(window)) {
-	// 	glfwPollEvents();
 
-	// 	glClear(GL_COLOR_BUFFER_BIT);
-	// 	glUseProgram(shader);
-	// 	//triangle->draw();
-	// 	glfwSwapBuffers(window);
-	// }
-
-	// glDeleteProgram(shader);
-	// glfwTerminate();
-	// return 0;
-
-	Camera camera (45.0f * M_PI / 180.0f, 640.0f / 480.0f, 0.1f, 100.0f);
+	Camera camera (45.0f * M_PI / 180.0f, (float)resolutionX / (float)resolutionY, 0.1f, 100.0f);
 
 	int cameraPosLocation = glGetUniformLocation(shader, "cameraPos");
+	int targetLocation = glGetUniformLocation(shader, "target");
+
+	int resolution = glGetUniformLocation(shader, "resolution");
+	glUniform2f(resolution, resolutionX, resolutionY);
 
 
 	float quadVertices[] = {
@@ -95,7 +87,6 @@ int main() {
 	// MAIN RENDER LOOP
 
 	float rotationSpeed = 0.5f;
-	float angle = 0.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -103,22 +94,18 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		float deltaTime = 0.01f;
-		angle += deltaTime * rotationSpeed;
-
-		if (angle > 2.0f * M_PI) {
-			angle -= 2.0f * M_PI;
-		}
+		float time = glfwGetTime() * rotationSpeed;
 
 
-		camera.rotateAroundPoint(angle, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 3.0f);
+		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 3.0f);
 
 		Eigen::Vector3f cameraPos = camera.getPosition();
-
 		glUniform3f(cameraPosLocation, cameraPos.x(), cameraPos.y(), cameraPos.z());
 
+		glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f);
+
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
 		glBindVertexArray(0);
 
 
