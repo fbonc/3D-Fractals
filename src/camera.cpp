@@ -19,14 +19,14 @@ void Camera::rotateAroundPoint(float angle, const Eigen::Vector3f& point, float 
     float camX = sin(angle) * radius;
     float camZ = cos(angle) * radius;
 
-    position = Eigen::Vector3f(camX, 0.0f, camZ);
+    position = Eigen::Vector3f(point[0] + camX, point[1] + 0.0f, point[2] + camZ);
 
 }
 
 const Eigen::Vector3f& Camera::getPosition() const {
 
     return position;
-    
+
 }
 
 

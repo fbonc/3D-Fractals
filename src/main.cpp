@@ -86,7 +86,7 @@ int main() {
 
 	// MAIN RENDER LOOP
 
-	float rotationSpeed = 0.5f;
+	float rotationSpeed = 0.2f;
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -97,12 +97,12 @@ int main() {
 		float time = glfwGetTime() * rotationSpeed;
 
 
-		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 3.0f);
+		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.8f, 0.0f), 1.5f);
 
 		Eigen::Vector3f cameraPos = camera.getPosition();
 		glUniform3f(cameraPosLocation, cameraPos.x(), cameraPos.y(), cameraPos.z());
 
-		glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f);
+		glUniform3f(targetLocation, 0.0f, 0.8f, 0.0f);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 6);

@@ -10,13 +10,25 @@ uniform vec3 lightPos;
 
 //Cube SDF
 
-float sdf_cube(vec3 p, vec3 size) {
+float cubeSDF(vec3 p, vec3 size) {
 
     vec3 d = abs(p) - size;
     return length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
 
 }
 
+float sphereSDF(vec3 p, float size) {
+
+    return length(p) - size;
+
+}
+
+
+vec3 repeat(vec3 p, vec3 c) {
+
+    return mod(p + 0.5 * c, c) - 0.5 * c; //repeat space in all directions with cell size c
+
+}
 
 
 
@@ -25,7 +37,7 @@ float sdf_cube(vec3 p, vec3 size) {
 vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
 
     vec2 ndc = (fragCoord / resolution) * 2.0f - 1.0f;
-    ndc.y = -ndc.y;
+    //ndc.y = -ndc.y;
 
     float aspectRatio = resolution.x / resolution.y;
     float z = 1.0/tan(radians(fov) / 2.0f);
@@ -52,7 +64,14 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint) {
 
     for (int i = 0; i < MAX_STEPS; i++) {
         point = rayOrigin + rayDir * totalDist;
-        float dist = sdf_cube(point, vec3(0.5)); //cube of size 1 centered at the origin
+
+
+        //repeat object infinitely in all directions
+        vec3 repeatedPoint = repeat(point, vec3(2.0));
+        float dist = sphereSDF(repeatedPoint, 0.4);
+
+
+        //float dist = sphereSDF(point, 1);
 
         if (dist < SURFACE_DIST) {
             hitPoint = point;
@@ -85,6 +104,7 @@ void main() {
     if (distance > 0.0) {
 
         screenColor = vec4(1.0 / distance, 1.0 / distance, 1.0 / distance, 1.0);
+        //screenColor = vec4(1.0, 1.0, 1.0, 1.0);
 
     } else {
 
