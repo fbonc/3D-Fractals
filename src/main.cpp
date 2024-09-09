@@ -38,17 +38,17 @@ int main() {
 	// glViewport(0,0,w,h);
 
 	// PC
-	// unsigned int shader = shaderManager.make_shader(
-	// 	"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",
-	// 	"C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
-	// );
+	unsigned int shader = shaderManager.make_shader(
+		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",
+		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
+	);
 
 
 	//Laptop
-	unsigned int shader = shaderManager.make_shader(
-		"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",
-		"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
-	);
+	// unsigned int shader = shaderManager.make_shader(
+	// 	"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",
+	// 	"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
+	// );
 
 	glUseProgram(shader);
 
