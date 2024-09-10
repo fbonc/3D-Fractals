@@ -104,12 +104,14 @@ int main() {
 		float time = glfwGetTime() * rotationSpeed;
 
 
-		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.8f, 0.0f), 1.5f);
+		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.8f, 0.0f), 20.0f);
+		//camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 0.2f);
 
 		Eigen::Vector3f cameraPos = camera.getPosition();
 		glUniform3f(cameraPosLocation, cameraPos.x(), cameraPos.y(), cameraPos.z());
 
-		glUniform3f(targetLocation, 0.0f, 0.8f, 0.0f);
+		//glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f);
+		glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 6);

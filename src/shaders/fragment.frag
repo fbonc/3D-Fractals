@@ -11,45 +11,105 @@ uniform vec3 lightPos;
 
 //Cube SDF
 
-float cubeSDF(vec3 p, vec3 size) {
+// float cubeSDF(vec3 p, vec3 size) {
 
-    vec3 d = abs(p) - size;
-    return length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
+//     vec3 d = abs(p) - size;
+//     return length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
 
-}
+// }
 
 
-float cubeSDF(vec3 rayPos) {
+float cubeSDF(vec3 rayPos, float width) {
   //half initial scale of square (arbitrary)
-  const float halfWidth = 1.0;
-  const vec3 corner = vec3(halfWidth, halfWidth, halfWidth);
+    float halfWidth = width / 2.0;
+    vec3 corner = vec3(halfWidth, halfWidth, halfWidth);
 
-  //fold ray into positive octant
-  vec3 foldedPos = abs(rayPos);
-  //corner to ray
-  vec3 ctr = foldedPos - corner;
+    //fold ray into positive octant
+    vec3 foldedPos = abs(rayPos);
+    //corner to ray
+    vec3 ctr = foldedPos - corner;
 
-  //ignore negative components for outside points
-  vec3 closestToOutsideRay = max(ctr, 0.0);
+    //ignore negative components for outside points
+    vec3 closestToOutsideRay = max(ctr, 0.0);
 
-  float cornerToRayMaxComponent = max(max(ctr.x, ctr.y), ctr.z);
-  float distToInsideRay = min(cornerToRayMaxComponent, 0.0);
+    float cornerToRayMaxComponent = max(max(ctr.x, ctr.y), ctr.z);
+    float distToInsideRay = min(cornerToRayMaxComponent, 0.0);
 
-  // return either the distance to outside OR distance to inside
-  return length(closestToOutsideRay) + distToInsideRay;
+    // return either the distance to outside OR distance to inside
+    return length(closestToOutsideRay) + distToInsideRay;
 } 
 
 
-float sphereSDF(vec3 p, float size) {
 
-    return length(p) - size;
+float sdCross(vec3 rayPos, float width) {
+    float halfWidth = width / 2.0;
+    vec3 corner = vec3(halfWidth, halfWidth, halfWidth);
+    vec3 foldedPos = abs(rayPos);
+
+    //corner to ray
+    vec3 ctr = foldedPos - corner;
+
+    float minComp = min(min(ctr.x, ctr.y), ctr.z);
+    float maxComp = max(max(ctr.x, ctr.y), ctr.z);
+
+    //acquire middle component
+    float midComp = ctr.x + ctr.y + ctr.z - minComp - maxComp;
+
+    vec2 closestOutsidePoint = max(vec2(minComp, midComp), 0.0);
+    vec2 closestInsidePoint = min(vec2(midComp, maxComp), 0.0);
+
+    // return either the distance to inside OR outside
+    return length(closestOutsidePoint) + -length(closestInsidePoint);
+}
+
+
+
+float mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
+  const float oneThird = 1.0 / 3.0;
+  float spongeCube = cubeSDF(rayPos, cubeWidth);
+  float mengerSpongeDist = spongeCube;
+  
+  float scale = 1.0;
+  for(int i = 0; i < numIterations; ++i) {
+    //determine repeated box width
+    float boxedWidth = cubeWidth / scale;
+    
+    float translation = -boxedWidth / 2.0;
+    vec3 ray = rayPos - translation;
+    vec3 repeatedPos = mod(ray, boxedWidth);
+    repeatedPos += translation;
+    
+    //scale coordinate systems from 
+    //[-1/scale, 1/scale) -> to [-1.0, 1.0)
+    repeatedPos *= scale;
+    
+    float crossesDist = sdCross(repeatedPos / oneThird, cubeWidth) * oneThird;
+    
+    //Acquire actual distance by un-stretching
+    crossesDist /= scale;
+    
+    mengerSpongeDist = max(mengerSpongeDist, -crossesDist);
+    
+    scale *= 3.0;
+  }
+  return mengerSpongeDist;
+}
+
+
+
+float sphereSDF(vec3 rayPos, float radius) {
+
+    return length(rayPos) - radius;
 
 }
 
 
-vec3 repeat(vec3 p, vec3 c) {
 
-    return mod(p + 0.5 * c, c) - 0.5 * c; //repeat space in all directions with cell size c
+
+
+vec3 repeat(vec3 rayPos, vec3 cell_width) {
+
+    return mod(rayPos + 0.5 * cell_width, cell_width) - 0.5 * cell_width; //repeat space in all directions with cell size c
 
 }
 
@@ -94,9 +154,9 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iteratio
         point = rayOrigin + rayDir * totalDist;
 
 
-        //repeat object infinitely in all directions
-        vec3 repeatedPoint = repeat(point, vec3(2.0));
-        float dist = sphereSDF(repeatedPoint, 0.4);
+        
+        //vec3 repeatedPoint = repeat(point, vec3(2.0)); //repeat object infinitely in all directions
+        float dist = mengerSpongeSDF(point, 5, 10);
 
 
         //float dist = sphereSDF(point, 1);
@@ -136,7 +196,8 @@ void main() {
 
     if (distance > 0.0) {
 
-        screenColor = vec4(1.0 - (float(iterations) / float(max_steps)));
+        vec3 color = vec3(1 - (float(iterations) / float(max_steps)));
+        screenColor = vec4(color, 1.0);
         //screenColor = vec4(1.0, 1.0, 1.0, 1.0);
 
     } else {
