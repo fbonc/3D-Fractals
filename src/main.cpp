@@ -33,9 +33,7 @@ int main() {
 
 	
 	glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
-	// int w,h;
-	// glfwGetFramebufferSize(window, &w, &h);
-	// glViewport(0,0,w,h);
+
 
 	// PC
 	unsigned int shader = shaderManager.make_shader(
@@ -51,11 +49,6 @@ int main() {
 	// );
 
 	glUseProgram(shader);
-
-	// unsigned int shader = make_shader(
-	// 	"src/shaders/vertex.vert",
-	// 	"src/shaders/fragment.frag"
-	// );
 
 
 	Camera camera (45.0f * M_PI / 180.0f, (float)resolutionX / (float)resolutionY, 0.1f, 100.0f);
@@ -93,7 +86,7 @@ int main() {
 
 	// MAIN RENDER LOOP
 
-	float rotationSpeed = 0.2f;
+	float rotationSpeed = 0.1f;
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -104,14 +97,17 @@ int main() {
 		float time = glfwGetTime() * rotationSpeed;
 
 
-		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.8f, 0.0f), 20.0f);
-		//camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 0.2f);
+
+		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.8f, 0.0f), 20.0f); //outside view
+		//camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 0.2f); //inside view
+
 
 		Eigen::Vector3f cameraPos = camera.getPosition();
 		glUniform3f(cameraPosLocation, cameraPos.x(), cameraPos.y(), cameraPos.z());
 
-		//glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f);
-		glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f);
+		
+		glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f); //outside view
+		//glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f); //inside view
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 6);

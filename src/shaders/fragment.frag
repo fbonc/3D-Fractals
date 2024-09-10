@@ -109,7 +109,7 @@ float sphereSDF(vec3 rayPos, float radius) {
 
 vec3 repeat(vec3 rayPos, vec3 cell_width) {
 
-    return mod(rayPos + 0.5 * cell_width, cell_width) - 0.5 * cell_width; //repeat space in all directions with cell size c
+    return mod(rayPos + 0.5 * cell_width, cell_width) - 0.5 * cell_width; //repeat space in all directions
 
 }
 
@@ -155,11 +155,11 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iteratio
 
 
         
-        //vec3 repeatedPoint = repeat(point, vec3(2.0)); //repeat object infinitely in all directions
         float dist = mengerSpongeSDF(point, 5, 10);
 
+        // vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
+        // float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
 
-        //float dist = sphereSDF(point, 1);
 
         if (dist < SURFACE_DIST) {
             hitPoint = point;
@@ -196,7 +196,7 @@ void main() {
 
     if (distance > 0.0) {
 
-        vec3 color = vec3(1 - (float(iterations) / float(max_steps)));
+        vec3 color = vec3(0.6 - (float(iterations) / float(max_steps)));
         screenColor = vec4(color, 1.0);
         //screenColor = vec4(1.0, 1.0, 1.0, 1.0);
 
