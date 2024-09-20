@@ -2,7 +2,71 @@
 #include "shader_manager.h"
 #include "camera.h"
 
+//variables for tracking time, mouse position, and camera mode
+float lastX = 1920.0f / 2.0f;
+float lastY = 1080.0f / 2.0f;
+bool firstMouse = true;
+bool modeSwitchPressed = false;
 
+float deltaTime = 0.0f;  //time between current frame and last frame
+float lastFrame = 0.0f;  //time of last frame
+
+
+// Mouse callback function to process mouse movement
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // Reversed since y-coordinates range from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    Camera* camera = reinterpret_cast<Camera*>(glfwGetWindowUserPointer(window));
+    if (camera->getMode() == Camera::Mode::FreeCam) {
+        camera->processMouseMovement(xoffset, yoffset);  // Only process in freeCam mode
+    }
+}
+
+//process keyboard input for movement and switching camera modes
+void processInput(GLFWwindow* window, Camera& camera) {
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera.processKeyboardInput(GLFW_KEY_W, deltaTime);
+		}
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+        camera.processKeyboardInput(GLFW_KEY_S, deltaTime);
+		}
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        camera.processKeyboardInput(GLFW_KEY_A, deltaTime);
+		}
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        camera.processKeyboardInput(GLFW_KEY_D, deltaTime);
+		}
+
+    //switch between autoRotation and freeCam modes
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !modeSwitchPressed) {
+        if (camera.getMode() == Camera::Mode::AutoRotation) {
+            camera.setMode(Camera::Mode::FreeCam);
+			std::cout << "Switched to FreeCam mode\n";
+        } else {
+            camera.setMode(Camera::Mode::AutoRotation);
+			std::cout << "Switched to AutoRotation mode\n";
+        }
+        modeSwitchPressed = true;  //prevent repeated toggling
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE) {
+        modeSwitchPressed = false;
+    }
+}
 
 int main() {
 	
@@ -23,6 +87,7 @@ int main() {
 		glfwTerminate();
 		return -1;
 	}
+
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -36,22 +101,31 @@ int main() {
 
 
 	// PC
-	unsigned int shader = shaderManager.make_shader(
-		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",
-		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
-	);
+	// unsigned int shader = shaderManager.make_shader(
+	// 	"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",
+	// 	"C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
+	// );
 
 
 	//Laptop
-	// unsigned int shader = shaderManager.make_shader(
-	// 	"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",
-	// 	"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
-	// );
+	unsigned int shader = shaderManager.make_shader(
+		"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",
+		"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
+	);
 
 	glUseProgram(shader);
 
 
 	Camera camera (45.0f * M_PI / 180.0f, (float)resolutionX / (float)resolutionY, 0.1f, 100.0f);
+
+	//set the camera as a pointer for the mouse callback
+    glfwSetWindowUserPointer(window, &camera);
+
+    //set mouse callback function
+    glfwSetCursorPosCallback(window, mouse_callback);
+
+    //capture the mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	int cameraPosLocation = glGetUniformLocation(shader, "cameraPos");
 	int targetLocation = glGetUniformLocation(shader, "target");
@@ -89,7 +163,13 @@ int main() {
 	float rotationSpeed = 0.1f;
 
 	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
+		// Process input
+        processInput(window, camera);
+
+        // Clear screen and render scene
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        camera.update(deltaTime, Eigen::Vector3f(0.0f, 0.0f, 0.0f));
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -97,17 +177,12 @@ int main() {
 		float time = glfwGetTime() * rotationSpeed;
 
 
-
-		camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.8f, 0.0f), 20.0f); //outside view
-		//camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f, 0.0f, 0.0f), 0.2f); //inside view
-
-
 		Eigen::Vector3f cameraPos = camera.getPosition();
 		glUniform3f(cameraPosLocation, cameraPos.x(), cameraPos.y(), cameraPos.z());
 
 		
-		glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f); //outside view
-		//glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f); //inside view
+		//glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f); //outside view
+		glUniform3f(targetLocation, 0.0f, 0.0f, 0.0f); //inside view
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
@@ -115,6 +190,7 @@ int main() {
 
 
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 
 	}
 
