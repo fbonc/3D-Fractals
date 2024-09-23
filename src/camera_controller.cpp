@@ -17,9 +17,12 @@ CameraController::Mode CameraController::getMode() {
     return mode;
 }
 
-void CameraController::processKeyboardInput(int key, float deltaTime) {
+void CameraController::processKeyboardInput(int key, float deltaTime, bool isShiftPressed) {
     float velocity = movementSpeed * deltaTime;
     if (mode == Mode::FreeCam) {
+        if (isShiftPressed) {
+            velocity *= 2.0f;
+        }
         if (key == GLFW_KEY_W) {
             camera.setPosition(camera.getPosition() + camera.getFront() * velocity);
         }
@@ -32,6 +35,15 @@ void CameraController::processKeyboardInput(int key, float deltaTime) {
         if (key == GLFW_KEY_D) {
             camera.setPosition(camera.getPosition() + camera.getRight() * velocity);
         }
+        if (key == GLFW_KEY_SPACE) {
+            camera.setPosition(camera.getPosition() + camera.getWorldUp() * velocity);
+            std::cout << "space" << std::endl;
+        }
+        if (key == GLFW_KEY_LEFT_CONTROL) {
+            camera.setPosition(camera.getPosition() - camera.getWorldUp() * velocity);
+            std::cout << "ctrl" << std::endl;
+        }
+        
     }
 }
 

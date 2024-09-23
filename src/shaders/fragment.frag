@@ -6,8 +6,7 @@ out vec4 screenColor;
 uniform vec3 cameraPos;
 uniform vec3 target;
 uniform vec2 resolution;
-uniform vec3 lightPos;
-
+uniform bool isRepeating;
 
 //Cube SDF
 
@@ -146,6 +145,7 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iteratio
     float totalDist = 0.0;
 
     vec3 point;
+    vec3 finalPoint;
     int iteration_num;
 
     for (int i = 0; i < MAX_STEPS; i++) {
@@ -154,11 +154,18 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iteratio
         point = rayOrigin + rayDir * totalDist;
 
 
-        
-        //float dist = mengerSpongeSDF(point, 5, 10);
 
-        vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
-        float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
+        if (isRepeating) {
+            vec3 finalPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
+        } else {
+            finalPoint = point;
+        }
+
+
+        float dist = mengerSpongeSDF(finalPoint, 5, 10);
+
+        // vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
+        // float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
 
 
         if (dist < SURFACE_DIST) {

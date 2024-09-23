@@ -10,7 +10,7 @@ public:
 
     void setMode(Mode newMode);
     CameraController::Mode getMode();
-    void processKeyboardInput(int key, float deltaTime);
+    void processKeyboardInput(int key, float deltaTime, bool isShiftPressed);
     void processMouseMovement(float xoffset, float yoffset);
 
     void rotateAroundPoint(float angle, const Eigen::Vector3f& point, float radius);

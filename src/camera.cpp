@@ -43,6 +43,10 @@ const Eigen::Vector3f& Camera::getUp() const {
     return up;
 }
 
+const Eigen::Vector3f& Camera::getWorldUp() const {
+    return worldUp;
+}
+
 
 
 

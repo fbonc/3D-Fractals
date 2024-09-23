@@ -17,6 +17,7 @@ public:
     const Eigen::Vector3f& getFront() const;
     const Eigen::Vector3f& getRight() const;
     const Eigen::Vector3f& getUp() const;
+    const Eigen::Vector3f& getWorldUp() const;
 
 private:
     Eigen::Vector3f position;
