@@ -4,12 +4,12 @@
 Camera::Camera(float fov, float aspectRatio, float nearPlane, float farPlane)
     : front(Eigen::Vector3f(0.0f, 0.0f, -1.0f)),
     worldUp(Eigen::Vector3f(0.0f, 1.0f, 0.0f)),
-    yaw(-90.0f), // Pointing towards negative Z
+    yaw(-90.0f), //pointing towards -z
     pitch(0.0f),
     movementSpeed(2.5f),
     mouseSensitivity(0.1f),
     rotationSpeed(0.2f),
-    mode(Mode::AutoRotation) {  // Default mode is autoRotation
+    mode(Mode::AutoRotation) {
 
     position = Eigen::Vector3f(0.0f, 0.0f, 3.0f);
     updateCameraVectors();
