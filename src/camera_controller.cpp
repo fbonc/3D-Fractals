@@ -2,7 +2,7 @@
 
 CameraController::CameraController(Camera& camera)
     : camera(camera),
-      movementSpeed(2.5f),
+      movementSpeed(3.5f),
       mouseSensitivity(0.125f),
       rotationSpeed(0.2f),
       mode(Mode::AutoRotation),
@@ -79,4 +79,8 @@ void CameraController::updateRotation(float deltaTime, const Eigen::Vector3f& ro
 
 void CameraController::updateCameraVectors() {
     camera.updateCameraVectors(yaw, pitch);
+}
+
+Camera CameraController::getCamera(){
+    return camera;
 }

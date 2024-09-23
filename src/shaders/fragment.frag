@@ -155,14 +155,14 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iteratio
 
 
 
-        if (isRepeating) {
-            vec3 finalPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
-        } else {
-            finalPoint = point;
-        }
+        // if (isRepeating) {
+        //     vec3 finalPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
+        // } else {
+        //     finalPoint = point;
+        // }
 
 
-        float dist = mengerSpongeSDF(finalPoint, 5, 10);
+        float dist = mengerSpongeSDF(point, 5, 10);
 
         // vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
         // float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
