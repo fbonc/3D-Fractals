@@ -8,14 +8,6 @@ uniform vec3 target;
 uniform vec2 resolution;
 uniform bool isRepeating;
 
-//Cube SDF
-
-// float cubeSDF(vec3 p, vec3 size) {
-
-//     vec3 d = abs(p) - size;
-//     return length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
-
-// }
 
 
 float cubeSDF(vec3 rayPos, float width) {
@@ -154,18 +146,10 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iteratio
         point = rayOrigin + rayDir * totalDist;
 
 
+        // float dist = mengerSpongeSDF(point, 5, 10);
 
-        // if (isRepeating) {
-        //     vec3 finalPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
-        // } else {
-        //     finalPoint = point;
-        // }
-
-
-        float dist = mengerSpongeSDF(point, 5, 10);
-
-        // vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
-        // float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
+        vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
+        float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
 
 
         if (dist < SURFACE_DIST) {
