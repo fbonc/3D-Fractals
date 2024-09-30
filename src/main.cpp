@@ -133,6 +133,7 @@ int main() {
 
 	int cameraPosLocation = glGetUniformLocation(shader, "cameraPos");
 	int targetLocation = glGetUniformLocation(shader, "target");
+    int powerLocation = glGetUniformLocation(shader, "Power");
 
 	int resolution = glGetUniformLocation(shader, "resolution");
 	glUniform2f(resolution, resolutionX, resolutionY);
@@ -163,6 +164,9 @@ int main() {
 
 	//MAIN RENDER LOOP
 	float rotationSpeed = 0.1f;
+    float power = 3.0f;
+    bool powerUp = true;
+    float powerRate = 0.015f;
 	Eigen::Vector3f target;
 
 	while (!glfwWindowShouldClose(window)) {
@@ -185,10 +189,26 @@ int main() {
 
 
 		if (cameraController.getMode() == CameraController::Mode::AutoRotation) {
-			target.x() = 0.0f; target.z() = 0.0f;; target.y() = 0.0f;
+			target.x() = 0.0f; target.z() = 0.0f; target.y() = 0.0f;
 		} else {
 			target = cameraPos + camera.getFront();
 		}
+
+
+        if (power > 15.0f) {
+            powerUp = false;
+        } else if (power < 1.0f) {
+            powerUp = true;
+        }
+    
+        if (powerUp) {
+            power += powerRate;
+        } else {
+            power -= powerRate;
+        }
+
+        glUniform1f(powerLocation, power);
+
 		glUniform3f(targetLocation, target.x(), target.y(), target.z()); //inside view
 
 		glBindVertexArray(VAO);

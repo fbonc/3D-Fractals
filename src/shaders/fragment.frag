@@ -7,6 +7,10 @@ uniform vec3 cameraPos;
 uniform vec3 target;
 uniform vec2 resolution;
 uniform bool isRepeating;
+uniform float Power;
+
+
+float size = 10.0;
 
 
 
@@ -76,7 +80,7 @@ float mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
     
     float crossesDist = sdCross(repeatedPos / oneThird, cubeWidth) * oneThird;
     
-    //Acquire actual distance by un-stretching
+    //acquire actual distance by un-stretching
     crossesDist /= scale;
     
     mengerSpongeDist = max(mengerSpongeDist, -crossesDist);
@@ -86,15 +90,50 @@ float mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
   return mengerSpongeDist;
 }
 
+float mandelbulbSDF(vec3 rayPos) {
 
+    vec3 currentPoint = rayPos;
+    float radius = 0.0;  //distance from the origin
+    float derivative = 1.0;  //derivative used for distance estimation
+    // float Power = 8.0;
 
-float sphereSDF(vec3 rayPos, float radius) {
+    for (int i = 0; i < 40; i++) {
 
-    return length(rayPos) - radius;
+        radius = length(currentPoint);
+        if (radius > 4.0) break;  //early exit if outside the bounding radius
+
+        //convert current point to polar coordinates
+        float polarAngle = acos(currentPoint.z / radius);
+        float azimuthalAngle = atan(currentPoint.y, currentPoint.x);
+        
+        //update derivative
+        derivative = pow(radius, Power - 1.0) * Power * derivative + 1.0;
+
+        //scale and rotate the point based on the current radius and angles
+        float scaledRadius = pow(radius, Power);
+        polarAngle *= Power;
+        azimuthalAngle *= Power;
+
+        //convert back to cartesian coordinates
+        currentPoint = scaledRadius * vec3(
+            sin(polarAngle) * cos(azimuthalAngle),
+            sin(azimuthalAngle) * sin(polarAngle),
+            cos(polarAngle)
+        );
+        currentPoint += rayPos;
+
+    }
+
+    return 0.5 * log(radius) * radius / derivative;  //final distance estimation
 
 }
 
+//signed distance function for a sphere
+float sphereSDF(vec3 rayPos, vec3 center, float radius) {
 
+    return length(rayPos - center) - radius;
+
+}
 
 
 
@@ -131,8 +170,8 @@ vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, v
 float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iterations, out int max_steps) {
 
     const int MAX_STEPS = 100;
-    const float MAX_DIST = 100.0;
-    const float SURFACE_DIST = 0.01;
+    const float MAX_DIST = 200.0;
+    const float SURFACE_DIST = 0.0001;
 
     float totalDist = 0.0;
 
@@ -146,10 +185,18 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iteratio
         point = rayOrigin + rayDir * totalDist;
 
 
-        // float dist = mengerSpongeSDF(point, 5, 10);
 
-        vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
-        float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
+        // if (isRepeating) {
+        //     vec3 finalPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
+        // } else {
+        //     finalPoint = point;
+        // }
+
+
+        float dist = mandelbulbSDF(point);
+
+        // vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
+        // float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
 
 
         if (dist < SURFACE_DIST) {
@@ -189,7 +236,6 @@ void main() {
 
         vec3 color = vec3(0.6 - (float(iterations) / float(max_steps)));
         screenColor = vec4(color, 1.0);
-        //screenColor = vec4(1.0, 1.0, 1.0, 1.0);
 
     } else {
 

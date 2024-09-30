@@ -2,7 +2,7 @@
 
 CameraController::CameraController(Camera& camera)
     : camera(camera),
-      movementSpeed(3.5f),
+      movementSpeed(5.0f),
       mouseSensitivity(0.125f),
       rotationSpeed(0.2f),
       mode(Mode::AutoRotation),
@@ -21,7 +21,7 @@ void CameraController::processKeyboardInput(int key, float deltaTime, bool isShi
     float velocity = movementSpeed * deltaTime;
     if (mode == Mode::FreeCam) {
         if (isShiftPressed) {
-            velocity *= 2.0f;
+            velocity *= 6.0f;
         }
         if (key == GLFW_KEY_W) {
             camera.setPosition(camera.getPosition() + camera.getFront() * velocity);
@@ -73,7 +73,7 @@ void CameraController::rotateAroundPoint(float angle, const Eigen::Vector3f& poi
 void CameraController::updateRotation(float deltaTime, const Eigen::Vector3f& rotationCenter) {
     if (mode == Mode::AutoRotation) {
         float time = glfwGetTime() * rotationSpeed;
-        rotateAroundPoint(time, rotationCenter, 1.0f);
+        rotateAroundPoint(time, rotationCenter, 4.0f);
     }
 }
 
