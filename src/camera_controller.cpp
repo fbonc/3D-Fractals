@@ -2,7 +2,7 @@
 
 CameraController::CameraController(Camera& camera)
     : camera(camera),
-      movementSpeed(5.0f),
+      movementSpeed(1.0f),
       mouseSensitivity(0.125f),
       rotationSpeed(0.2f),
       mode(Mode::AutoRotation),
@@ -43,6 +43,12 @@ void CameraController::processKeyboardInput(int key, float deltaTime, bool isShi
             camera.setPosition(camera.getPosition() - camera.getWorldUp() * velocity);
             std::cout << "ctrl" << std::endl;
         }
+        if (key == GLFW_KEY_UP) {
+            changeMovementSpeed(1);
+        }
+        if (key == GLFW_KEY_DOWN) {
+            changeMovementSpeed(-1);
+        }
         
     }
 }
@@ -79,6 +85,10 @@ void CameraController::updateRotation(float deltaTime, const Eigen::Vector3f& ro
 
 void CameraController::updateCameraVectors() {
     camera.updateCameraVectors(yaw, pitch);
+}
+
+void CameraController::changeMovementSpeed(int dir) {
+    movementSpeed += 0.2f * dir;
 }
 
 Camera CameraController::getCamera(){

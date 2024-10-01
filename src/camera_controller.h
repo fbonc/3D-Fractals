@@ -16,6 +16,7 @@ public:
     void rotateAroundPoint(float angle, const Eigen::Vector3f& point, float radius);
     void updateRotation(float deltaTime, const Eigen::Vector3f& rotationCenter);
     void updateCameraVectors();
+    void changeMovementSpeed(int dir);
     Camera getCamera();
 
 private:

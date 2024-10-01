@@ -9,8 +9,9 @@ uniform vec2 resolution;
 uniform bool isRepeating;
 uniform float Power;
 
-
-float size = 10.0;
+#define MAX_DIST 200.0
+#define MAX_STEPS 200
+#define EPSILON 0.0001
 
 
 
@@ -151,7 +152,6 @@ vec3 repeat(vec3 rayPos, vec3 cell_width) {
 vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
 
     vec2 ndc = (fragCoord / resolution) * 2.0f - 1.0f;
-    //ndc.y = -ndc.y;
 
     float aspectRatio = resolution.x / resolution.y;
     float z = 1.0/tan(radians(fov) / 2.0f);
@@ -167,53 +167,34 @@ vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, v
 
 
 
-float ray_march(vec3 rayOrigin, vec3 rayDir, out vec3 hitPoint, out int iterations, out int max_steps) {
-
-    const int MAX_STEPS = 100;
-    const float MAX_DIST = 200.0;
-    const float SURFACE_DIST = 0.0001;
+float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint) {
 
     float totalDist = 0.0;
 
-    vec3 point;
-    vec3 finalPoint;
-    int iteration_num;
+    steps = 0;
 
     for (int i = 0; i < MAX_STEPS; i++) {
-        iteration_num += 1;
 
-        point = rayOrigin + rayDir * totalDist;
+        steps += 1;
+        vec3 point = rayOrigin + rayDir * totalDist;
 
-
-
-        // if (isRepeating) {
-        //     vec3 finalPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
-        // } else {
-        //     finalPoint = point;
-        // }
-
-
+        //vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
         float dist = mandelbulbSDF(point);
-
-        // vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
-        // float dist = mengerSpongeSDF(repeatedPoint, 5, 10);
+        // float dist = mengerSpongeSDF(point, 7, 10);
 
 
-        if (dist < SURFACE_DIST) {
+        if (abs(dist) < EPSILON) {
             hitPoint = point;
-            iterations = iteration_num;
-            max_steps = MAX_STEPS;
-
             return totalDist;
         }
         
         totalDist += dist;
 
-        if (totalDist > MAX_DIST)
-            break;
+        if (totalDist > MAX_DIST) break;
+        
     }
 
-    return -1.0; // no hit
+    return totalDist; //no hit
 
 }
 
@@ -228,13 +209,12 @@ void main() {
     vec3 rayOrigin = cameraPos;
 
     vec3 hitPoint;
-    int iterations;
-    int max_steps;
-    float distance = ray_march(rayOrigin, rayDir, hitPoint, iterations, max_steps);
+    int steps;
+    float distance = ray_march(rayOrigin, rayDir, steps, hitPoint);
 
-    if (distance > 0.0) {
+    if (distance < MAX_DIST) {
 
-        vec3 color = vec3(0.6 - (float(iterations) / float(max_steps)));
+        vec3 color = vec3(0.6 - (float(steps) / float(MAX_STEPS))); //white objects
         screenColor = vec4(color, 1.0);
 
     } else {

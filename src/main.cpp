@@ -164,7 +164,7 @@ int main() {
 
 	//MAIN RENDER LOOP
 	float rotationSpeed = 0.1f;
-    float power = 3.0f;
+    float power = 8.0f;
     bool powerUp = true;
     float powerRate = 0.015f;
 	Eigen::Vector3f target;
@@ -195,17 +195,17 @@ int main() {
 		}
 
 
-        if (power > 15.0f) {
-            powerUp = false;
-        } else if (power < 1.0f) {
-            powerUp = true;
-        }
+        // if (power > 15.0f) {
+        //     powerUp = false;
+        // } else if (power < 1.0f) {
+        //     powerUp = true;
+        // }
     
-        if (powerUp) {
-            power += powerRate;
-        } else {
-            power -= powerRate;
-        }
+        // if (powerUp) {
+        //     power += powerRate;
+        // } else {
+        //     power -= powerRate;
+        // }
 
         glUniform1f(powerLocation, power);
 
