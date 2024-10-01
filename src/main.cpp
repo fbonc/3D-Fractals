@@ -58,6 +58,13 @@ void processInput(GLFWwindow* window, CameraController& cameraController) {
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS){
         cameraController.processKeyboardInput(GLFW_KEY_LEFT_CONTROL, deltaTime, isShiftPressed);
     }
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+        cameraController.processKeyboardInput(GLFW_KEY_UP, deltaTime, isShiftPressed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+        cameraController.processKeyboardInput(GLFW_KEY_DOWN, deltaTime, isShiftPressed);
+    }
+    
 
 
     //switch between autoRotation and freeCam modes

@@ -88,7 +88,14 @@ void CameraController::updateCameraVectors() {
 }
 
 void CameraController::changeMovementSpeed(int dir) {
-    movementSpeed += 0.2f * dir;
+    float p;
+    if (dir == 1){
+        p = 1.2;
+    } else {
+        p = 0.8;
+    }
+
+    movementSpeed *= p;
 }
 
 Camera CameraController::getCamera(){
