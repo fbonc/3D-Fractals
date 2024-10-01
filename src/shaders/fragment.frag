@@ -150,19 +150,21 @@ vec3 repeat(vec3 rayPos, vec3 cell_width) {
 //Ray marcher
 
 vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
-
-    vec2 ndc = (fragCoord / resolution) * 2.0f - 1.0f;
-
-    float aspectRatio = resolution.x / resolution.y;
-    float z = 1.0/tan(radians(fov) / 2.0f);
+    vec2 ndc = (fragCoord / resolution) * 2.0f - 1.0f;  //normalize device coordinates
+    ndc.x *= resolution.x / resolution.y;  //aspect ratio correction
 
     vec3 forward = normalize(target - cameraPos);
     vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));
     vec3 up = cross(right, forward);
 
-    vec3 rayDir = normalize(ndc.x * right * aspectRatio + ndc.y * up + z * forward);
-    return rayDir;
+    vec3 rayDir = normalize(ndc.x * right + ndc.y * up + forward);
+    rayDir = normalize(rayDir);
 
+    if (dot(rayDir, forward) < 0.0) {
+        rayDir = -rayDir;
+    }
+
+    return rayDir;
 }
 
 
@@ -190,7 +192,7 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint) {
         
         totalDist += dist;
 
-        if (totalDist > MAX_DIST) break;
+        if (abs(totalDist) > MAX_DIST) break;
         
     }
 
@@ -205,7 +207,7 @@ void main() {
     vec2 fragCoord = gl_FragCoord.xy;
     vec2 resolution = vec2(resolution.x, resolution.y);
     
-    vec3 rayDir = ray_direction(45.0f, fragCoord, resolution, cameraPos, target);
+    vec3 rayDir = ray_direction(35.0f, fragCoord, resolution, cameraPos, target);
     vec3 rayOrigin = cameraPos;
 
     vec3 hitPoint;
