@@ -107,7 +107,6 @@ float mandelbulbSDF(vec3 rayPos) {
         float polarAngle = acos(currentPoint.z / radius);
         float azimuthalAngle = atan(currentPoint.y, currentPoint.x);
         
-        //update derivative
         derivative = pow(radius, Power - 1.0) * Power * derivative + 1.0;
 
         //scale and rotate the point based on the current radius and angles
@@ -192,11 +191,27 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint) {
         
         totalDist += dist;
 
-        if (abs(totalDist) > MAX_DIST) break;
+        if (totalDist > MAX_DIST) break;
         
     }
 
     return totalDist; //no hit
+
+}
+
+
+vec3 colorGradient(float t) {
+
+    vec3 col1 = vec3(0.1, 0.0, 0.4);
+    vec3 col2 = vec3(0.4, 0.1, 0.7);
+    vec3 col3 = vec3(0.9, 0.2, 0.5);
+
+    //interpolate smoothly between the colors
+    if (t < 0.5) {
+        return mix(col1, col2, t * 2.0);  
+    } else {
+        return mix(col2, col3, (t - 0.5) * 2.0);  
+    }
 
 }
 
@@ -214,14 +229,26 @@ void main() {
     int steps;
     float distance = ray_march(rayOrigin, rayDir, steps, hitPoint);
 
+    vec3 color;
+
     if (distance < MAX_DIST) {
 
-        vec3 color = vec3(0.6 - (float(steps) / float(MAX_STEPS))); //white objects
-        screenColor = vec4(color, 1.0);
+        // Map the steps to a color gradient
+        float t = float(steps) / float(MAX_STEPS);  
+        color = colorGradient(t);  
 
+        // Add subtle glow effect (emission based on steps)
+        float glowFactor = smoothstep(0.0, 0.5 * float(MAX_STEPS), float(steps)); // Reduce emission factor
+        color += vec3(0.15, 0.1, 0.25) * glowFactor * 0.3; // Reduced intensity for glow
+
+        screenColor = vec4(color, 1.0);
     } else {
 
-        screenColor = vec4(0.2, 0.2, 0.2, 1.0); //black background
+        // Soft glow for rays that miss
+        float glowFactor = exp(-0.05 * distance);  // More subtle exponential falloff for glow
+        vec3 glowColor = vec3(0.1, 0.05, 0.2) * glowFactor;  // Softer glow color
+
+        screenColor = vec4(glowColor, 1.0);  // Apply the glow color as the background
     }
 
 }

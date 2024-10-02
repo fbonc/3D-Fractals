@@ -117,11 +117,11 @@ int main() {
 
 	//load shaders
 	unsigned int shader = shaderManager.make_shader(
-		"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",		//Laptop
-		"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
+		// "C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",		//Laptop
+		// "C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
 
-		// "C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",		//PC
-		// "C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
+		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",		//PC
+		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
 	);
 
 	glUseProgram(shader);
@@ -202,17 +202,17 @@ int main() {
 		}
 
 
-        // if (power > 15.0f) {
-        //     powerUp = false;
-        // } else if (power < 1.0f) {
-        //     powerUp = true;
-        // }
+        if (power > 15.0f) {
+            powerUp = false;
+        } else if (power < 1.0f) {
+            powerUp = true;
+        }
     
-        // if (powerUp) {
-        //     power += powerRate;
-        // } else {
-        //     power -= powerRate;
-        // }
+        if (powerUp) {
+            power += powerRate;
+        } else {
+            power -= powerRate;
+        }
 
         glUniform1f(powerLocation, power);
 
