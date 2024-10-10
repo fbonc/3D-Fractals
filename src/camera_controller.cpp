@@ -79,7 +79,7 @@ void CameraController::rotateAroundPoint(float angle, const Eigen::Vector3f& poi
 void CameraController::updateRotation(float deltaTime, const Eigen::Vector3f& rotationCenter) {
     if (mode == Mode::AutoRotation) {
         float time = glfwGetTime() * rotationSpeed;
-        rotateAroundPoint(time, rotationCenter, 4.0f);
+        rotateAroundPoint(time, rotationCenter, 3.0f);
     }
 }
 

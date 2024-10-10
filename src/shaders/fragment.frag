@@ -12,8 +12,11 @@ uniform float Power;
 #define MAX_DIST 200.0
 #define MAX_STEPS 200
 #define EPSILON 0.0001
+#define PHI 1.61803398874989484820459
 
-
+float gold_noise(in vec2 xy, in float seed){
+       return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
+}
 
 float cubeSDF(vec3 rayPos, float width) {
   //half initial scale of square (arbitrary)
@@ -67,6 +70,10 @@ float mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
   
   float scale = 1.0;
   for(int i = 0; i < numIterations; ++i) {
+
+
+    rayPos += gold_noise(vec2(-2.0f,2.0f), i);
+
     //determine repeated box width
     float boxedWidth = cubeWidth / scale;
     
@@ -177,7 +184,7 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint) {
     for (int i = 0; i < MAX_STEPS; i++) {
 
         steps += 1;
-        vec3 point = rayOrigin + rayDir * totalDist;
+        vec3 point = rayOrigin + rayDir * abs(totalDist);
 
         //vec3 repeatedPoint = repeat(point, vec3(6.7)); //repeat object infinitely in all directions
         float dist = mandelbulbSDF(point);
@@ -219,7 +226,7 @@ void main() {
     if (distance < MAX_DIST) {
 
         vec3 emissionColor = vec3(1.0, 0.0, 0.0) * colorFactor;
-        vec3 baseColor = vec3(0.3, 0.2, 0.51); // Reduced intensity for glow
+        vec3 baseColor = vec3(0.6275, 0.6275, 0.6275); // Reduced intensity for glow
 
         vec3 finalColor = baseColor - colorFactor;
 
@@ -229,7 +236,7 @@ void main() {
 
         // Soft glow for rays that miss
         
-        vec3 glowColor = vec3(1.0, 0.0, 0.0) * colorFactor;  // Softer glow color
+        vec3 glowColor = vec3(0.3373, 0.3373, 0.3373) * colorFactor;  // Softer glow color
 
         screenColor = vec4(glowColor, 1.0);  // Apply the glow color as the background
     }

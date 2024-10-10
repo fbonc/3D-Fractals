@@ -117,15 +117,15 @@ int main() {
 
 	//load shaders
 	unsigned int shader = shaderManager.make_shader(
-		// "C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",		//Laptop
-		// "C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
+		"C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",		//Laptop
+		"C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
 
-		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",		//PC
-		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
+		// "C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",		//PC
+		// "C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
 	);
 
 	glUseProgram(shader);
-
+    
 	Camera camera;
 	CameraController cameraController(camera);
 
