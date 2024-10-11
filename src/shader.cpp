@@ -9,7 +9,7 @@ const unsigned int Shader::getShaderID() const {
 }
 
 
-const char* Shader::readFile(const std::string& filepath) const {
+const char* Shader::readFile(const std::string& filepath, const unsigned int module_type) {
     std::ifstream file;
 	std::stringstream bufferedLines;
 	std::string line;
@@ -25,13 +25,14 @@ const char* Shader::readFile(const std::string& filepath) const {
 	bufferedLines.str("");
 	file.close();
 
+    if (module_type == GL_FRAGMENT_SHADER)
     return shaderSrc;
 }
 
 
 unsigned int Shader::makeModule(const std::string& filepath, unsigned int module_type) {
 
-    const char* shaderSrc = readFile(filepath);
+    const char* shaderSrc = readFile(filepath, module_type);
 
 	unsigned int shaderModule = glCreateShader(module_type);
 	glShaderSource(shaderModule, 1, &shaderSrc, NULL);
