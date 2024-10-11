@@ -16,6 +16,12 @@ GLFWwindow* GLFWManager::getWindow() {
     return window;
 }
 
+void GLFWManager::setInputFunctions(CameraController& cameraController) {
+    glfwSetWindowUserPointer(window, &cameraController);
+    glfwSetCursorPosCallback(window, GLFWManager::mouseCallback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}   
+
 int GLFWManager::initialiseGLFW() {
     const int resolutionX = 1920;
 	const int resolutionY = 1080;
@@ -64,7 +70,7 @@ void GLFWManager::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 
-void GLFWManager::processInput(GLFWwindow* window, CameraController& cameraController) {
+void GLFWManager::processInput(CameraController& cameraController) {
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;

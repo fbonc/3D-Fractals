@@ -6,23 +6,24 @@ class GLFWManager
 {
 private:
     /* data */
-    float lastX;
-    float lastY;
-    bool firstMouse;
+    static float lastX;
+    static float lastY;
+    static bool firstMouse;
     bool modeSwitchPressed;
 
     float deltaTime;  //time between current frame and last frame
     float lastFrame;  //time of last frame
 
-    GLFWwindow* window;
+    static GLFWwindow* window;
 
-    void mouseCallback(GLFWwindow* window, double xpos, double ypos);
-    void processInput(GLFWwindow* window, CameraController& cameraController);
+    static void mouseCallback(GLFWwindow*, double xpos, double ypos);
+    void processInput(CameraController& cameraController);
     int initialiseGLFW();
 
     
 public:
 
+    void setInputFunctions(CameraController& cameraController);
     GLFWManager(/* args */);
     ~GLFWManager();
     GLFWwindow* getWindow();
