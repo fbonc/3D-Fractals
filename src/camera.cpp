@@ -1,9 +1,9 @@
 #include "camera.h"
 
 Camera::Camera()
-    : front(Eigen::Vector3f(0.0f, 0.0f, -1.0f)),
-      worldUp(Eigen::Vector3f(0.0f, 1.0f, 0.0f)) {
-    position = Eigen::Vector3f(0.0f, 0.0f, 3.0f);
+    :   front(Eigen::Vector3f(0.0f, 0.0f, -1.0f)),
+        worldUp(Eigen::Vector3f(0.0f, 1.0f, 0.0f)) {
+        position = Eigen::Vector3f(0.0f, 0.0f, 3.0f);
 }
 
 void Camera::setPosition(const Eigen::Vector3f& pos) {

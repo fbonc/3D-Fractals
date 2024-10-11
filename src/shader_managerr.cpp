@@ -4,6 +4,10 @@ ShaderManager::ShaderManager(const std::string& vertex_filepath, const std::stri
     shaderProgram = createShader(vertex_filepath, fragment_filepath);
 }
 
+ShaderManager::~ShaderManager() {
+    deleteShader();
+}
+
 std::unique_ptr<Shader> ShaderManager::createShader(const std::string& vertex_filepath, const std::string& fragment_filepath) {
     return std::make_unique<Shader>(vertex_filepath, fragment_filepath);
 }
