@@ -141,8 +141,8 @@ int main() {
 	int cameraPosLocation = glGetUniformLocation(shader, "cameraPos");
 	int targetLocation = glGetUniformLocation(shader, "target");
     int powerLocation = glGetUniformLocation(shader, "Power");
-
 	int resolution = glGetUniformLocation(shader, "resolution");
+    
 	glUniform2f(resolution, resolutionX, resolutionY);
 
 	//vertex data for a quad (for ray marching)

@@ -1,10 +1,13 @@
 
 #include "glfw_manager.h"
 
+static float lastX = 1920.0f / 2.0f;
+static float lastY = 1920.0f / 2.0f;
+static bool firstMouse = true;
+
+
 GLFWManager::GLFWManager() 
-    :   lastX(1920.00f / 2.0f), 
-        lastY(1080.0f / 2.0f), 
-        firstMouse(true), 
+        :
         modeSwitchPressed(false), 
         deltaTime(0.0f), 
         lastFrame(0.0f)
