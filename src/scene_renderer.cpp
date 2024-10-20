@@ -11,6 +11,10 @@ SceneRenderer::~SceneRenderer()
 }
 
 
+void mainRenderLoop() {
+    
+}
+
 void SceneRenderer::setUniformLocations(const std::vector<std::string>& uniformNames)
 {
     for (size_t i = 0; i < uniformNames.size(); ++i) {

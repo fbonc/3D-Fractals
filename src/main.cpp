@@ -186,8 +186,6 @@ int main() {
         cameraController.updateRotation(deltaTime, Eigen::Vector3f(0.0f, 0.0f, 0.0f));
 		cameraController.updateCameraVectors();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		float time = glfwGetTime() * rotationSpeed;
 
 		//update camera uniform
