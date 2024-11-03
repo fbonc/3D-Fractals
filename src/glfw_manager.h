@@ -5,7 +5,7 @@
 class GLFWManager
 {
 private:
-    /* data */
+
     static float lastX;
     static float lastY;
     static bool firstMouse;

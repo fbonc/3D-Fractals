@@ -1,17 +1,21 @@
 #include "scene_renderer.h"
 
-SceneRenderer::SceneRenderer(const ShaderManager& shaderManager) : shaderManager(shaderManager)
+SceneRenderer::SceneRenderer(const ShaderManager& shaderManager, const Camera& cameraInput) : shaderManager(shaderManager), camera(cameraInput), cameraController(camera)
 {
+
+	glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
+
+    glUseProgram(shaderManager.getShaderProgram()->getShaderID());
 
 }
 
 SceneRenderer::~SceneRenderer()
 {
-
+    
 }
 
 
-void mainRenderLoop() {
+void SceneRenderer::mainRenderLoop() {
     
 }
 
@@ -53,9 +57,4 @@ void SceneRenderer::setUniformByType<int>(int location, int value) {
 template<>
 void SceneRenderer::setUniformByType<float>(int location, float value) {
     glUniform1f(location, value);
-}
-
-template<>
-void SceneRenderer::setUniformByType<bool>(int location, bool value) {
-    glUniform1i(location, value);
 }
