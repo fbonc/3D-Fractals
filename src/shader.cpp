@@ -25,7 +25,6 @@ const char* Shader::readFile(const std::string& filepath, const unsigned int mod
 	bufferedLines.str("");
 	file.close();
 
-    if (module_type == GL_FRAGMENT_SHADER)
     return shaderSrc;
 }
 

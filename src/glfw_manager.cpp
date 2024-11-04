@@ -1,9 +1,10 @@
 
 #include "glfw_manager.h"
 
-static float lastX = 1920.0f / 2.0f;
-static float lastY = 1920.0f / 2.0f;
-static bool firstMouse = true;
+float GLFWManager::lastX = 1920.0f / 2.0f;
+float GLFWManager::lastY = 1920.0f / 2.0f;
+bool GLFWManager::firstMouse = true;
+GLFWwindow* GLFWManager::window = nullptr;
 
 
 GLFWManager::GLFWManager() 
@@ -49,8 +50,8 @@ int GLFWManager::initialiseGLFW() {
 		return -1;
 	}
 
-	
-	glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
+
+    return 0;
 }
 
 void GLFWManager::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
