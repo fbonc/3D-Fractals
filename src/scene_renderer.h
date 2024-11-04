@@ -1,24 +1,25 @@
+#pragma once
+#include "Fractal.h"
 #include "shader_managerr.h"
+#include "camera_controller.h"
 #include "config.h"
-#include "unordered_map"
+#include <memory>
 
-
-class SceneRenderer
-{
-private:
-    std::unordered_map<std::string, int> uniformLocations;
-    const ShaderManager& shaderManager;
-
-    template<typename T>
-    void setUniformByType(int location, T value);
+class SceneRenderer {
 public:
-    SceneRenderer(const ShaderManager& shaderManager);
+    SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController);
     ~SceneRenderer();
 
-    void setUniformLocations(const std::vector<std::string>& uniformNames);
-    int getUniformLocation(const std::string& uniformName);
+    void setFractal(std::unique_ptr<Fractal> fractal);  // Set active fractal
+    void initializeUniformLocations();
+    void render();
 
-    template<typename T>
-    void setUniform(const std::string& uniformName, T value);
+private:
+    void setCommonUniforms();
+    void setFractalUniforms();
+
+    const ShaderManager& shaderManager;
+    CameraController& cameraController;
+    std::unique_ptr<Fractal> currentFractal;
+    std::unordered_map<std::string, int> uniformLocations;
 };
-

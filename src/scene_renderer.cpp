@@ -1,61 +1,60 @@
+// SceneRenderer.cpp
 #include "scene_renderer.h"
 
-SceneRenderer::SceneRenderer(const ShaderManager& shaderManager) : shaderManager(shaderManager)
-{
+SceneRenderer::SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController)
+    : shaderManager(shaderManager), cameraController(cameraController) {}
+
+SceneRenderer::~SceneRenderer() {}
+
+void SceneRenderer::setFractal(std::unique_ptr<Fractal> fractal) {
+    currentFractal = std::move(fractal);
+    initializeUniformLocations();
+}
+
+void SceneRenderer::initializeUniformLocations() {
+    uniformLocations.clear();
+    if (currentFractal) {
+        for (const auto& name : currentFractal->getUniformNames()) {
+            int location = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), name.c_str());
+            if (location != -1) {
+                uniformLocations[name] = location;
+            }
+        }
+    }
+
+    uniformLocations["cameraPos"] = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), "cameraPos");
+    uniformLocations["target"] = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), "target");
+    uniformLocations["resolution"] = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), "resolution");
+}
+
+void SceneRenderer::setCommonUniforms() {
+
+    Eigen::Vector3f cameraPos = cameraController.getCamera().getPosition();
+    glUniform3f(uniformLocations["cameraPos"], cameraPos.x(), cameraPos.y(), cameraPos.z());
+
+    Eigen::Vector3f target = cameraController.getCamera().getFront() + cameraPos;
+    glUniform3f(uniformLocations["target"], target.x(), target.y(), target.z());
 
 }
 
-SceneRenderer::~SceneRenderer()
-{
-
-}
-
-
-void mainRenderLoop() {
+void SceneRenderer::setFractalUniforms() {
+    if (!currentFractal) return;
     
-}
-
-void SceneRenderer::setUniformLocations(const std::vector<std::string>& uniformNames)
-{
-    for (size_t i = 0; i < uniformNames.size(); ++i) {
-        this->uniformLocations[uniformNames[i]] = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), uniformNames[i].c_str());
+    for (const auto& name : currentFractal->getUniformNames()) {
+        int location = uniformLocations[name];
+        float value = currentFractal->getUniformValue(name);
+        glUniform1f(location, value);
     }
 }
 
-int SceneRenderer::getUniformLocation(const std::string& uniformName)
-{
-    auto it = uniformLocations.find(uniformName);
-    if (it != uniformLocations.end()) {
-        return it->second;
-    }
-    return -1;
-}
+void SceneRenderer::render() {
+    setCommonUniforms();
+    setFractalUniforms();
 
-//template function to handle different uniform types
-template<typename T>
-void SceneRenderer::setUniform(const std::string& uniformName, T value)
-{
-    int location = getUniformLocation(uniformName);
-    if (location == -1) {
-        std::cout << "Uniform " << uniformName << " not found!" << std::endl;
-        return;
-    }
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    setUniformByType(location, value);
-}
-
-
-template<>
-void SceneRenderer::setUniformByType<int>(int location, int value) {
-    glUniform1i(location, value);
-}
-
-template<>
-void SceneRenderer::setUniformByType<float>(int location, float value) {
-    glUniform1f(location, value);
-}
-
-template<>
-void SceneRenderer::setUniformByType<bool>(int location, bool value) {
-    glUniform1i(location, value);
+    // Bind and draw the quad for full-screen rendering
+    glBindVertexArray(shaderManager.getVAO());
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
+    glBindVertexArray(0);
 }
