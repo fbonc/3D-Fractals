@@ -23,6 +23,7 @@ private:
     
 public:
 
+    GLFWwindow* getWindow();
     void setInputFunctions(CameraController& cameraController);
     GLFWManager(/* args */);
     ~GLFWManager();

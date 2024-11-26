@@ -74,6 +74,7 @@ void GLFWManager::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 
+
 void GLFWManager::processInput(CameraController& cameraController) {
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;

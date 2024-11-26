@@ -10,11 +10,12 @@ public:
     SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController);
     ~SceneRenderer();
 
-    void setFractal(std::unique_ptr<Fractal> fractal);  // Set active fractal
+    void setFractal(std::unique_ptr<Fractal> fractal); //set active fractal
     void initializeUniformLocations();
     void render();
 
 private:
+    void initialiseQuad();
     void setCommonUniforms();
     void setFractalUniforms();
 
@@ -22,4 +23,6 @@ private:
     CameraController& cameraController;
     std::unique_ptr<Fractal> currentFractal;
     std::unordered_map<std::string, int> uniformLocations;
+
+    unsigned int VAO, VBO;
 };

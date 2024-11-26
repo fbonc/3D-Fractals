@@ -1,4 +1,3 @@
-#pragma once
 #include "Fractal.h"
 
 class Mandelbulb : public Fractal {

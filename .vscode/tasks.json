@@ -8,10 +8,10 @@
             "args": [
                 "-g",
                 "-std=c++17",
-                "-I${workspaceFolder}/include",
-                "-L${workspaceFolder}/include/lib",
-                "${workspaceFolder}/src/*.cpp",
-                "${workspaceFolder}/src/*.c",
+                "-Iinclude",
+                "-Linclude/lib",
+                "src/*.cpp",
+                "src/*.c",
                 "-lglfw3dll",
                 "-o",
                 "${workspaceFolder}/fracgen.exe"

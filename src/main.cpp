@@ -84,7 +84,13 @@ void processInput(GLFWwindow* window, CameraController& cameraController) {
     }
 }
 
+#include <filesystem>
+
 int main() {
+
+    std::cout << "Current working directory: " 
+            << std::filesystem::current_path() 
+            << std::endl;
 	
 	GLFWwindow* window;
 	ShaderManager shaderManager;
@@ -117,11 +123,11 @@ int main() {
 
 	//load shaders
 	unsigned int shader = shaderManager.make_shader(
-		// "C:/Users/felip/Desktop/dev/NEA/src/shaders/vertex.vert",		//Laptop
-		// "C:/Users/felip/Desktop/dev/NEA/src/shaders/fragment.frag"
+		// "C:/Users/felip/Desktop/dev/NEA/shaders/vertex.vert",		//Laptop
+		// "C:/Users/felip/Desktop/dev/NEA/shaders/fragment.frag"
 
-		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/vertex.vert",		//PC
-		"C:/Users/felip/Desktop/Projects/NEA/src/shaders/fragment.frag"
+		"${workspaceFolder}/shaders/vertex.vert",		//PC
+		"${workspaceFolder}/shaders/fragment.frag"
 	);
 
 	glUseProgram(shader);
@@ -132,7 +138,6 @@ int main() {
 	//set the cameraController as the window user pointer for mouse callbacks
     glfwSetWindowUserPointer(window, &cameraController);
 
-    //set mouse callback function
     glfwSetCursorPosCallback(window, mouse_callback);
 
     //capture the mouse

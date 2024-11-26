@@ -1,6 +1,9 @@
+#pragma once
+
 #include "config.h"
 #include "Eigen/Dense"
 #include "camera.h"
+
 
 class CameraController {
 public:

@@ -2,6 +2,7 @@
 
 ShaderManager::ShaderManager(const std::string& vertex_filepath, const std::string& fragment_filepath) {
     shaderProgram = createShader(vertex_filepath, fragment_filepath);
+    glUseProgram(shaderProgram->getShaderID());
 }
 
 std::unique_ptr<Shader> ShaderManager::createShader(const std::string& vertex_filepath, const std::string& fragment_filepath) {
@@ -20,5 +21,6 @@ void ShaderManager::deleteShader() {
 void ShaderManager::changeShader(const std::string& vertex_filepath, const std::string& fragment_filepath) {
     deleteShader();
     shaderProgram = createShader(vertex_filepath, fragment_filepath);
+    glUseProgram(shaderProgram->getShaderID());
 }
 

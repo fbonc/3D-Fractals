@@ -1,4 +1,3 @@
-#pragma once
 #include "Fractal.h"
 
 class MengerSponge : public Fractal {
@@ -20,5 +19,5 @@ MengerSponge::MengerSponge() {
 }
 
 std::string MengerSponge::getShaderFilePath() const {
-    return "shaders/mandelbulb.frag";
+    return "shaders/mengersponge.frag";
 }

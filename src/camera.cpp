@@ -31,6 +31,7 @@ void Camera::updateCameraVectors(float yaw, float pitch) {
     up = right.cross(front).normalized();
 }
 
+
 const Eigen::Vector3f& Camera::getFront() const {
     return front;
 }
