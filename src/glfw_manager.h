@@ -27,6 +27,5 @@ public:
     void setInputFunctions(CameraController& cameraController);
     GLFWManager(/* args */);
     ~GLFWManager();
-    GLFWwindow* getWindow();
 
 };

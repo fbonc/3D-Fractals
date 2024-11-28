@@ -126,8 +126,8 @@ int main() {
 		// "C:/Users/felip/Desktop/dev/NEA/shaders/vertex.vert",		//Laptop
 		// "C:/Users/felip/Desktop/dev/NEA/shaders/fragment.frag"
 
-		"${workspaceFolder}/shaders/vertex.vert",		//PC
-		"${workspaceFolder}/shaders/fragment.frag"
+		"shaders/vertex.vert",		//PC
+		"shaders/fragment.frag"
 	);
 
 	glUseProgram(shader);

@@ -17,7 +17,7 @@
                 "${workspaceFolder}/fracgen.exe"
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceRoot}"
             },
             "problemMatcher": [
                 "$gcc"
