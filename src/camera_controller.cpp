@@ -70,25 +70,23 @@ void CameraController::processMouseMovement(float xoffset, float yoffset) {
     }
 }
 
-void CameraController::rotateAroundPoint(float angle, const Eigen::Vector3f& point, float radius) {
+void CameraController::updateRotation(const Eigen::Vector3f& rotationCenter) {
     if (mode == Mode::AutoRotation) {
-        camera.rotateAroundPoint(angle, point, radius);
+        float time = glfwGetTime() * rotationSpeed;
+        camera.rotateAroundPoint(time, rotationCenter, 3.0f);
     }
 }
 
-void CameraController::updateRotation(float deltaTime, const Eigen::Vector3f& rotationCenter) {
-    if (mode == Mode::AutoRotation) {
-        float time = glfwGetTime() * rotationSpeed;
-        rotateAroundPoint(time, rotationCenter, 3.0f);
-    }
+void CameraController::changeRotationSpeed(int speed) {
+    rotationSpeed = speed;
 }
 
 void CameraController::updateCameraVectors() {
     camera.updateCameraVectors(yaw, pitch);
 }
 
-void CameraController::changeMovementSpeed(int dir) {
-    movementSpeed *= 1 + 0.2 * dir;
+void CameraController::changeMovementSpeed(int speed) {
+    movementSpeed = speed;
 }
 
 Camera CameraController::getCamera(){

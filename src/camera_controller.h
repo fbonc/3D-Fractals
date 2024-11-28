@@ -16,10 +16,10 @@ public:
     void processKeyboardInput(int key, float deltaTime, bool isShiftPressed);
     void processMouseMovement(float xoffset, float yoffset);
 
-    void rotateAroundPoint(float angle, const Eigen::Vector3f& point, float radius);
-    void updateRotation(float deltaTime, const Eigen::Vector3f& rotationCenter);
+    void updateRotation(const Eigen::Vector3f& rotationCenter);
     void updateCameraVectors();
-    void changeMovementSpeed(int dir);
+    void changeMovementSpeed(int speed);
+    void changeRotationSpeed(int speed);
     Camera getCamera();
 
 private:

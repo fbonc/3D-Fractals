@@ -125,3 +125,10 @@ void GLFWManager::processInput(CameraController& cameraController) {
         modeSwitchPressed = false;
     }
 }
+
+
+
+void GLFWManager::endLoop() {
+    glfwSwapBuffers(window);
+	glfwPollEvents();
+}

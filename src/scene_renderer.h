@@ -11,12 +11,18 @@ public:
     ~SceneRenderer();
 
     void setFractal(std::unique_ptr<Fractal> fractal); //set active fractal
-    void initializeUniformLocations();
-    void render();
+    void initialiseUniformLocations();
+    void SceneRenderer::startLoop();
+    void SceneRenderer::endLoop();
+
+
+    void setResolutionUniform(float resX, float resY);
+    void setCameraPosUniform(Eigen::Vector3f cameraPos);
+    void setTargetUniform(Eigen::Vector3f target);
+
 
 private:
     void initialiseQuad();
-    void setCommonUniforms();
     void setFractalUniforms();
 
     const ShaderManager& shaderManager;

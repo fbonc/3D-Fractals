@@ -17,15 +17,16 @@ private:
     static GLFWwindow* window;
 
     static void mouseCallback(GLFWwindow*, double xpos, double ypos);
-    void processInput(CameraController& cameraController);
     int initialiseGLFW();
 
     
 public:
 
+    void processInput(CameraController& cameraController);
     GLFWwindow* getWindow();
     void setInputFunctions(CameraController& cameraController);
     GLFWManager(/* args */);
     ~GLFWManager();
+    void endLoop();
 
 };

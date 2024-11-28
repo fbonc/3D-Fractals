@@ -197,10 +197,9 @@ int main() {
         //clear screen and render scene
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        cameraController.updateRotation(deltaTime, Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+        cameraController.updateRotation(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
 		cameraController.updateCameraVectors();
 
-		float time = glfwGetTime() * rotationSpeed;
 
 		//update camera uniform
 		Eigen::Vector3f cameraPos = camera.getPosition();

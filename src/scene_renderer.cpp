@@ -8,7 +8,7 @@ SceneRenderer::~SceneRenderer() {}
 
 void SceneRenderer::setFractal(std::unique_ptr<Fractal> fractal) {
     currentFractal = std::move(fractal);
-    initializeUniformLocations();
+    initialiseUniformLocations();
 }
 
 void SceneRenderer::initialiseQuad() {
@@ -35,7 +35,7 @@ void SceneRenderer::initialiseQuad() {
     glBindVertexArray(0);
 }
 
-void SceneRenderer::initializeUniformLocations() {
+void SceneRenderer::initialiseUniformLocations() {
     uniformLocations.clear();
     if (currentFractal) {
         for (const auto& name : currentFractal->getUniformNames()) {
@@ -51,15 +51,17 @@ void SceneRenderer::initializeUniformLocations() {
     uniformLocations["resolution"] = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), "resolution");
 }
 
-void SceneRenderer::setCommonUniforms() {
+void SceneRenderer::setResolutionUniform(float resX, float resY) {
+        glUniform2f(uniformLocations["resolution"], resX, resY);
+}
 
-    Eigen::Vector3f cameraPos = cameraController.getCamera().getPosition();
+void SceneRenderer::setCameraPosUniform(Eigen::Vector3f cameraPos) {
     glUniform3f(uniformLocations["cameraPos"], cameraPos.x(), cameraPos.y(), cameraPos.z());
+}
 
-    Eigen::Vector3f target = cameraController.getCamera().getFront() + cameraPos;
+
+void SceneRenderer::setTargetUniform(Eigen::Vector3f target) {
     glUniform3f(uniformLocations["target"], target.x(), target.y(), target.z());
-
-    glUniform2f(uniformLocations["resolution"], 1920.0f, 1080.0f);
 }
 
 void SceneRenderer::setFractalUniforms() {
@@ -72,12 +74,12 @@ void SceneRenderer::setFractalUniforms() {
     }
 }
 
-void SceneRenderer::render() {
-    setCommonUniforms();
-    setFractalUniforms();
-
+void SceneRenderer::startLoop() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    setFractalUniforms();
+}
 
+void SceneRenderer::endLoop() {
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBindVertexArray(0);
