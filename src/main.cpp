@@ -88,9 +88,19 @@ void processInput(GLFWwindow* window, CameraController& cameraController) {
 
 int main() {
 
+    // dogshit workaround to fix the relative file paths - cwd not working in launch.json, no idea why, tried everything
+    std::filesystem::current_path("C:/Users/felip/Desktop/Projects/NEA");
+    std::cout << "Updated working directory: " 
+              << std::filesystem::current_path() 
+              << std::endl;
+
+
     std::cout << "Current working directory: " 
             << std::filesystem::current_path() 
             << std::endl;
+
+
+
 	
 	GLFWwindow* window;
 	ShaderManager shaderManager;
@@ -123,11 +133,10 @@ int main() {
 
 	//load shaders
 	unsigned int shader = shaderManager.make_shader(
-		// "C:/Users/felip/Desktop/dev/NEA/shaders/vertex.vert",		//Laptop
-		// "C:/Users/felip/Desktop/dev/NEA/shaders/fragment.frag"
 
-		"shaders/vertex.vert",		//PC
-		"shaders/fragment.frag"
+        "shaders/vertex.vert",
+        "shaders/fragment.frag"
+
 	);
 
 	glUseProgram(shader);

@@ -8,11 +8,11 @@
             "program": "${workspaceFolder}/fracgen.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",                     // Ensure relative paths work
+            "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,                         // Optional console
+            "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerPath": "C:/msys64/ucrt64/bin/gdb.exe", // Path to GDB debugger
+            "miDebuggerPath": "C:/msys64/ucrt64/bin/gdb.exe",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
