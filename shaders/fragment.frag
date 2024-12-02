@@ -226,7 +226,7 @@ void main() {
     if (distance < MAX_DIST) {
 
         vec3 emissionColor = vec3(1.0, 0.0, 0.0) * colorFactor;
-        vec3 baseColor = vec3(0.6275, 0.6275, 0.6275); // Reduced intensity for glow
+        vec3 baseColor = vec3(0.6275, 0.6275, 0.6275); //reduced intensity for glow
 
         vec3 finalColor = baseColor - colorFactor;
 
@@ -234,11 +234,11 @@ void main() {
 
     } else {
 
-        // Soft glow for rays that miss
+        //soft glow for rays that miss
         
-        vec3 glowColor = vec3(0.3373, 0.3373, 0.3373) * colorFactor;  // Softer glow color
+        vec3 glowColor = vec3(0.3373, 0.3373, 0.3373) * colorFactor;  //softer glow color
 
-        screenColor = vec4(glowColor, 1.0);  // Apply the glow color as the background
+        screenColor = vec4(glowColor, 1.0);  //apply the glow color as the background
     }
 
 }
