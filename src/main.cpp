@@ -33,7 +33,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 //process keyboard input for movement and switching camera modes
-void processInput(GLFWwindow* window, CameraController& cameraController) {
+void processInput(GLFWwindow* window, CameraController& cameraController, int cmLocation) {
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
@@ -64,6 +64,30 @@ void processInput(GLFWwindow* window, CameraController& cameraController) {
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
         cameraController.processKeyboardInput(GLFW_KEY_DOWN, deltaTime, isShiftPressed);
     }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+        cameraController.processKeyboardInput(GLFW_KEY_DOWN, deltaTime, isShiftPressed);
+    }
+
+
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
+        glUniform1i(cmLocation, 1);
+    }
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS){
+        glUniform1i(cmLocation, 2);
+    }
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS){
+        glUniform1i(cmLocation, 3);
+    }
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS){
+        glUniform1i(cmLocation, 4);
+    }
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS){
+        glUniform1i(cmLocation, 5);
+    }
+    if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS){
+        glUniform1i(cmLocation, 6);
+    }
+    
     
 
 
@@ -156,6 +180,7 @@ int main() {
 	int targetLocation = glGetUniformLocation(shader, "target");
     int powerLocation = glGetUniformLocation(shader, "Power");
 	int resolution = glGetUniformLocation(shader, "resolution");
+    int colorModeLocation = glGetUniformLocation(shader, "colorMode");
     
 	glUniform2f(resolution, resolutionX, resolutionY);
 
@@ -190,9 +215,12 @@ int main() {
     float powerRate = 0.015f;
 	Eigen::Vector3f target;
 
+    glUniform1f(powerLocation, power);
+    glUniform1i(colorModeLocation, 1);
+
 	while (!glfwWindowShouldClose(window)) {
 
-        processInput(window, cameraController);
+        processInput(window, cameraController, colorModeLocation);
 
         //clear screen and render scene
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -212,20 +240,6 @@ int main() {
 			target = cameraPos + camera.getFront();
 		}
 
-
-        if (power > 15.0f) {
-            powerUp = false;
-        } else if (power < 1.0f) {
-            powerUp = true;
-        }
-    
-        if (powerUp) {
-            power += powerRate;
-        } else {
-            power -= powerRate;
-        }
-
-        glUniform1f(powerLocation, power);
 
 		glUniform3f(targetLocation, target.x(), target.y(), target.z()); //inside view
 
