@@ -12,8 +12,8 @@ public:
 
     void setFractal(std::unique_ptr<Fractal> fractal); //set active fractal
     void initialiseUniformLocations();
-    void SceneRenderer::startLoop();
-    void SceneRenderer::endLoop();
+    void startLoop();
+    void endLoop();
 
 
     void setResolutionUniform(float resX, float resY);

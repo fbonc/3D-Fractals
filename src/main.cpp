@@ -135,7 +135,7 @@ int main() {
 	unsigned int shader = shaderManager.make_shader(
 
         "shaders/vertex.vert",
-        "shaders/fragment.frag"
+        "shaders/fragment2.frag"
 
 	);
 
