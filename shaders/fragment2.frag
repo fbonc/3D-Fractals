@@ -3,14 +3,14 @@
 
 out vec4 screenColor;
 
-//CAMERA UNIFORMs
+//################ CAMERA UNIFORMs ################
 uniform vec3 cameraPos;
 uniform vec3 target;
 uniform vec2 resolution;
 #define FOV 35.0f
 
 
-//RAY MARCH UNIFORMS
+//################ RAY MARCH UNIFORMS ################
 #define MAX_DIST 200.0
 #define MAX_STEPS 200
 #define EPSILON 0.0001
@@ -18,22 +18,23 @@ uniform vec2 resolution;
 #define repeatFractal false
 #define repeatCellSize 6.7
 
-//SCENE UNIFORMS
+//################ SCENE UNIFORMS ################
 #define backgroundColour vec3(0.4, 1.6, 1.0)
 #define useHalo true
 #define useGradient true
+#define haloRadius 17.0
 #define haloColour vec3(1.0, 0.8, 0.4)
 #define fractalColour vec3(0.9059, 0.9373, 0.9412)
 
-//MENGERSPONGE UNIFORMS
+//################ MENGERSPONGE UNIFORMS ################
 #define numIters 6
 #define widthOfCube 10.0
 
-//MANDELBULB UNIFORMS
+//################ MANDELBULB UNIFORMS ################
 uniform float Power;
 #define mandelBulbRadius 1.0
 
-//LIGHTING UNIFORMS
+//################ LIGHTING UNIFORMS ################
 #define ambientColor vec3(0.9137, 0.9137, 0.9137)
 #define lightSourceDir vec3(1.0f, 1.0f, 1.0f)
 
@@ -48,8 +49,35 @@ uniform float Power;
 #define lightestShadow 0.7
 #define darkestShadow 0.2
 
+
+//################ POST PROCESSING UNIFORMS ################
+#define gammaAmount 2.2
+#define contrastAmount 0.5 // 0.0 - 1.0
+#define saturationAmount 1.0
+#define vignetteAmount 1.0// 0.0 - 1.0
+#define luminanceColour vec3(0.2126, 0.7152, 0.0722)
+
+//################ COLOURS UNIFORMS ################
 uniform int colorMode;
-// #define colorMode 5
+#define positionColouringScale 1.0
+#define positionColourOne vec3(0.0, 1.0, 0.6667)
+#define positionColourTwo vec3(0.149, 0.0196, 0.3882)
+
+#define iterationColourVarOne 0.3
+#define iterationColourVarTwo 3.0
+#define iterationColourVarThree 4.2
+#define iterationColourVarFour vec3(0.6353, 0.6588, 0.5294)
+
+//################ TRANSFORMATION UNIFORMS ################
+#define useScale true
+#define scaleAmount 2.0
+#define useTwist false
+#define twistAmount 0.5
+#define useBend false
+#define bendAmount 0.1
+#define useWarp false
+#define warpAmount 0.0001
+
 
 
 
@@ -191,6 +219,10 @@ float noise(vec3 P) {
 //##############################################################################################
 
 
+vec3 scale(vec3 p, float k) {
+    return p / k;
+}
+
 vec3 twist(vec3 p, float k) {
     float c = cos(k * p.y);
     float s = sin(k * p.y);
@@ -206,9 +238,8 @@ vec3 bend(vec3 p, float k) {
     return vec3(p.x, m * p.yz);
 }
 
-vec3 warp(vec3 p) {
-    float strength = 0.0001;
-    p += strength * vec3(
+vec3 warp(vec3 p, float k) {
+    p += k * vec3(
         noise(p + vec3(0.0)),
         noise(p + vec3(100.0)),
         noise(p + vec3(200.0))
@@ -217,12 +248,31 @@ vec3 warp(vec3 p) {
 }
 
 
+vec3 applyTransformations(vec3 rayOrigin) {
+
+    if (useScale) {
+        rayOrigin = scale(rayOrigin, scaleAmount);
+    }
+    if (useTwist) {
+        rayOrigin = twist(rayOrigin, twistAmount);
+    }
+    if (useBend) {
+        rayOrigin = bend(rayOrigin, bendAmount);
+    }
+    if (useWarp) {
+        rayOrigin = warp(rayOrigin, warpAmount);
+    }
+
+    return rayOrigin;
+}
+
+
 //##############################################################################################
 //##################################### FRACTAL SDFS ########################################
 //##############################################################################################
 
 
-float mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
+vec2 mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
 
     //############################### TRANSFORMATIONS #####################################
     //BEND
@@ -236,7 +286,7 @@ float mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
 
 
     //WARP
-    // rayPos = warp(rayPos);
+    // rayPos = warp(rayPos, 0.0001);
 
 
     //####################################################################
@@ -247,7 +297,9 @@ float mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
     float mengerSpongeDist = spongeCube;
     
     float scale = 1.0;
+    int iterations = 0;
     for(int i = 0; i < numIterations; ++i) {
+        iterations = i;
 
         //determine repeated box width
         float boxedWidth = cubeWidth / scale;
@@ -270,15 +322,20 @@ float mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
         
         scale *= 3.0;
     }
-    return mengerSpongeDist;
+    float colorFactor = float(iterations) / numIterations;
+    return vec2(mengerSpongeDist, colorFactor);
 }
 
 vec3 estimateNormalMengerSponge(vec3 p, int numIterations, float cubeWidth) {
-    const float eps = 0.0001;
 
-    float dx = mengerSpongeSDF(p + vec3(eps, 0.0, 0.0), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(eps, 0.0, 0.0), numIterations, cubeWidth);
-    float dy = mengerSpongeSDF(p + vec3(0.0, eps, 0.0), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(0.0, eps, 0.0), numIterations, cubeWidth);
-    float dz = mengerSpongeSDF(p + vec3(0.0, 0.0, eps), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(0.0, 0.0, eps), numIterations, cubeWidth);
+    vec2 dxDistAndColor = mengerSpongeSDF(p + vec3(EPSILON, 0.0, 0.0), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(EPSILON, 0.0, 0.0), numIterations, cubeWidth);
+    float dx = dxDistAndColor.x;
+
+    vec2 dyDistAndColor = mengerSpongeSDF(p + vec3(0.0, EPSILON, 0.0), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(0.0, EPSILON, 0.0), numIterations, cubeWidth);
+    float dy = dyDistAndColor.x;
+
+    vec2 dzDistAndColor = mengerSpongeSDF(p + vec3(0.0, 0.0, EPSILON), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(0.0, 0.0, EPSILON), numIterations, cubeWidth);
+    float dz = dzDistAndColor.x;
 
     return normalize(vec3(dx, dy, dz));
 }
@@ -332,7 +389,6 @@ vec2 mandelbulbSDF(vec3 rayPos) {
 }
 
 vec3 estimateNormalMandelBulb(vec3 p) {
-    const float eps = 0.0001;
     vec2 dxDistAndColor = mandelbulbSDF(p + vec3(EPSILON, 0.0, 0.0)) - mandelbulbSDF(p - vec3(EPSILON, 0.0, 0.0));
     float dx = dxDistAndColor.x;
 
@@ -358,26 +414,19 @@ vec3 repeat(vec3 rayPos, vec3 cell_width) {
 //##############################################################################################
 
 
-vec3 colorByDepth(int steps) {
-    float factor = float(steps) / float(MAX_STEPS);
-    return mix(vec3(0.0), vec3(1.0), factor); //black to white
-}
-
 vec3 colorByNormal(vec3 normal) {
     return normal * 0.5 + 0.5; //map normals from [-1,1] to [0,1]
 }
 
 vec3 colorByPosition(vec3 position) {
-    // You can scale and shift position components as needed
-    return fract(position * 0.1); // Wrap position values every 10 units
+    float factor = length(position) / positionColouringScale;
+    return mix(positionColourOne, positionColourTwo, factor); //this one is based on each point's distance from centre
 }
 
 vec3 colorByFractal(float colorFactor) { //fractal iterations
-    colorFactor = pow(clamp(colorFactor, 0.0, 1.0), 0.55);
-    vec3 color = 0.5 + 0.5 * sin(3.0 + 4.2 * colorFactor + vec3(0.0, 0.5, 1.0));
-    return color;
+    colorFactor = pow(clamp(colorFactor, 0.0, 1.0), iterationColourVarOne);
+    return 0.5 + 0.5 * sin(iterationColourVarTwo + iterationColourVarThree * colorFactor + iterationColourVarFour);
 }
-
 
 
 
@@ -387,12 +436,10 @@ vec3 getColor(int steps, vec3 normal, vec3 position, float distance, float color
     if (colorMode == 0) {
         color = fractalColour;
     } else if (colorMode == 1) {
-        color = colorByDepth(steps);
-    } else if (colorMode == 2) {
         color = colorByNormal(normal);
-    } else if (colorMode == 3) {
+    } else if (colorMode == 2) {
         color = colorByPosition(position);
-    } else if (colorMode == 4) {
+    } else if (colorMode == 3) {
         color = colorByFractal(colorFactor);
     } else {
         color = fractalColour;
@@ -418,8 +465,8 @@ float calculateSoftShadow(vec3 ro, vec3 rd, int numIterations, float cubeWidth, 
     for (int i = 0; i < shadowMaxSteps; i++) {
         vec3 currentPoint = ro + rd * t;
 
-        // float h = mengerSpongeSDF(currentPoint, numIterations, cubeWidth);
-        vec2 distAndColor = mandelbulbSDF(currentPoint);
+        vec2 distAndColor = mengerSpongeSDF(currentPoint, numIterations, cubeWidth);
+        // vec2 distAndColor = mandelbulbSDF(currentPoint);
         float h = distAndColor.x;
 
         if (h < 0.001) {
@@ -498,11 +545,11 @@ vec3 calculateBgColor (vec2 fragCoord) {
 vec3 calculateHaloColor(vec3 rayOrigin, vec3 rayDir) {
     vec3 forward = normalize(target - cameraPos);
     float halo = clamp(dot(normalize(-rayOrigin), rayDir), 0.0, 1.0);
-    return haloColour * pow(halo, 17.0);
+    return haloColour * pow(halo, haloRadius);
 }
 
 
-vec4 calculateBackground(vec2 fragCoord, vec3 rayOrigin, vec3 rayDir) {
+vec3 calculateBackground(vec2 fragCoord, vec3 rayOrigin, vec3 rayDir) {
 
     vec3 bgColor = vec3(0.0f, 0.0f, 0.0f);
     vec3 haloColor = vec3(0.0f, 0.0f, 0.0f);
@@ -526,10 +573,42 @@ vec4 calculateBackground(vec2 fragCoord, vec3 rayOrigin, vec3 rayDir) {
         finalBgColor = backgroundColour;
     }
 
-    return vec4(finalBgColor, 1.0f);
+    return vec3(finalBgColor);
 
 
 }
+
+
+
+//##############################################################################################
+//###################################### POST PROCESSING #######################################
+//##############################################################################################
+
+vec3 applyPostProcessing(vec3 color, vec2 q) {
+    //gamma Correction
+    color = pow(clamp(color, 0.0, 1.0), vec3(1.0/gammaAmount));
+
+    //contrast
+    vec3 enhancedColor = color * color * (3.0 - 2.0 * color);
+    color = mix(color, enhancedColor, contrastAmount);
+
+    //saturation
+    float luminance = dot(color, luminanceColour);
+    vec3 grayscaleColor = vec3(luminance);
+    color = mix(grayscaleColor, color, saturationAmount);
+
+    //vignetting
+    float vignetteFactor = pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.7);
+    float vignette = mix(1.0, vignetteFactor, vignetteAmount);
+    color *= vignette;
+
+    return color;
+}
+
+
+//##############################################################################################
+//######################################## RAY MARCHING ########################################
+//##############################################################################################
 
 
 vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
@@ -565,11 +644,12 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint, o
 
 
         if (repeatFractal) {
-            vec3 point = repeat(point, vec3(repeatCellSize)); //repeat object infinitely in all directions
+            point = repeat(point, vec3(repeatCellSize)); //repeat object infinitely in all directions
         }
 
-        vec2 distAndColor = mandelbulbSDF(point);
-        // vec2 distAndColor = mengerSpongeSDF(point, numIters, widthOfCube);
+        // vec2 distAndColor = mandelbulbSDF(point);
+        point = applyTransformations(point);
+        vec2 distAndColor = mengerSpongeSDF(point, numIters, widthOfCube);
 
         float dist = distAndColor.x;
 
@@ -592,8 +672,11 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint, o
 
 
 
+
+
 void main() {
     vec2 fragCoord = gl_FragCoord.xy;
+    vec2 q = fragCoord.xy / resolution.xy;
     vec2 res = vec2(resolution.x, resolution.y);
 
     vec3 rayDir = ray_direction(FOV, fragCoord, res, cameraPos, target);
@@ -602,12 +685,16 @@ void main() {
     vec3 hitPoint;
     int steps;
     float colorFactor;
+
     float distance = ray_march(rayOrigin, rayDir, steps, hitPoint, colorFactor);
 
     vec3 lightDir = normalize(lightSourceDir);
 
+    vec3 finalColor;
+
     if (distance < MAX_DIST) {
         vec3 normal = estimateNormalMengerSponge(hitPoint, numIters, widthOfCube);
+        // vec3 normal = estimateNormalMandelBulb(hitPoint);
 
         vec3 viewDir = normalize(cameraPos - hitPoint);
 
@@ -615,13 +702,15 @@ void main() {
 
         vec3 objectColor = getColor(steps, normal, hitPoint, distance, colorFactor);
 
-        vec3 finalColor = calculateLighting(hitPoint, normal, viewDir, lightDirection, objectColor, steps);
-
-        screenColor = vec4(finalColor, 1.0);
+        finalColor = calculateLighting(hitPoint, normal, viewDir, lightDirection, objectColor, steps);
 
     } else {
-        screenColor = calculateBackground(fragCoord, rayOrigin, rayDir);
+        finalColor = calculateBackground(fragCoord, rayOrigin, rayDir);
     }
+
+    finalColor = applyPostProcessing(finalColor, q);
+    screenColor = vec4(finalColor, 1.0);
+
 
 }
 
