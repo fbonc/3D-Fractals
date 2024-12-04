@@ -19,20 +19,19 @@ uniform vec2 resolution;
 #define repeatCellSize 6.7
 
 //################ SCENE UNIFORMS ################
-#define backgroundColour vec3(0.4, 1.6, 1.0)
+#define backgroundColour vec3(0.0, 0.0, 0.0) // vec3(0.4, .6, 1.0)
 #define useHalo true
 #define useGradient true
 #define haloRadius 17.0
-#define haloColour vec3(1.0, 0.8, 0.4)
-#define fractalColour vec3(0.9059, 0.9373, 0.9412)
+#define haloColour vec3(1.0, 0.0, 0.0) //vec3(1.0, 0.8, 0.4)
+#define fractalColour vec3(0.0078, 0.0078, 0.0078)
 
 //################ MENGERSPONGE UNIFORMS ################
-#define numIters 6
-#define widthOfCube 10.0
+#define mengerspongeIterations 6
 
 //################ MANDELBULB UNIFORMS ################
 uniform float Power;
-#define mandelBulbRadius 1.0
+#define mandelbulbIterations 40
 
 //################ LIGHTING UNIFORMS ################
 #define ambientColor vec3(0.9137, 0.9137, 0.9137)
@@ -41,7 +40,7 @@ uniform float Power;
 #define specularStrength 0.5
 #define shininess 32.0
 
-#define ambientOcclusion true
+#define ambientOcclusion false
 #define softShadows false
 
 #define shadowMaxSteps 100
@@ -49,24 +48,29 @@ uniform float Power;
 #define lightestShadow 0.7
 #define darkestShadow 0.2
 
+////################ GLOW UNIFORMS //################
+#define glowOn true
+#define glowColor vec3(1.0, 0.0, 0.0)
+#define glowStrength 0.5
+
 
 //################ POST PROCESSING UNIFORMS ################
 #define gammaAmount 2.2
 #define contrastAmount 0.5 // 0.0 - 1.0
 #define saturationAmount 1.0
-#define vignetteAmount 1.0// 0.0 - 1.0
+#define vignetteAmount 0.5// 0.0 - 1.0
 #define luminanceColour vec3(0.2126, 0.7152, 0.0722)
 
 //################ COLOURS UNIFORMS ################
 uniform int colorMode;
-#define positionColouringScale 1.0
+#define positionColouringScale 0.6
 #define positionColourOne vec3(0.0, 1.0, 0.6667)
 #define positionColourTwo vec3(0.149, 0.0196, 0.3882)
 
-#define iterationColourVarOne 0.3
-#define iterationColourVarTwo 3.0
-#define iterationColourVarThree 4.2
-#define iterationColourVarFour vec3(0.6353, 0.6588, 0.5294)
+#define iterationColourVarOne 0.4
+#define iterationColourVarTwo 2.0
+#define iterationColourVarThree 3.7
+#define iterationColourVarFour vec3(0.4118, 0.6588, 0.702)
 
 //################ TRANSFORMATION UNIFORMS ################
 #define useScale false
@@ -130,12 +134,6 @@ float sdCross(vec3 rayPos, float width) {
     return length(closestOutsidePoint) + -length(closestInsidePoint);
 }
 
-
-float sphereSDF(vec3 rayPos, vec3 center, float radius) {
-
-    return length(rayPos - center) - radius;
-
-}
 
 
 
@@ -272,34 +270,17 @@ vec3 applyTransformations(vec3 rayOrigin) {
 //##############################################################################################
 
 
-vec2 mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
+vec2 mengerSpongeSDF(vec3 rayPos) {
 
-    //############################### TRANSFORMATIONS #####################################
-    //BEND
-    // float bendAmount = 0.5;
-    // rayPos = bend(rayPos, bendAmount);
-
-
-    //TWIST
-    // rayPos = twist(rayPos, 0.1);
-
-
-
-    //WARP
-    // rayPos = warp(rayPos, 0.0001);
-
-
-    //####################################################################
-
-
+    float cubeWidth = 1.5;
     const float oneThird = 1.0 / 3.0;
     float spongeCube = cubeSDF(rayPos, cubeWidth);
     float mengerSpongeDist = spongeCube;
     
     float scale = 1.0;
     int iterations = 0;
-    for(int i = 0; i < numIterations; ++i) {
-        iterations = i;
+    float minDist = 1000.0;
+    for(int i = 0; i < mengerspongeIterations; ++i) {
 
         //determine repeated box width
         float boxedWidth = cubeWidth / scale;
@@ -320,21 +301,27 @@ vec2 mengerSpongeSDF(vec3 rayPos, int numIterations, float cubeWidth) {
         
         mengerSpongeDist = max(mengerSpongeDist, -crossesDist);
         
+        if (mengerSpongeDist < minDist) {
+            minDist = mengerSpongeDist;
+            iterations = i;
+        }
+
         scale *= 3.0;
+
     }
-    float colorFactor = float(iterations) / numIterations;
+    float colorFactor = float(iterations) / mengerspongeIterations;
     return vec2(mengerSpongeDist, colorFactor);
 }
 
-vec3 estimateNormalMengerSponge(vec3 p, int numIterations, float cubeWidth) {
+vec3 estimateNormalMengerSponge(vec3 p) {
 
-    vec2 dxDistAndColor = mengerSpongeSDF(p + vec3(EPSILON, 0.0, 0.0), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(EPSILON, 0.0, 0.0), numIterations, cubeWidth);
+    vec2 dxDistAndColor = mengerSpongeSDF(p + vec3(EPSILON, 0.0, 0.0)) - mengerSpongeSDF(p - vec3(EPSILON, 0.0, 0.0));
     float dx = dxDistAndColor.x;
 
-    vec2 dyDistAndColor = mengerSpongeSDF(p + vec3(0.0, EPSILON, 0.0), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(0.0, EPSILON, 0.0), numIterations, cubeWidth);
+    vec2 dyDistAndColor = mengerSpongeSDF(p + vec3(0.0, EPSILON, 0.0)) - mengerSpongeSDF(p - vec3(0.0, EPSILON, 0.0));
     float dy = dyDistAndColor.x;
 
-    vec2 dzDistAndColor = mengerSpongeSDF(p + vec3(0.0, 0.0, EPSILON), numIterations, cubeWidth) - mengerSpongeSDF(p - vec3(0.0, 0.0, EPSILON), numIterations, cubeWidth);
+    vec2 dzDistAndColor = mengerSpongeSDF(p + vec3(0.0, 0.0, EPSILON)) - mengerSpongeSDF(p - vec3(0.0, 0.0, EPSILON));
     float dz = dzDistAndColor.x;
 
     return normalize(vec3(dx, dy, dz));
@@ -345,12 +332,12 @@ vec3 estimateNormalMengerSponge(vec3 p, int numIterations, float cubeWidth) {
 vec2 mandelbulbSDF(vec3 rayPos) {
 
     vec3 currentPoint = rayPos;
-    float radius = mandelBulbRadius;  //distance from the origin
+    float radius;  //distance from the origin
     float derivative = 1.0;  //derivative used for distance estimation
     float minRadius = 1000.0;
     int iterations = 0;
 
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < mandelbulbIterations; i++) {
 
         radius = length(currentPoint);
         if (radius > 4.0) break;  //early exit if outside the bounding radius
@@ -433,7 +420,7 @@ vec3 colorByNormal(vec3 normal) {
 }
 
 vec3 colorByPosition(vec3 position) {
-    float factor = length(position) / positionColouringScale;
+    float factor = length(position) / (positionColouringScale);
     return mix(positionColourOne, positionColourTwo, factor); //this one is based on each point's distance from centre
 }
 
@@ -441,7 +428,6 @@ vec3 colorByFractal(float colorFactor) { //fractal iterations
     colorFactor = pow(clamp(colorFactor, 0.0, 1.0), iterationColourVarOne);
     return 0.5 + 0.5 * sin(iterationColourVarTwo + iterationColourVarThree * colorFactor + iterationColourVarFour);
 }
-
 
 
 vec3 getColor(int steps, vec3 normal, vec3 position, float distance, float colorFactor) {
@@ -458,6 +444,7 @@ vec3 getColor(int steps, vec3 normal, vec3 position, float distance, float color
     } else {
         color = fractalColour;
     }
+    
 
     return color;
 }
@@ -471,7 +458,7 @@ vec3 getColor(int steps, vec3 normal, vec3 position, float distance, float color
 //##############################################################################################
 
 
-float calculateSoftShadow(vec3 ro, vec3 rd, int numIterations, float cubeWidth, float k) {
+float calculateSoftShadow(vec3 ro, vec3 rd, float k) {
     float res = 1.0;
     float t = 0.1;
     float maxDistance = MAX_DIST;
@@ -480,8 +467,8 @@ float calculateSoftShadow(vec3 ro, vec3 rd, int numIterations, float cubeWidth, 
         vec3 currentPoint = ro + rd * t;
 
         // vec2 distAndColor = apollonianGasketSDF(currentPoint);
-        vec2 distAndColor = mengerSpongeSDF(currentPoint, numIterations, cubeWidth);
-        // vec2 distAndColor = mandelbulbSDF(currentPoint);
+        // vec2 distAndColor = mengerSpongeSDF(currentPoint);
+        vec2 distAndColor = mandelbulbSDF(currentPoint);
         float h = distAndColor.x;
 
         if (h < 0.001) {
@@ -515,29 +502,25 @@ vec3 calculateLighting(vec3 hitPoint, vec3 normal, vec3 viewDir, vec3 lightDirec
 
     float specular = calculateSpecular(normal, viewDir, lightDirection, shininess, specularStrength);
 
-    vec3 finalAmbientColor = ambientColor;
-
-    float shadow = 1.0f;
-    if (softShadows) {
-        float k = kSoftShadow;
-        shadow = calculateSoftShadow(hitPoint, lightDirection, numIters, widthOfCube, k);
-    }
-
     vec3 finalColor;
 
-    float colorFactor = float(steps) / float(MAX_STEPS);
+    float stepFactor = float(steps) / float(MAX_STEPS);
+
+    float shadow = 1.0f;
 
     if (softShadows) {
-        finalColor = (finalAmbientColor * objectColor * shadow) + (diffuse * objectColor + specular * vec3(1.0)) * shadow;
-        finalColor = finalColor - colorFactor;
+        float k = kSoftShadow;
+        shadow = calculateSoftShadow(hitPoint, lightDirection, k);
+        finalColor = (ambientColor * objectColor * shadow) + (diffuse * objectColor + specular * vec3(1.0)) * shadow;
     } else {
         finalColor = objectColor;
     }
 
     if (ambientOcclusion){
         //no shadows, only ambient occlusion
-        float colorFactor = float(steps) / float(MAX_STEPS);
-        finalColor = objectColor - colorFactor;
+        finalColor -= stepFactor;
+    } else if (glowOn) {
+        finalColor += glowColor * stepFactor * glowStrength;
     }
 
     return clamp(finalColor, 0.0, 1.0);
@@ -670,8 +653,8 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint, o
 
         point = applyTransformations(point);
 
-        // vec2 distAndColor = mandelbulbSDF(point);
-        vec2 distAndColor = mengerSpongeSDF(point, numIters, widthOfCube);
+        vec2 distAndColor = mandelbulbSDF(point);
+        // vec2 distAndColor = mengerSpongeSDF(point);
         // vec2 distAndColor = apollonianGasketSDF(point);
 
 
@@ -720,8 +703,8 @@ void main() {
     vec3 finalColor;
 
     if (distance < MAX_DIST) {
-        vec3 normal = estimateNormalMengerSponge(hitPoint, numIters, widthOfCube);
-        // vec3 normal = estimateNormalMandelBulb(hitPoint);
+        // vec3 normal = estimateNormalMengerSponge(hitPoint);
+        vec3 normal = estimateNormalMandelBulb(hitPoint);
         // vec3 normal = estimateNormalApollonianGasket(hitPoint);
 
         vec3 viewDir = normalize(cameraPos - hitPoint);

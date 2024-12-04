@@ -219,7 +219,6 @@ int main() {
     glUniform1i(colorModeLocation, 1);
 
 	while (!glfwWindowShouldClose(window)) {
-
         processInput(window, cameraController, colorModeLocation);
 
         //clear screen and render scene
