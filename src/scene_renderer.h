@@ -19,10 +19,10 @@ public:
     void setResolutionUniform(float resX, float resY);
     void setCameraPosUniform(Eigen::Vector3f cameraPos);
     void setTargetUniform(Eigen::Vector3f target);
+    void initialiseQuad();
 
 
 private:
-    void initialiseQuad();
     void setFractalUniforms();
 
     const ShaderManager& shaderManager;

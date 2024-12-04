@@ -3,86 +3,87 @@
 #include <sstream>
 #include <iostream>
 
-GLSLManager::GLSLManager() : currentLightMode(LightMode::NONE) {}
-
-GLSLManager::~GLSLManager() {}
-
-void GLSLManager::setBaseShaderPath(const std::string& basePath) {
-    baseShaderPath = basePath;
+GLSLManager::GLSLManager() {
 }
 
-void GLSLManager::setFragmentShaderPath(const std::string& fragmentPath) {
-    fragmentShaderPath = fragmentPath;
-}
-
-void GLSLManager::setVertexShaderPath(const std::string& vertexPath) {
-    vertexShaderPath = vertexPath;
-}
-
-void GLSLManager::setLightMode(LightMode mode) {
-    currentLightMode = mode;
+GLSLManager::~GLSLManager() {
 }
 
 std::string GLSLManager::generateVertexShader() {
-    return readShaderFile(vertexShaderPath);
+
+    std::string vertexShaderCode = R"(
+        #version 330 core
+
+        layout (location=0) in vec3 vertexPos;
+        layout (location=1) in vec3 vertexColor;
+
+        out vec3 fragmentColor;
+
+        void main()
+        {
+            gl_Position = vec4(vertexPos, 1.0);
+            fragmentColor = vertexColor;
+        }
+    )";
+
+    return vertexShaderCode;
 }
 
-std::string GLSLManager::generateFragmentShader(const std::vector<std::string>& fractalCode) {
-    std::ostringstream shaderStream;
+std::string GLSLManager::generateFragmentShader(const int& fractalID) {
+    std::string uniformsCode = readShaderFile(universalUniformsPath);
+    std::string perlinNoiseCode = readShaderFile(perlinNosiePath);
+    std::string transformationsCode = readShaderFile(transformationsPath);
+    std::string colouringCode = readShaderFile(colouringPath);
+    std::string lightingCode = readShaderFile(lightingPath);
+    std::string backgroundCode = readShaderFile(backgroundPath);
+    std::string postProcessingCode = readShaderFile(postProcessingPath);
+    std::string rayMarchingCode = readShaderFile(rayMarchingPath);
+    std::string mainCode = readShaderFile(mainPath);
 
-    shaderStream << "#version 330 core\n\n";
-    shaderStream << readShaderFile(baseShaderPath);
+    //fractal specific code based on fractalID
+    std::string fractalCode = getFractalCode(fractalID);
 
-    shaderStream << "\n// Lighting Code\n";
-    shaderStream << getLightModeCode();
+    //full fragment shader code
+    std::ostringstream fragmentShaderStream;
+    fragmentShaderStream << "#version 330 core\n\n";
+    fragmentShaderStream << "out vec4 screenColor;\n\n";
 
-    // Add fractal-specific code
-    shaderStream << "\n// Fractal-Specific Code\n";
-    for (const auto& line : fractalCode) {
-        shaderStream << line << "\n";
-    }
+    fragmentShaderStream << uniformsCode << "\n";
+    fragmentShaderStream << fractalCode << "\n";
+    fragmentShaderStream << perlinNoiseCode << "\n";
+    fragmentShaderStream << transformationsCode << "\n";
+    fragmentShaderStream << colouringCode << "\n";
+    fragmentShaderStream << lightingCode << "\n";
+    fragmentShaderStream << backgroundCode << "\n";
+    fragmentShaderStream << postProcessingCode << "\n";
+    fragmentShaderStream << rayMarchingCode << "\n";
+    fragmentShaderStream << mainCode << "\n";
 
-    return shaderStream.str();
-}
-
-std::string GLSLManager::getLightModeCode() const {
-    switch (currentLightMode) {
-        case LightMode::PHONG:
-            return R"(
-                vec3 calculatePhongLighting(vec3 normal, vec3 lightDir, vec3 viewDir) {
-                    vec3 reflectDir = reflect(-lightDir, normal);
-                    vec3 ambient = vec3(0.1);
-                    vec3 diffuse = max(dot(normal, lightDir), 0.0) * vec3(0.5);
-                    vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * vec3(0.3);
-                    return ambient + diffuse + specular;
-                }
-            )";
-        case LightMode::BLINN_PHONG:
-            return R"(
-                vec3 calculateBlinnPhongLighting(vec3 normal, vec3 lightDir, vec3 viewDir) {
-                    vec3 halfwayDir = normalize(lightDir + viewDir);
-                    vec3 ambient = vec3(0.1);
-                    vec3 diffuse = max(dot(normal, lightDir), 0.0) * vec3(0.5);
-                    vec3 specular = pow(max(dot(normal, halfwayDir), 0.0), 16.0) * vec3(0.3);
-                    return ambient + diffuse + specular;
-                }
-            )";
-        case LightMode::NONE:
-            return "// No lighting applied\n";
-        default:
-            return "// Unsupported lighting mode\n";
-    }
+    return fragmentShaderStream.str();
 }
 
 std::string GLSLManager::readShaderFile(const std::string& filepath) const {
-    std::ifstream file(filepath);
-    if (!file.is_open()) {
-        std::cerr << "Failed to open shader file: " << filepath << std::endl;
+    std::ifstream fileStream(filepath);
+    if (!fileStream.is_open()) {
+        std::cerr << "Error: Could not open shader file " << filepath << std::endl;
         return "";
     }
 
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    file.close();
+    std::ostringstream buffer;
+    buffer << fileStream.rdbuf();
     return buffer.str();
+}
+
+std::string GLSLManager::getFractalCode(const int& fractalID) const {
+
+
+    switch (fractalID) {
+        case 0:
+            return readShaderFile(mandelbulbPath);
+        case 1:
+            return readShaderFile(mengerSpongePath);
+        default:
+            std::cerr << "Error: Unknown fractalID " << fractalID << std::endl;
+            return "";
+    }
 }

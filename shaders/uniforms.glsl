@@ -1,4 +1,4 @@
-//################ CAMERA UNIFORMs ################
+//################ CAMERA UNIFORMS ################
 uniform vec3 cameraPos;
 uniform vec3 target;
 uniform vec2 resolution;

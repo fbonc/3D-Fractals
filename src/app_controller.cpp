@@ -1,23 +1,28 @@
-// #include "scene_renderer.h"
-// #include "mandelbulb.cpp"
-// #include "shader_manager.h"
-// #include "camera_controller.h"
+#include "camera.h"
+#include "camera_controller.h"
+#include "scene_renderer.h"
+#include "glfw_manager.h"
+#include "glsl_manager.h"
+//#include "ui_manager.h"
 
-// int main() {
+int main() {
+    GLFWManager glfwManager;
+    GLSLManager glslManager;
+    
+    std::string fragmentShader = glslManager.generateFragmentShader(0);
+    std::string vertexShader = glslManager.generateVertexShader();
+    ShaderManager shaderManager(fragmentShader, vertexShader);
 
-//     ShaderManager shaderManager("vertex.vert", "fragment.frag");
-//     Camera camera;
-//     CameraController cameraController(camera);
+    Camera camera;
+    CameraController cameraController(camera);
+    SceneRenderer sceneRenderer(shaderManager, cameraController);
+    //UIManager uiManager;
 
-//     SceneRenderer renderer(shaderManager, cameraController);
-//     renderer.setFractal(std::make_unique<Mandelbulb>());
 
-//     while (!glfwWindowShouldClose(window)) {
-//         processInput(window, cameraController);
-//         renderer.render();
-//         glfwSwapBuffers(window);
-//         glfwPollEvents();
-//     }
+    //Setting up
+    glfwManager.setInputFunctions(cameraController);
+    sceneRenderer.initialiseQuad();
+    sceneRenderer.initialiseUniformLocations();
 
-//     return 0;
-// }
+
+}

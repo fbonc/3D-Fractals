@@ -13,9 +13,8 @@ private:
 };
 
 MengerSponge::MengerSponge() {
-    uniformNames = {"Power", "Scale"};
+    uniformNames = {"Power"};
     uniforms["Power"] = 8.0f;
-    uniforms["Scale"] = 1.0f;
 }
 
 std::string MengerSponge::getShaderFilePath() const {
