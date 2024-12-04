@@ -403,11 +403,7 @@ vec3 estimateNormalMandelBulb(vec3 p) {
 
 
 
-vec3 repeat(vec3 rayPos, vec3 cell_width) {
 
-    return mod(rayPos + 0.5 * cell_width, cell_width) - 0.5 * cell_width; //repeat space in all directions
-
-}
 
 //##############################################################################################
 //######################################### COLOUR #########################################
@@ -610,6 +606,12 @@ vec3 applyPostProcessing(vec3 color, vec2 q) {
 //######################################## RAY MARCHING ########################################
 //##############################################################################################
 
+vec3 repeat(vec3 rayPos, vec3 cell_width) {
+
+    return mod(rayPos + 0.5 * cell_width, cell_width) - 0.5 * cell_width; //repeat space in all directions
+
+}
+
 
 vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
     vec2 ndc = (fragCoord / resolution) * 2.0f - 1.0f;  //normalize device coordinates
@@ -671,6 +673,9 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint, o
 }
 
 
+//##############################################################################################
+//######################################## MAIN ########################################
+//##############################################################################################
 
 
 
