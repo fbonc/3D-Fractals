@@ -69,7 +69,7 @@ uniform int colorMode;
 #define iterationColourVarFour vec3(0.6353, 0.6588, 0.5294)
 
 //################ TRANSFORMATION UNIFORMS ################
-#define useScale true
+#define useScale false
 #define scaleAmount 2.0
 #define useTwist false
 #define twistAmount 0.5
@@ -402,7 +402,25 @@ vec3 estimateNormalMandelBulb(vec3 p) {
 }
 
 
+vec2 apollonianGasketSDF(vec3 p) {
+    float distance = 0.0f;
+    float colorFactor = 1.0f;
+    return vec2(distance, colorFactor);
+}
 
+
+vec3 estimateNormalApollonianGasket(vec3 p) {
+    vec2 dxDistAndColor = apollonianGasketSDF(p + vec3(EPSILON, 0.0, 0.0)) - apollonianGasketSDF(p - vec3(EPSILON, 0.0, 0.0));
+    float dx = dxDistAndColor.x;
+
+    vec2 dyDistAndColor = apollonianGasketSDF(p + vec3(0.0, EPSILON, 0.0)) - apollonianGasketSDF(p - vec3(0.0, EPSILON, 0.0));
+    float dy = dyDistAndColor.x;
+
+    vec2 dzDistAndColor = apollonianGasketSDF(p + vec3(0.0, 0.0, EPSILON)) - apollonianGasketSDF(p - vec3(0.0, 0.0, EPSILON));
+    float dz = dzDistAndColor.x;
+
+    return normalize(vec3(dx, dy, dz));
+}
 
 
 //##############################################################################################
@@ -461,6 +479,7 @@ float calculateSoftShadow(vec3 ro, vec3 rd, int numIterations, float cubeWidth, 
     for (int i = 0; i < shadowMaxSteps; i++) {
         vec3 currentPoint = ro + rd * t;
 
+        // vec2 distAndColor = apollonianGasketSDF(currentPoint);
         vec2 distAndColor = mengerSpongeSDF(currentPoint, numIterations, cubeWidth);
         // vec2 distAndColor = mandelbulbSDF(currentPoint);
         float h = distAndColor.x;
@@ -649,9 +668,12 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint, o
             point = repeat(point, vec3(repeatCellSize)); //repeat object infinitely in all directions
         }
 
-        // vec2 distAndColor = mandelbulbSDF(point);
         point = applyTransformations(point);
+
+        // vec2 distAndColor = mandelbulbSDF(point);
         vec2 distAndColor = mengerSpongeSDF(point, numIters, widthOfCube);
+        // vec2 distAndColor = apollonianGasketSDF(point);
+
 
         float dist = distAndColor.x;
 
@@ -700,6 +722,7 @@ void main() {
     if (distance < MAX_DIST) {
         vec3 normal = estimateNormalMengerSponge(hitPoint, numIters, widthOfCube);
         // vec3 normal = estimateNormalMandelBulb(hitPoint);
+        // vec3 normal = estimateNormalApollonianGasket(hitPoint);
 
         vec3 viewDir = normalize(cameraPos - hitPoint);
 
