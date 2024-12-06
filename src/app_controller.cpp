@@ -1,28 +1,88 @@
-#include "camera.h"
-#include "camera_controller.h"
-#include "scene_renderer.h"
-#include "glfw_manager.h"
-#include "glsl_manager.h"
-//#include "ui_manager.h"
+#include "app_controller.h"
+#include <filesystem>
 
-int main() {
-    GLFWManager glfwManager;
-    GLSLManager glslManager;
-    
-    std::string fragmentShader = glslManager.generateFragmentShader(0);
-    std::string vertexShader = glslManager.generateVertexShader();
-    ShaderManager shaderManager(fragmentShader, vertexShader);
+AppController::AppController()
+    : camera(), 
+      cameraController(camera), 
+      sceneRenderer(nullptr) 
+{
+    init();
+}
 
-    Camera camera;
-    CameraController cameraController(camera);
-    SceneRenderer sceneRenderer(shaderManager, cameraController);
-    //UIManager uiManager;
+AppController::~AppController() {
+    delete sceneRenderer;
+    // GLFW cleanup
+}
 
+void AppController::init() {
+    std::filesystem::current_path("C:/Users/felip/Desktop/Projects/NEA");
+    std::cout << "Working directory: " << std::filesystem::current_path() << std::endl;
 
-    //Setting up
+    GLFWwindow* window = glfwManager.getWindow();
+    if (!window) {
+        std::cerr << "Failed to create GLFW window in AppController init." << std::endl;
+        return;
+    }
+
     glfwManager.setInputFunctions(cameraController);
-    sceneRenderer.initialiseQuad();
-    sceneRenderer.initialiseUniformLocations();
 
+    createShader();
+
+    sceneRenderer = new SceneRenderer(*shaderManager, cameraController);
+    sceneRenderer->initialiseQuad();
+    sceneRenderer->initialiseUniformLocations();
+
+    sceneRenderer->setResolutionUniform((float)resolutionX, (float)resolutionY);
+
+    // uiManager.init(window);
+}
+
+void AppController::createShader() {
+    // using existing vertex and fragment shader files
+    //integrate GLSLManager later to generate them dynamically
+    std::string vertexFile = "shaders/vertex.vert";
+    std::string fragmentFile = "shaders/fragment2.frag";
+
+    shaderManager = std::make_unique<ShaderManager>(vertexFile, fragmentFile);
+    glUseProgram(shaderManager->getShaderProgram()->getShaderID());
+}
+
+void AppController::setupScene() {
+
+}
+
+bool AppController::shouldClose() {
+    GLFWwindow* window = glfwManager.getWindow();
+    return (window && glfwWindowShouldClose(window));
+}
+
+void AppController::processInput() {
+    glfwManager.processInput(cameraController);
+}
+
+void AppController::endFrame() {
+    glfwManager.endLoop();
+}
+
+void AppController::run() {
+    while (!shouldClose()) {
+        processInput();
+
+        cameraController.updateRotation(Eigen::Vector3f(0.0f,0.0f,0.0f));
+        cameraController.updateCameraVectors();
+
+
+        Eigen::Vector3f cameraPos = camera.getPosition();
+        sceneRenderer->setCameraPosUniform(cameraPos);
+        Eigen::Vector3f target = (cameraController.getMode() == CameraController::Mode::AutoRotation)
+                                 ? Eigen::Vector3f(0.0f,0.0f,0.0f)
+                                 : cameraPos + camera.getFront();
+        sceneRenderer->setTargetUniform(target);
+
+        sceneRenderer->startLoop();
+        sceneRenderer->endLoop();
+
+        endFrame();
+    }
 
 }

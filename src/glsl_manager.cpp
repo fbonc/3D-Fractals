@@ -31,7 +31,7 @@ std::string GLSLManager::generateVertexShader() {
 
 std::string GLSLManager::generateFragmentShader(const int& fractalID) {
     std::string uniformsCode = readShaderFile(universalUniformsPath);
-    std::string perlinNoiseCode = readShaderFile(perlinNosiePath);
+    std::string perlinNoiseCode = readShaderFile(perlinNoisePath);
     std::string transformationsCode = readShaderFile(transformationsPath);
     std::string colouringCode = readShaderFile(colouringPath);
     std::string lightingCode = readShaderFile(lightingPath);
@@ -58,6 +58,8 @@ std::string GLSLManager::generateFragmentShader(const int& fractalID) {
     fragmentShaderStream << postProcessingCode << "\n";
     fragmentShaderStream << rayMarchingCode << "\n";
     fragmentShaderStream << mainCode << "\n";
+
+    std::cout << fragmentShaderStream.str() <<std::endl;
 
     return fragmentShaderStream.str();
 }

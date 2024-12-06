@@ -15,7 +15,7 @@ public:
 
 private:
     std::string universalUniformsPath = "shaders/uniforms.glsl";
-    std::string perlinNosiePath= "shaders/perlin_noise.glsl";
+    std::string perlinNoisePath= "shaders/perlin_noise.glsl";
     std::string transformationsPath = "shaders/transformations.glsl";
     std::string colouringPath = "shaders/colouring.glsl";
     std::string lightingPath = "shaders/lighting.glsl";

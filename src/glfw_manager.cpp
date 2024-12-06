@@ -16,6 +16,12 @@ GLFWManager::GLFWManager()
     initialiseGLFW();
 }
 
+GLFWManager::~GLFWManager()
+{
+    glfwTerminate();
+}
+
+
 GLFWwindow* GLFWManager::getWindow() {
     return window;
 }

@@ -17,9 +17,7 @@ void main() {
     vec3 finalColor;
 
     if (distance < MAX_DIST) {
-        // vec3 normal = estimateNormalMengerSponge(hitPoint);
-        vec3 normal = estimateNormalMandelBulb(hitPoint);
-        // vec3 normal = estimateNormalApollonianGasket(hitPoint);
+        vec3 normal = estimateNormal(hitPoint);
 
         vec3 viewDir = normalize(cameraPos - hitPoint);
 

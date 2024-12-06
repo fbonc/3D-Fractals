@@ -43,10 +43,7 @@ float ray_march(vec3 rayOrigin, vec3 rayDir, out int steps, out vec3 hitPoint, o
 
         point = applyTransformations(point);
 
-        vec2 distAndColor = mandelbulbSDF(point);
-        // vec2 distAndColor = mengerSpongeSDF(point);
-        // vec2 distAndColor = apollonianGasketSDF(point);
-
+        vec2 distAndColor = SDF(point);
 
         float dist = distAndColor.x;
 

@@ -47,15 +47,3 @@ vec2 SDF(vec3 rayPos) {
 
 }
 
-vec3 estimateNormal(vec3 p) {
-    vec2 dxDistAndColor = mandelbulbSDF(p + vec3(EPSILON, 0.0, 0.0)) - mandelbulbSDF(p - vec3(EPSILON, 0.0, 0.0));
-    float dx = dxDistAndColor.x;
-
-    vec2 dyDistAndColor = mandelbulbSDF(p + vec3(0.0, EPSILON, 0.0)) - mandelbulbSDF(p - vec3(0.0, EPSILON, 0.0));
-    float dy = dyDistAndColor.x;
-
-    vec2 dzDistAndColor = mandelbulbSDF(p + vec3(0.0, 0.0, EPSILON)) - mandelbulbSDF(p - vec3(0.0, 0.0, EPSILON));
-    float dz = dzDistAndColor.x;
-
-    return normalize(vec3(dx, dy, dz));
-}

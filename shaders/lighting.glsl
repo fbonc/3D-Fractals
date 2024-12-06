@@ -1,3 +1,18 @@
+vec3 estimateNormal(vec3 p) {
+    vec2 dxDistAndColor = SDF(p + vec3(EPSILON, 0.0, 0.0)) - SDF(p - vec3(EPSILON, 0.0, 0.0));
+    float dx = dxDistAndColor.x;
+
+    vec2 dyDistAndColor = SDF(p + vec3(0.0, EPSILON, 0.0)) - SDF(p - vec3(0.0, EPSILON, 0.0));
+    float dy = dyDistAndColor.x;
+
+    vec2 dzDistAndColor = SDF(p + vec3(0.0, 0.0, EPSILON)) - SDF(p - vec3(0.0, 0.0, EPSILON));
+    float dz = dzDistAndColor.x;
+
+    return normalize(vec3(dx, dy, dz));
+}
+
+
+
 float calculateSoftShadow(vec3 ro, vec3 rd, float k) {
     float res = 1.0;
     float t = 0.1;

@@ -46,7 +46,7 @@ float sdCross(vec3 rayPos, float width) {
 
 
 
-vec2 mengerSpongeSDF(vec3 rayPos) {
+vec2 SDF(vec3 rayPos) {
 
     float cubeWidth = 1.5;
     const float oneThird = 1.0 / 3.0;
@@ -87,18 +87,4 @@ vec2 mengerSpongeSDF(vec3 rayPos) {
     }
     float colorFactor = float(iterations) / mengerspongeIterations;
     return vec2(mengerSpongeDist, colorFactor);
-}
-
-vec3 estimateNormalMengerSponge(vec3 p) {
-
-    vec2 dxDistAndColor = mengerSpongeSDF(p + vec3(EPSILON, 0.0, 0.0)) - mengerSpongeSDF(p - vec3(EPSILON, 0.0, 0.0));
-    float dx = dxDistAndColor.x;
-
-    vec2 dyDistAndColor = mengerSpongeSDF(p + vec3(0.0, EPSILON, 0.0)) - mengerSpongeSDF(p - vec3(0.0, EPSILON, 0.0));
-    float dy = dyDistAndColor.x;
-
-    vec2 dzDistAndColor = mengerSpongeSDF(p + vec3(0.0, 0.0, EPSILON)) - mengerSpongeSDF(p - vec3(0.0, 0.0, EPSILON));
-    float dz = dzDistAndColor.x;
-
-    return normalize(vec3(dx, dy, dz));
 }

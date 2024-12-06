@@ -2,7 +2,7 @@
 uniform vec3 cameraPos;
 uniform vec3 target;
 uniform vec2 resolution;
-uniform float FOV 35.0f; //default 35.0f
+uniform float FOV; //default 35.0f
 
 
 //################ RAY MARCH UNIFORMS ################
