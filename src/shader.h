@@ -16,7 +16,7 @@ class Shader {
         unsigned int makeModule(const std::string& filepath, unsigned int module_type);
         unsigned int makeShader(const std::string& vertex_filepath, const std::string& fragment_filepath);
 
-        const char* readFile(const std::string& filepath, const unsigned int module_type);
+        std::string readFile(const std::string& filepath, const unsigned int module_type);
         unsigned int shaderID;
         std::string shaderName;
 };

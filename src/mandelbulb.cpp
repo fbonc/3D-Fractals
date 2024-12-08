@@ -1,21 +1,9 @@
-#include "Fractal.h"
+#include "mandelbulb.h"
 
-class Mandelbulb : public Fractal {
-public:
-
-    Mandelbulb();
-    std::string getShaderFilePath() const override;
-
-private:
-
-    std::vector<std::string> uniformNames;
-
-};
 
 Mandelbulb::Mandelbulb() {
-    uniformNames = {"Power", "Scale"};
+    uniformNames = {"Power"};
     uniforms["Power"] = 8.0f;
-    uniforms["Scale"] = 1.0f;
 }
 
 std::string Mandelbulb::getShaderFilePath() const {

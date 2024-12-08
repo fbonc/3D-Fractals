@@ -33,6 +33,8 @@ void AppController::init() {
     sceneRenderer->initialiseUniformLocations();
 
     sceneRenderer->setResolutionUniform((float)resolutionX, (float)resolutionY);
+    
+    sceneRenderer->setFractal(std::make_unique<Mandelbulb>());
 
     // uiManager.init(window);
 }
@@ -45,10 +47,6 @@ void AppController::createShader() {
 
     shaderManager = std::make_unique<ShaderManager>(vertexFile, fragmentFile);
     glUseProgram(shaderManager->getShaderProgram()->getShaderID());
-}
-
-void AppController::setupScene() {
-
 }
 
 bool AppController::shouldClose() {
@@ -66,6 +64,8 @@ void AppController::endFrame() {
 
 void AppController::run() {
     while (!shouldClose()) {
+        sceneRenderer->startLoop();
+
         processInput();
 
         cameraController.updateRotation(Eigen::Vector3f(0.0f,0.0f,0.0f));
@@ -79,7 +79,6 @@ void AppController::run() {
                                  : cameraPos + camera.getFront();
         sceneRenderer->setTargetUniform(target);
 
-        sceneRenderer->startLoop();
         sceneRenderer->endLoop();
 
         endFrame();

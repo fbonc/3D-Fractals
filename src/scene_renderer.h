@@ -24,6 +24,7 @@ public:
 
 private:
     void setFractalUniforms();
+    void setGlobalUniforms();
 
     const ShaderManager& shaderManager;
     CameraController& cameraController;

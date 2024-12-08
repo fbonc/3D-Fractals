@@ -8,6 +8,7 @@
 #include "camera_controller.h"
 #include "scene_renderer.h"
 #include <memory>
+#include "mandelbulb.h"
 
 class AppController {
 public:
