@@ -4,13 +4,13 @@
 AppController::AppController()
     : camera(), 
       cameraController(camera), 
-      sceneRenderer(nullptr) 
+      sceneRenderer(nullptr),
+      uiManager(nullptr)
 {
     init();
 }
 
 AppController::~AppController() {
-    delete sceneRenderer;
     // GLFW cleanup
 }
 
@@ -28,15 +28,17 @@ void AppController::init() {
 
     createShader();
 
-    sceneRenderer = new SceneRenderer(*shaderManager, cameraController);
+    sceneRenderer = std::make_unique<SceneRenderer>(*shaderManager, cameraController);
     sceneRenderer->initialiseQuad();
     sceneRenderer->initialiseUniformLocations();
 
     sceneRenderer->setResolutionUniform((float)resolutionX, (float)resolutionY);
     
-    sceneRenderer->setFractal(std::make_unique<Mandelbulb>());
+    std::unique_ptr<Fractal> initialFractal = std::make_unique<Mandelbulb>();
+    sceneRenderer->setFractal(std::move(initialFractal));
 
-    // uiManager.init(window);
+    uiManager = std::make_unique<UIManager>(*sceneRenderer, *shaderManager, window);
+    uiManager->init();
 }
 
 void AppController::createShader() {
@@ -63,7 +65,14 @@ void AppController::endFrame() {
 }
 
 void AppController::run() {
+    using clock = std::chrono::high_resolution_clock;
+    auto lastTimePoint = clock::now();
+
     while (!shouldClose()) {
+        auto currentTimePoint = clock::now();
+        deltaTime = std::chrono::duration<float>(currentTimePoint - lastTimePoint).count();
+        lastTimePoint = currentTimePoint;
+
         sceneRenderer->startLoop();
 
         processInput();
@@ -71,6 +80,8 @@ void AppController::run() {
         cameraController.updateRotation(Eigen::Vector3f(0.0f,0.0f,0.0f));
         cameraController.updateCameraVectors();
 
+        uiManager->update(deltaTime);
+        uiManager->render();
 
         Eigen::Vector3f cameraPos = camera.getPosition();
         sceneRenderer->setCameraPosUniform(cameraPos);
@@ -78,6 +89,9 @@ void AppController::run() {
                                  ? Eigen::Vector3f(0.0f,0.0f,0.0f)
                                  : cameraPos + camera.getFront();
         sceneRenderer->setTargetUniform(target);
+
+        sceneRenderer->setGlobalUniforms();
+        sceneRenderer->setFractalUniforms();
 
         sceneRenderer->endLoop();
 

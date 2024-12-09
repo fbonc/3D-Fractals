@@ -4,16 +4,26 @@
 #include <unordered_map>
 #include <vector>
 
+struct AutoChangeConfig {
+    float rate;           // Units per second
+    float minValue;
+    float maxValue;
+};
+
 class Fractal {
 public:
-    virtual ~Fractal() = default;
     
-    virtual std::string getShaderFilePath() const = 0;
     const std::vector<std::string>& getUniformNames() const;
     float getUniformValue(const std::string& name) const;
     void setUniformValue(const std::string& name, float value);
 
+    const std::unordered_map<std::string, AutoChangeConfig>& getAutoChangeUniforms() const;
+
+    virtual std::string getShaderFilePath() const = 0;
+
 protected:
     std::unordered_map<std::string, float> uniforms;
     std::vector<std::string> uniformNames;
+    std::unordered_map<std::string, AutoChangeConfig> autoChangeUniforms;
+
 };

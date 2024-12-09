@@ -2,9 +2,20 @@
 
 #include "scene_renderer.h"
 #include "shader_managerr.h"
+#include "config.h"
 
 #include <unordered_map>
 #include <string>
+#include <optional>
+
+struct AutoChangeSetting {
+    bool enabled;
+    float rate;
+    float minValue;
+    float maxValue;
+    float currentValue;
+    bool increasing;
+};
 
 class UIManager {
 public:
@@ -24,15 +35,6 @@ private:
     ShaderManager& shaderManager;
     GLFWwindow* window;
 
-    struct AutoChangeSetting {
-        bool enabled;
-        float rate;     
-        float minValue;
-        float maxValue;
-        float currentValue;
-        bool increasing;   
-    };
-
     std::unordered_map<std::string, AutoChangeSetting> autoChangeSettings;
 
     void renderRayMarchingSettings();
@@ -44,4 +46,8 @@ private:
     void renderFractalSettings();
 
     void renderAutoChangeControls(const std::string& uniformName);
+
+    void initializeAutoChangeSettings();
+
+    void cleanupAutoChangeSettings();
 };

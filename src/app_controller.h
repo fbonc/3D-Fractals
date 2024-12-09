@@ -7,8 +7,10 @@
 #include "camera.h"
 #include "camera_controller.h"
 #include "scene_renderer.h"
-#include <memory>
 #include "mandelbulb.h"
+#include "ui_manager.h"
+#include <memory>
+
 
 class AppController {
 public:
@@ -23,10 +25,14 @@ private:
     std::unique_ptr<ShaderManager> shaderManager; 
     Camera camera;
     CameraController cameraController;
-    SceneRenderer* sceneRenderer;
+    std::unique_ptr<SceneRenderer> sceneRenderer;
+    std::unique_ptr<UIManager> uiManager;
 
     int resolutionX = 1920;
     int resolutionY = 1080;
+
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
 
     void init();
     void createShader();
