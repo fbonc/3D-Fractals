@@ -15,7 +15,7 @@ AppController::~AppController() {
 }
 
 void AppController::init() {
-    std::filesystem::current_path("C:/Users/felip/Desktop/Projects/NEA");
+    std::filesystem::current_path(R"(C:\Users\felip\Desktop\dev\NEA)");
     std::cout << "Working directory: " << std::filesystem::current_path() << std::endl;
 
     GLFWwindow* window = glfwManager.getWindow();
