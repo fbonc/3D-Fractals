@@ -107,7 +107,7 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform1f("FOV", 35.0f);
     setUniform1f("MAX_DIST", 200.0f);
     setUniform1i("MAX_STEPS", 200);
-    setUniform1f("EPSILON", 0.0001f);
+    setUniform1f("EPSILON", 0.001f);
     setUniform1i("repeatFractal", 0); //false
     setUniform1f("repeatCellSize", 6.7f);
 
@@ -140,7 +140,7 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform1f("vignetteAmount", 0.5f);
     setUniform3f("luminanceColour", 0.2126f, 0.7152f, 0.0722f);
 
-    setUniform1i("colorMode", 0);
+    setUniform1i("colorMode", 3);
     setUniform1f("positionColouringScale", 0.6f);
     setUniform3f("positionColourOne", 0.0f, 1.0f, 0.6667f);
     setUniform3f("positionColourTwo", 0.149f, 0.0196f, 0.3882f);

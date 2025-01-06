@@ -21,6 +21,9 @@ public:
     void setTargetUniform(Eigen::Vector3f target);
     void initialiseQuad();
 
+    std::unique_ptr<Fractal> currentFractal;
+
+
 
 private:
     void setFractalUniforms();
@@ -28,7 +31,6 @@ private:
 
     const ShaderManager& shaderManager;
     CameraController& cameraController;
-    std::unique_ptr<Fractal> currentFractal;
     std::unordered_map<std::string, int> uniformLocations;
 
     unsigned int VAO, VBO;
