@@ -30,12 +30,14 @@ public:
     void setFractalUniforms();
     void setGlobalUniforms();
 
+    std::unique_ptr<Fractal> currentFractal;
+
+
 
 private:
 
     const ShaderManager& shaderManager;
     CameraController& cameraController;
-    std::unique_ptr<Fractal> currentFractal;
     std::unordered_map<std::string, int> uniformLocations;
 
     unsigned int VAO, VBO;

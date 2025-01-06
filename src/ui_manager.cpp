@@ -1,15 +1,15 @@
-#include "ui_manager.h"
-#include <iostream>
+// #include "ui_manager.h"
+// #include <iostream>
 
-UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window)
-    : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window)
-{
-}
+// UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window)
+//     : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window)
+// {
+// }
 
-UIManager::~UIManager()
-{
-    shutdown();
-}
+// UIManager::~UIManager()
+// {
+//     shutdown();
+// }
 
 void UIManager::init()
 {
