@@ -1,10 +1,21 @@
 // #pragma once
 
-// #include "scene_renderer.h"
-// #include "shader_managerr.h"
+#include "scene_renderer.h"
+#include "shader_managerr.h"
+#include "config.h"
 
-// #include <unordered_map>
-// #include <string>
+#include <unordered_map>
+#include <string>
+#include <optional>
+
+struct AutoChangeSetting {
+    bool enabled;
+    float rate;
+    float minValue;
+    float maxValue;
+    float currentValue;
+    bool increasing;
+};
 
 // class UIManager {
 // public:
@@ -19,19 +30,10 @@
 
 //     void shutdown();
 
-// private:
-//     SceneRenderer& sceneRenderer;
-//     ShaderManager& shaderManager;
-//     GLFWwindow* window;
-
-//     struct AutoChangeSetting {
-//         bool enabled;
-//         float rate;     
-//         float minValue;
-//         float maxValue;
-//         float currentValue;
-//         bool increasing;   
-//     };
+private:
+    SceneRenderer& sceneRenderer;
+    ShaderManager& shaderManager;
+    GLFWwindow* window;
 
 //     std::unordered_map<std::string, AutoChangeSetting> autoChangeSettings;
 
@@ -43,5 +45,9 @@
 //     void renderTransformationsSettings();
 //     void renderFractalSettings();
 
-//     void renderAutoChangeControls(const std::string& uniformName);
-// };
+    void renderAutoChangeControls(const std::string& uniformName);
+
+    void initializeAutoChangeSettings();
+
+    void cleanupAutoChangeSettings();
+};
