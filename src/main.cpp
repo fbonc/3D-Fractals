@@ -33,7 +33,7 @@ int main() {
 
 //     float xoffset = xpos - lastX;
 //     float yoffset = lastY - ypos; //reversed since y-coordinates range from bottom to top
-
+  
 //     lastX = xpos;
 //     lastY = ypos;
 

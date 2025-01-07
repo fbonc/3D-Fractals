@@ -3,7 +3,7 @@ void main() {
     vec2 q = fragCoord.xy / resolution.xy;
     vec2 res = vec2(resolution.x, resolution.y);
 
-    vec3 rayDir = ray_direction(FOV, fragCoord, res, cameraPos, target);
+    vec3 rayDir = ray_direction(fragCoord, res, cameraPos, target);
     vec3 rayOrigin = cameraPos;
 
     vec3 hitPoint;

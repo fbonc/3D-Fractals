@@ -1,9 +1,9 @@
 #include "mandelbulb.h"
 
 Mandelbulb::Mandelbulb() {
-    uniformNames = {"Power"};
+    uniformNames = {"Power", "mandelbulbIterations"};
     uniforms["Power"] = 8.0f;
-    uniforms["mandelbulbIterations"] = 8;
+    uniforms["mandelbulbIterations"] = 40.0f;
     
     // Define auto-change configuration for "Power" uniform
     AutoChangeConfig powerConfig;
@@ -15,7 +15,7 @@ Mandelbulb::Mandelbulb() {
     AutoChangeConfig mandelbulbIterationsConfig;
     mandelbulbIterationsConfig.rate = 1.0f;
     mandelbulbIterationsConfig.minValue = 10;
-    mandelbulbIterationsConfig.maxValue = 60;
+    mandelbulbIterationsConfig.maxValue = 100;
     autoChangeUniforms["mandelbulbIterations"] = mandelbulbIterationsConfig;
 }
 

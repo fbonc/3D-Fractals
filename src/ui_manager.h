@@ -1,4 +1,4 @@
-// #pragma once
+#pragma once
 
 #include "scene_renderer.h"
 #include "shader_managerr.h"
@@ -17,37 +17,36 @@ struct AutoChangeSetting {
     bool increasing;
 };
 
-// class UIManager {
-// public:
-//     UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window);
-//     ~UIManager();
+class UIManager {
+public:
+    UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window);
+    ~UIManager();
 
-//     void init();
+    void init();
 
-//     void render();
+    void initRender();
+    void mainRender();
 
-//     void update(float deltaTime);
+    void update(float deltaTime);
 
-//     void shutdown();
+    void shutdown();
 
 private:
     SceneRenderer& sceneRenderer;
     ShaderManager& shaderManager;
     GLFWwindow* window;
 
-//     std::unordered_map<std::string, AutoChangeSetting> autoChangeSettings;
+    std::unordered_map<std::string, AutoChangeSetting> autoChangeSettings;
 
-//     void renderRayMarchingSettings();
-//     void renderSceneSettings();
-//     void renderLightingSettings();
-//     void renderPostProcessingSettings();
-//     void renderColouringSettings();
-//     void renderTransformationsSettings();
-//     void renderFractalSettings();
-
+    void renderRayMarchingSettings();
+    void renderSceneSettings();
+    void renderLightingSettings();
+    void renderPostProcessingSettings();
+    void renderColouringSettings();
+    void renderTransformationsSettings();
+    void renderFractalSettings();
     void renderAutoChangeControls(const std::string& uniformName);
 
     void initializeAutoChangeSettings();
-
     void cleanupAutoChangeSettings();
 };

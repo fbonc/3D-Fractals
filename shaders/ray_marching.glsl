@@ -5,7 +5,7 @@ vec3 repeat(vec3 rayPos, vec3 cell_width) {
 }
 
 
-vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
+vec3 ray_direction(vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
     vec2 ndc = (fragCoord / resolution) * 2.0f - 1.0f;  //normalize device coordinates
     ndc.x *= resolution.x / resolution.y;  //aspect ratio correction
 

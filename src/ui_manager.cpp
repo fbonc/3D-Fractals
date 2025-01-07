@@ -1,21 +1,22 @@
-// #include "ui_manager.h"
-// #include <iostream>
+#include "ui_manager.h"
 
-// UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window)
-//     : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window)
-// {
-// }
+UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window)
+    : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window)
+{
+}
 
-// UIManager::~UIManager()
-// {
-//     shutdown();
-// }
+UIManager::~UIManager()
+{
+    shutdown();
+}
 
 void UIManager::init()
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    io.IniFilename = nullptr;
     
     ImGui::StyleColorsDark();
     
@@ -67,12 +68,15 @@ void UIManager::cleanupAutoChangeSettings()
     }
 }
 
-void UIManager::render()
+void UIManager::initRender()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+}
 
+void UIManager::mainRender() 
+{
     renderRayMarchingSettings();
     renderSceneSettings();
     renderLightingSettings();
@@ -125,6 +129,10 @@ void UIManager::renderAutoChangeControls(const std::string& uniformName)
 
 void UIManager::renderRayMarchingSettings()
 {
+    ImGui::SetNextWindowPos(ImVec2(152, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(190, 146), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
+
     ImGui::Begin("Ray Marching Settings");
     
     float maxDist = sceneRenderer.getUniformValue("MAX_DIST");
@@ -160,6 +168,10 @@ void UIManager::renderRayMarchingSettings()
 
 void UIManager::renderSceneSettings()
 {
+    ImGui::SetNextWindowPos(ImVec2(550, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(144, 146), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
+
     ImGui::Begin("Scene Settings");
     
     Eigen::Vector3f bgColorVec = sceneRenderer.getUniformVec3("backgroundColour");
@@ -196,6 +208,10 @@ void UIManager::renderSceneSettings()
 
 void UIManager::renderLightingSettings()
 {
+    ImGui::SetNextWindowPos(ImVec2(862, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(163, 330), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
+
     ImGui::Begin("Lighting Settings");
     
     Eigen::Vector3f ambientColorVec = sceneRenderer.getUniformVec3("ambientColor");
@@ -275,6 +291,10 @@ void UIManager::renderLightingSettings()
 
 void UIManager::renderPostProcessingSettings()
 {
+    ImGui::SetNextWindowPos(ImVec2(1024, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(215, 146), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
+
     ImGui::Begin("Post Processing Settings");
     
     float gammaAmount = sceneRenderer.getUniformValue("gammaAmount");
@@ -308,6 +328,10 @@ void UIManager::renderPostProcessingSettings()
 
 void UIManager::renderColouringSettings()
 {
+    ImGui::SetNextWindowPos(ImVec2(693, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(170, 215), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
+
     ImGui::Begin("Colouring Settings");
     
     float colorModeF = sceneRenderer.getUniformValue("colorMode");
@@ -360,6 +384,10 @@ void UIManager::renderColouringSettings()
 
 void UIManager::renderTransformationsSettings()
 {
+    ImGui::SetNextWindowPos(ImVec2(341, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(210, 215), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
+
     ImGui::Begin("Transformations Settings");
     
     float useScaleF = sceneRenderer.getUniformValue("useScale");
@@ -415,6 +443,10 @@ void UIManager::renderTransformationsSettings()
 
 void UIManager::renderFractalSettings()
 {
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(154, 77), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
+
     ImGui::Begin("Fractal Settings");
     
     Eigen::Vector3f fractalColourVec = sceneRenderer.getUniformVec3("fractalColour");
@@ -433,6 +465,16 @@ void UIManager::renderFractalSettings()
             if (name == "Power") {
                 if (ImGui::SliderFloat(name.c_str(), &value, 2.0f, 16.0f)) {
                     sceneRenderer.setUniformValue(name, value);
+                }
+                //auto change controls for Power if applicable
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "mandelBulbIterations") {
+                if (ImGui::SliderFloat(name.c_str(), &value, 10, 80)) {
+                    sceneRenderer.setUniformValue(name, value * 1.0f);
                 }
                 //auto change controls for Power if applicable
                 if (fractalAutoChange.find(name) != fractalAutoChange.end()) {

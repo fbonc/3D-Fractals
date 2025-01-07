@@ -51,7 +51,6 @@ void SceneRenderer::initialiseUniformLocations() {
 
     std::vector<std::string> globalUniforms = {
     "cameraPos", "target", "resolution",
-    "FOV",
     "MAX_DIST", "MAX_STEPS", "EPSILON", "repeatFractal", "repeatCellSize",
     "backgroundColour", "useHalo", "useGradient", "haloRadius", "haloColour", "fractalColour",
     "ambientColor", "lightSourceDir", "specularStrength", "shininess", "ambientOcclusion", 
@@ -118,7 +117,6 @@ void SceneRenderer::setGlobalUniforms() {
         }
     };
 
-    setUniform1f("FOV", 35.0f);
     setUniform1f("MAX_DIST", 200.0f);
     setUniform1i("MAX_STEPS", 200);
     setUniform1f("EPSILON", 0.001f);

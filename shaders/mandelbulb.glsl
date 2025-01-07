@@ -1,5 +1,5 @@
 uniform float Power;
-uniform int mandelbulbIterations; //default 40
+uniform float mandelbulbIterations; //default 40
 
 vec2 SDF(vec3 rayPos) {
 

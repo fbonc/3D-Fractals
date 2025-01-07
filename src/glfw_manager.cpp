@@ -119,9 +119,11 @@ void GLFWManager::processInput(CameraController& cameraController) {
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !modeSwitchPressed) {
         if (cameraController.getMode() == CameraController::Mode::AutoRotation) {
             cameraController.setMode(CameraController::Mode::FreeCam);
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             std::cout << "Switched to FreeCam mode\n";
         } else {
             cameraController.setMode(CameraController::Mode::AutoRotation);
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             std::cout << "Switched to AutoRotation mode\n";
         }
         modeSwitchPressed = true;  //prevent repeated toggling

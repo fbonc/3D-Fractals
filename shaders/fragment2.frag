@@ -9,16 +9,6 @@ uniform vec3 target;
 uniform vec2 resolution;
 
 
-
-
-
-
-
-
-
-uniform float FOV; //default 35.0f
-
-
 //################ RAY MARCH UNIFORMS ################
 uniform float MAX_DIST; //default 200.0
 uniform int MAX_STEPS; //default 200
@@ -118,7 +108,7 @@ uniform float warpAmount; //default 0.0001
 //################ MANDELBULB UNIFORMS ################
 //#define Power 8.0f
 uniform float Power;
-#define mandelbulbIterations 40
+uniform float mandelbulbIterations;
 
 // //################ LIGHTING UNIFORMS ################
 // #define ambientColor vec3(0.9137, 0.9137, 0.9137)
@@ -702,7 +692,7 @@ vec3 repeat(vec3 rayPos, vec3 cell_width) {
 }
 
 
-vec3 ray_direction(float fov, vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
+vec3 ray_direction(vec2 fragCoord, vec2 resolution, vec3 cameraPos, vec3 target) {
     vec2 ndc = (fragCoord / resolution) * 2.0f - 1.0f;  //normalize device coordinates
     ndc.x *= resolution.x / resolution.y;  //aspect ratio correction
 
@@ -776,7 +766,7 @@ void main() {
     vec2 q = fragCoord.xy / resolution.xy;
     vec2 res = vec2(resolution.x, resolution.y);
 
-    vec3 rayDir = ray_direction(FOV, fragCoord, res, cameraPos, target);
+    vec3 rayDir = ray_direction(fragCoord, res, cameraPos, target);
     vec3 rayOrigin = cameraPos;
 
     vec3 hitPoint;
