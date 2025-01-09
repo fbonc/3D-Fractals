@@ -4,6 +4,8 @@
 #include "shader_managerr.h"
 #include "config.h"
 #include "glsl_manager.h"
+#include "mandelbulb.h"
+#include "menger_sponge.h"
 
 #include <unordered_map>
 #include <string>

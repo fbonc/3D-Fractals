@@ -422,7 +422,7 @@ void UIManager::renderTransformationsSettings()
 void UIManager::renderFractalSettings()
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(154, 77), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(154, 77), ImGuiCond_FirstUseEver); // Adjusted size for ComboBox
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Fractal Settings");
@@ -433,7 +433,49 @@ void UIManager::renderFractalSettings()
         sceneRenderer.setUniformValue("fractalColour", fractalColour[0], fractalColour[1], fractalColour[2]);
     }
     
-    auto fractal = sceneRenderer.getCurrentFractal();
+    static int currentFractalIndex = 0; // 0: Mandelbulb, 1: Menger Sponge
+    const char* fractalTypes[] = { "Mandelbulb", "Menger Sponge" };
+    static int previousFractalIndex = 0;
+
+    if (ImGui::Combo("Fractal Type", &currentFractalIndex, fractalTypes, IM_ARRAYSIZE(fractalTypes))) {
+        if (currentFractalIndex != previousFractalIndex) {
+            int newFractalID = currentFractalIndex;
+            
+            std::string newFragmentShaderCode = glslManager.generateFragmentShader(newFractalID);
+            
+            if (newFragmentShaderCode.empty()) {
+                std::cerr << "Failed to generate fragment shader for fractalID: " << newFractalID << std::endl;
+            }
+            else {
+                std::string vertexShaderCode = glslManager.generateVertexShader();
+                
+                shaderManager.changeShader(vertexShaderCode, newFragmentShaderCode);
+                
+                std::unique_ptr<Fractal> newFractal;
+                if (newFractalID == 0) {
+                    newFractal = std::make_unique<Mandelbulb>();
+                }
+                else if (newFractalID == 1) {
+                    newFractal = std::make_unique<MengerSponge>();
+                }
+                else {
+                    std::cerr << "Unknown fractalID: " << newFractalID << std::endl;
+                    return;
+                }
+                
+                sceneRenderer.setFractal(std::move(newFractal));
+                sceneRenderer.setFractalUniforms();
+                sceneRenderer.setGlobalUniforms();
+                
+                initializeAutoChangeSettings();
+                
+                previousFractalIndex = currentFractalIndex;
+            }
+        }
+    }
+    
+    //render uniform controls for the current fractal
+    Fractal* fractal = sceneRenderer.getCurrentFractal();
     if (fractal) {
         const auto& fractalUniforms = fractal->getUniformNames();
         const auto& fractalAutoChange = fractal->getAutoChangeUniforms();

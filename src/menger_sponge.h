@@ -4,5 +4,4 @@
 class MengerSponge : public Fractal {
 public:
     MengerSponge();
-    std::string getShaderFilePath() const override;
 };

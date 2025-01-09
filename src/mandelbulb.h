@@ -4,5 +4,4 @@
 class Mandelbulb : public Fractal {
 public:
     Mandelbulb();
-    std::string getShaderFilePath() const override;
 };

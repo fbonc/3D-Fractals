@@ -19,6 +19,3 @@ Mandelbulb::Mandelbulb() {
     autoChangeUniforms["mandelbulbIterations"] = mandelbulbIterationsConfig;
 }
 
-std::string Mandelbulb::getShaderFilePath() const {
-    return "shaders/mandelbulb.frag";
-}

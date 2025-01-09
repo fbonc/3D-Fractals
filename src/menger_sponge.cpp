@@ -1,6 +1,6 @@
 #include "menger_sponge.h"
 
-Mandelbulb::Mandelbulb() {
+MengerSponge::MengerSponge() {
     uniformNames = {"mengerSpongeIterations"};
 
     uniforms["mengerSpongeIterations"] = 8.0f;
@@ -11,8 +11,4 @@ Mandelbulb::Mandelbulb() {
     mengerSpongeIterationsConfig.maxValue = 20.0f;
     autoChangeUniforms["mengerSpongeIterations"] = mengerSpongeIterationsConfig;
 
-}
-
-std::string MengerSponge::getShaderFilePath() const {
-    return "shaders/mengersponge.frag";
 }

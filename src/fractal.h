@@ -19,7 +19,6 @@ public:
 
     const std::unordered_map<std::string, AutoChangeConfig>& getAutoChangeUniforms() const;
 
-    virtual std::string getShaderFilePath() const = 0;
 
 protected:
     std::unordered_map<std::string, float> uniforms;
