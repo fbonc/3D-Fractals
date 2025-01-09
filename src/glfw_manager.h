@@ -18,6 +18,9 @@ private:
 
     static void mouseCallback(GLFWwindow*, double xpos, double ypos);
     int initialiseGLFW();
+    bool isCursorShown = false;
+    bool wasKPressed = false;
+
 
     
 public:

@@ -35,6 +35,8 @@ public:
 
 
 private:
+    bool defaultsSet = false;
+    bool fractalsSet = false;
 
     const ShaderManager& shaderManager;
     CameraController& cameraController;

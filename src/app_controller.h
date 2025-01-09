@@ -9,6 +9,7 @@
 #include "scene_renderer.h"
 #include "mandelbulb.h"
 #include "ui_manager.h"
+#include "glsl_manager.h"
 #include <memory>
 
 
@@ -26,6 +27,7 @@ private:
     Camera camera;
     CameraController cameraController;
     std::unique_ptr<SceneRenderer> sceneRenderer;
+    GLSLManager glslManager;
     std::unique_ptr<UIManager> uiManager;
 
     int resolutionX = 1920;

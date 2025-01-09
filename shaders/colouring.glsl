@@ -16,13 +16,13 @@ vec3 colorByFractal(float colorFactor) { //fractal iterations
 vec3 getColor(int steps, vec3 normal, vec3 position, float distance, float colorFactor) {
     vec3 color;
 
-    if (colorMode == 0) {
+    if (colorMode == 0.0) {
         color = fractalColour;
-    } else if (colorMode == 1) {
+    } else if (colorMode == 1.0) {
         color = colorByNormal(normal);
-    } else if (colorMode == 2) {
+    } else if (colorMode == 2.0) {
         color = colorByPosition(position);
-    } else if (colorMode == 3) {
+    } else if (colorMode == 3.0) {
         color = colorByFractal(colorFactor);
     } else {
         color = fractalColour;

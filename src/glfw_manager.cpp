@@ -87,6 +87,7 @@ void GLFWManager::processInput(CameraController& cameraController) {
     lastFrame = currentFrame;
 
 	bool isShiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+    bool isKPressed = (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         cameraController.processKeyboardInput(GLFW_KEY_W, deltaTime, isShiftPressed);
@@ -112,18 +113,26 @@ void GLFWManager::processInput(CameraController& cameraController) {
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
         cameraController.processKeyboardInput(GLFW_KEY_DOWN, deltaTime, isShiftPressed);
     }
-    
 
+    if (isKPressed && !wasKPressed) {
+        if (isCursorShown) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            isCursorShown = false;
+        } else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            isCursorShown = true;
+        }
+    }
+
+    wasKPressed = isKPressed;
 
     //switch between autoRotation and freeCam modes
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !modeSwitchPressed) {
         if (cameraController.getMode() == CameraController::Mode::AutoRotation) {
             cameraController.setMode(CameraController::Mode::FreeCam);
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             std::cout << "Switched to FreeCam mode\n";
         } else {
             cameraController.setMode(CameraController::Mode::AutoRotation);
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             std::cout << "Switched to AutoRotation mode\n";
         }
         modeSwitchPressed = true;  //prevent repeated toggling

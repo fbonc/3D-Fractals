@@ -1,4 +1,4 @@
-uniform int mengerspongeIterations; //default 6
+uniform int mengerSpongeIterations; //default 6
 
 
 float cubeSDF(vec3 rayPos, float width) {
@@ -56,7 +56,7 @@ vec2 SDF(vec3 rayPos) {
     float scale = 1.0;
     int iterations = 0;
     float minDist = 1000.0;
-    for(int i = 0; i < mengerspongeIterations; ++i) {
+    for(int i = 0; i < mengerSpongeIterations; ++i) {
 
         //determine repeated box width
         float boxedWidth = cubeWidth / scale;
@@ -85,6 +85,6 @@ vec2 SDF(vec3 rayPos) {
         scale *= 3.0;
 
     }
-    float colorFactor = float(iterations) / mengerspongeIterations;
+    float colorFactor = float(iterations) / mengerSpongeIterations;
     return vec2(mengerSpongeDist, colorFactor);
 }

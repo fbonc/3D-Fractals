@@ -1,7 +1,7 @@
 #include "ui_manager.h"
 
-UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window)
-    : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window)
+UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager)
+    : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window), glslManager(glslManager)
 {
 }
 
@@ -18,7 +18,7 @@ void UIManager::init()
 
     io.IniFilename = nullptr;
     
-    ImGui::StyleColorsDark();
+    ImGui::StyleColorsClassic();
     
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -118,10 +118,8 @@ void UIManager::renderAutoChangeControls(const std::string& uniformName)
     auto it = autoChangeSettings.find(uniformName);
     if (it != autoChangeSettings.end()) {
         AutoChangeSetting& setting = it->second;
-        ImGui::SameLine();
         ImGui::Checkbox(("Auto Change " + uniformName).c_str(), &setting.enabled);
         if (setting.enabled) {
-            ImGui::SameLine();
             ImGui::SliderFloat(("Rate " + uniformName).c_str(), &setting.rate, 0.0f, 10.0f, "%.2f");
         }
     }
@@ -136,7 +134,7 @@ void UIManager::renderRayMarchingSettings()
     ImGui::Begin("Ray Marching Settings");
     
     float maxDist = sceneRenderer.getUniformValue("MAX_DIST");
-    if (ImGui::SliderFloat("MAX_DIST", &maxDist, 50.0f, 500.0f)) {
+    if (ImGui::SliderFloat("MAX_DIST", &maxDist, 0.0f, 1500.0f)) {
         sceneRenderer.setUniformValue("MAX_DIST", maxDist);
     }
     
@@ -194,7 +192,7 @@ void UIManager::renderSceneSettings()
     
     float haloRadius = sceneRenderer.getUniformValue("haloRadius");
     if (ImGui::SliderFloat("haloRadius", &haloRadius, 1.0f, 50.0f)) {
-        sceneRenderer.setUniformValue("haloRadius", haloRadius);
+        sceneRenderer.setUniformValue("haloRadius", 51.0f - haloRadius);
     }
     
     Eigen::Vector3f haloColorVec = sceneRenderer.getUniformVec3("haloColour");
@@ -250,9 +248,10 @@ void UIManager::renderLightingSettings()
     
     float shadowMaxStepsF = sceneRenderer.getUniformValue("shadowMaxSteps");
     int shadowMaxSteps = static_cast<int>(shadowMaxStepsF);
-    if (ImGui::SliderInt("shadowMaxSteps", &shadowMaxSteps, 50, 500)) {
+    if (ImGui::SliderInt("shadowMaxSteps", &shadowMaxSteps, 0, 20)) {
         sceneRenderer.setUniformValue("shadowMaxSteps", static_cast<float>(shadowMaxSteps));
     }
+
     
     float kSoftShadow = sceneRenderer.getUniformValue("kSoftShadow");
     if (ImGui::SliderFloat("kSoftShadow", &kSoftShadow, 1.0f, 20.0f)) {
@@ -267,23 +266,6 @@ void UIManager::renderLightingSettings()
     float darkestShadow = sceneRenderer.getUniformValue("darkestShadow");
     if (ImGui::SliderFloat("darkestShadow", &darkestShadow, 0.0f, 1.0f)) {
         sceneRenderer.setUniformValue("darkestShadow", darkestShadow);
-    }
-    
-    float glowOnF = sceneRenderer.getUniformValue("glowOn");
-    bool glowOn = (glowOnF != 0.0f);
-    if (ImGui::Checkbox("glowOn", &glowOn)) {
-        sceneRenderer.setUniformValue("glowOn", glowOn ? 1.0f : 0.0f);
-    }
-    
-    Eigen::Vector3f glowColorVec = sceneRenderer.getUniformVec3("glowColor");
-    float glowColour[3] = { glowColorVec.x(), glowColorVec.y(), glowColorVec.z() };
-    if (ImGui::ColorEdit3("glowColour", glowColour)) {
-        sceneRenderer.setUniformValue("glowColor", glowColour[0], glowColour[1], glowColour[2]);
-    }
-    
-    float glowStrength = sceneRenderer.getUniformValue("glowStrength");
-    if (ImGui::SliderFloat("glowStrength", &glowStrength, 0.0f, 2.0f)) {
-        sceneRenderer.setUniformValue("glowStrength", glowStrength);
     }
     
     ImGui::End();
@@ -400,7 +382,6 @@ void UIManager::renderTransformationsSettings()
     if (ImGui::SliderFloat("scaleAmount", &scaleAmount, 0.1f, 10.0f)) {
         sceneRenderer.setUniformValue("scaleAmount", scaleAmount);
     }
-    renderAutoChangeControls("scaleAmount");
     
     float useTwistF = sceneRenderer.getUniformValue("useTwist");
     bool useTwist = (useTwistF != 0.0f);
@@ -412,7 +393,6 @@ void UIManager::renderTransformationsSettings()
     if (ImGui::SliderFloat("twistAmount", &twistAmount, 0.0f, 10.0f)) {
         sceneRenderer.setUniformValue("twistAmount", twistAmount);
     }
-    renderAutoChangeControls("twistAmount");
     
     float useBendF = sceneRenderer.getUniformValue("useBend");
     bool useBend = (useBendF != 0.0f);
@@ -424,7 +404,6 @@ void UIManager::renderTransformationsSettings()
     if (ImGui::SliderFloat("bendAmount", &bendAmount, 0.0f, 10.0f)) {
         sceneRenderer.setUniformValue("bendAmount", bendAmount);
     }
-    renderAutoChangeControls("bendAmount");
     
     float useWarpF = sceneRenderer.getUniformValue("useWarp");
     bool useWarp = (useWarpF != 0.0f);
@@ -436,7 +415,6 @@ void UIManager::renderTransformationsSettings()
     if (ImGui::SliderFloat("warpAmount", &warpAmount, 0.0f, 0.002f, "%.5f")) {
         sceneRenderer.setUniformValue("warpAmount", warpAmount);
     }
-    renderAutoChangeControls("warpAmount");
     
     ImGui::End();
 }
@@ -463,7 +441,7 @@ void UIManager::renderFractalSettings()
             float value = sceneRenderer.getUniformValue(name);
             
             if (name == "Power") {
-                if (ImGui::SliderFloat(name.c_str(), &value, 2.0f, 16.0f)) {
+                if (ImGui::SliderFloat(name.c_str(), &value, 1.0f, 20.0f)) {
                     sceneRenderer.setUniformValue(name, value);
                 }
                 //auto change controls for Power if applicable
@@ -472,8 +450,8 @@ void UIManager::renderFractalSettings()
                 }
             }
 
-            if (name == "mandelBulbIterations") {
-                if (ImGui::SliderFloat(name.c_str(), &value, 10, 80)) {
+            if (name == "mandelbulbIterations") {
+                if (ImGui::SliderFloat(name.c_str(), &value, 1.001, 20.0)) {
                     sceneRenderer.setUniformValue(name, value * 1.0f);
                 }
                 //auto change controls for Power if applicable

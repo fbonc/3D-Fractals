@@ -3,7 +3,7 @@ vec3 calculateBgColor (vec2 fragCoord) {
     vec2 uv = -1.0 + 2.0 * q;
     uv.x *= resolution.x / resolution.y;
     
-    return exp(uv.y - 2.0) * backgroundColour;
+    return exp(uv.y - 2.0) * backgroundColour * 5.0f;
 }
 
 vec3 calculateHaloColor(vec3 rayOrigin, vec3 rayDir) {
@@ -25,7 +25,6 @@ vec3 calculateBackground(vec2 fragCoord, vec3 rayOrigin, vec3 rayDir) {
     }
             
     if (useHalo) {
-        baseBg = false;
         haloColor = calculateHaloColor(rayOrigin, rayDir);
     }
 
@@ -34,7 +33,7 @@ vec3 calculateBackground(vec2 fragCoord, vec3 rayOrigin, vec3 rayDir) {
     if(!baseBg) {
         finalBgColor = bgColor + haloColor;
     } else {
-        finalBgColor = backgroundColour;
+        finalBgColor = backgroundColour + haloColor;
     }
 
     return vec3(finalBgColor);

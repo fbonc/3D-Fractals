@@ -55,7 +55,6 @@ void SceneRenderer::initialiseUniformLocations() {
     "backgroundColour", "useHalo", "useGradient", "haloRadius", "haloColour", "fractalColour",
     "ambientColor", "lightSourceDir", "specularStrength", "shininess", "ambientOcclusion", 
     "softShadows", "shadowMaxSteps", "kSoftShadow", "lightestShadow", "darkestShadow",
-    "glowOn", "glowColor", "glowStrength",
     "gammaAmount", "contrastAmount", "saturationAmount", "vignetteAmount", "luminanceColour",
     "colorMode", "positionColouringScale", "positionColourOne", "positionColourTwo",
     "iterationColourVarOne", "iterationColourVarTwo", "iterationColourVarThree", "iterationColourVarFour",
@@ -94,6 +93,8 @@ void SceneRenderer::setTargetUniform(Eigen::Vector3f target) {
 }
 
 void SceneRenderer::setGlobalUniforms() {
+    if (defaultsSet) return;
+
     glUseProgram(shaderManager.getShaderProgram()->getShaderID());
 
     auto setUniform1f = [&](const std::string &name, float val) {
@@ -118,12 +119,12 @@ void SceneRenderer::setGlobalUniforms() {
     };
 
     setUniform1f("MAX_DIST", 200.0f);
-    setUniform1i("MAX_STEPS", 200);
+    setUniform1f("MAX_STEPS", 200.0f);
     setUniform1f("EPSILON", 0.001f);
     setUniform1i("repeatFractal", 0); //false
     setUniform1f("repeatCellSize", 6.7f);
 
-    setUniform3f("backgroundColour", 0.4f, 1.0f, 1.0f);
+    setUniform3f("backgroundColour", 0.11f, 0.28f, 0.28f);
     setUniform1i("useHalo", 1); // true
     setUniform1i("useGradient", 1); // true
     setUniform1f("haloRadius", 17.0f);
@@ -137,14 +138,10 @@ void SceneRenderer::setGlobalUniforms() {
 
     setUniform1i("ambientOcclusion", 1); // true
     setUniform1i("softShadows", 1); // true
-    setUniform1i("shadowMaxSteps", 100);
+    setUniform1f("shadowMaxSteps", 100);
     setUniform1f("kSoftShadow", 8.0f);
     setUniform1f("lightestShadow", 0.7f);
     setUniform1f("darkestShadow", 0.2f);
-
-    setUniform1i("glowOn", 0); // false
-    setUniform3f("glowColor", 1.0f, 0.0f, 0.0f);
-    setUniform1f("glowStrength", 0.5f);
 
     setUniform1f("gammaAmount", 2.2f);
     setUniform1f("contrastAmount", 0.5f);
@@ -152,7 +149,7 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform1f("vignetteAmount", 0.5f);
     setUniform3f("luminanceColour", 0.2126f, 0.7152f, 0.0722f);
 
-    setUniform1i("colorMode", 3);
+    setUniform1f("colorMode", 3.0f);
     setUniform1f("positionColouringScale", 0.6f);
     setUniform3f("positionColourOne", 0.0f, 1.0f, 0.6667f);
     setUniform3f("positionColourTwo", 0.149f, 0.0196f, 0.3882f);
@@ -170,10 +167,13 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform1f("bendAmount", 0.1f);
     setUniform1i("useWarp", 0); // false
     setUniform1f("warpAmount", 0.0001f);
+
+    defaultsSet = true;
 }
 
 void SceneRenderer::setFractalUniforms() {
     if (!currentFractal) return;
+    else if (fractalsSet) return;
     
     for (const auto& name : currentFractal->getUniformNames()) {
         float value = currentFractal->getUniformValue(name);
@@ -184,6 +184,8 @@ void SceneRenderer::setFractalUniforms() {
             std::cerr << "Uniform '" << name << "' not found for fractal." << std::endl;
         }
     }
+
+    fractalsSet = true;
 }
 
 void SceneRenderer::setUniformValue(const std::string& name, float value)
@@ -247,7 +249,6 @@ Fractal* SceneRenderer::getCurrentFractal() const
 
 void SceneRenderer::startLoop() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    setFractalUniforms();
 }
 
 void SceneRenderer::endLoop() {

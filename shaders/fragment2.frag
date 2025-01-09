@@ -11,7 +11,7 @@ uniform vec2 resolution;
 
 //################ RAY MARCH UNIFORMS ################
 uniform float MAX_DIST; //default 200.0
-uniform int MAX_STEPS; //default 200
+uniform float MAX_STEPS; //default 200
 uniform float EPSILON; //default 0.0001
 #define PHI 1.61803398874989484820459
 uniform bool repeatFractal; //default false
@@ -36,15 +36,10 @@ uniform bool ambientOcclusion; //default false
 uniform bool softShadows; //default false
 
 
-uniform int shadowMaxSteps; //default 100
+uniform float shadowMaxSteps; //default 100
 uniform float kSoftShadow; //default 8.0
 uniform float lightestShadow; //default 0.7
 uniform float darkestShadow; //default 0.2
-
-////################ GLOW UNIFORMS //################
-uniform bool glowOn; //default true
-uniform vec3 glowColor; //default vec3(1.0, 0.0, 0.0)
-uniform float glowStrength; //default 0.5
 
 
 //################ POST PROCESSING UNIFORMS ################
@@ -55,7 +50,7 @@ uniform float vignetteAmount; //default 0.5 // (0.0 - 1.0)
 uniform vec3 luminanceColour; //default vec3(0.2126, 0.7152, 0.0722)
 
 //################ COLOURS UNIFORMS ################
-uniform int colorMode; //default 0
+uniform float colorMode; //default 0
 uniform float positionColouringScale; //default 0.6
 uniform vec3 positionColourOne; //default vec3(0.0, 1.0, 0.6667)
 uniform vec3 positionColourTwo; //default vec3(0.149, 0.0196, 0.3882)
@@ -103,7 +98,7 @@ uniform float warpAmount; //default 0.0001
 // #define fractalColour vec3(0.0078, 0.0078, 0.0078)
 
 //################ MENGERSPONGE UNIFORMS ################
-#define mengerspongeIterations 6
+#define mengerSpongeIterations 6
 
 //################ MANDELBULB UNIFORMS ################
 //#define Power 8.0f
@@ -357,7 +352,7 @@ vec2 mengerSpongeSDF(vec3 rayPos) {
     float scale = 1.0;
     int iterations = 0;
     float minDist = 1000.0;
-    for(int i = 0; i < mengerspongeIterations; ++i) {
+    for(int i = 0; i < mengerSpongeIterations; ++i) {
 
         //determine repeated box width
         float boxedWidth = cubeWidth / scale;
@@ -386,7 +381,7 @@ vec2 mengerSpongeSDF(vec3 rayPos) {
         scale *= 3.0;
 
     }
-    float colorFactor = float(iterations) / mengerspongeIterations;
+    float colorFactor = float(iterations) / mengerSpongeIterations;
     return vec2(mengerSpongeDist, colorFactor);
 }
 
@@ -510,13 +505,13 @@ vec3 colorByFractal(float colorFactor) { //fractal iterations
 vec3 getColor(int steps, vec3 normal, vec3 position, float distance, float colorFactor) {
     vec3 color;
 
-    if (colorMode == 0) {
+    if (colorMode == 0.0) {
         color = fractalColour;
-    } else if (colorMode == 1) {
+    } else if (colorMode == 1.0) {
         color = colorByNormal(normal);
-    } else if (colorMode == 2) {
+    } else if (colorMode == 2.0) {
         color = colorByPosition(position);
-    } else if (colorMode == 3) {
+    } else if (colorMode == 3.0) {
         color = colorByFractal(colorFactor);
     } else {
         color = fractalColour;
@@ -596,8 +591,6 @@ vec3 calculateLighting(vec3 hitPoint, vec3 normal, vec3 viewDir, vec3 lightDirec
     if (ambientOcclusion){
         //no shadows, only ambient occlusion
         finalColor -= stepFactor;
-    } else if (glowOn) {
-        finalColor += glowColor * stepFactor * glowStrength;
     }
 
     return clamp(finalColor, 0.0, 1.0);
@@ -614,7 +607,7 @@ vec3 calculateBgColor (vec2 fragCoord) {
     vec2 uv = -1.0 + 2.0 * q;
     uv.x *= resolution.x / resolution.y;
     
-    return exp(uv.y - 2.0) * backgroundColour;
+    return exp(uv.y - 2.0) * backgroundColour * 5.0f;
 }
 
 vec3 calculateHaloColor(vec3 rayOrigin, vec3 rayDir) {
@@ -636,7 +629,6 @@ vec3 calculateBackground(vec2 fragCoord, vec3 rayOrigin, vec3 rayDir) {
     }
             
     if (useHalo) {
-        baseBg = false;
         haloColor = calculateHaloColor(rayOrigin, rayDir);
     }
 
@@ -645,7 +637,7 @@ vec3 calculateBackground(vec2 fragCoord, vec3 rayOrigin, vec3 rayDir) {
     if(!baseBg) {
         finalBgColor = bgColor + haloColor;
     } else {
-        finalBgColor = backgroundColour;
+        finalBgColor = backgroundColour + haloColor;
     }
 
     return vec3(finalBgColor);

@@ -21,6 +21,10 @@ void ShaderManager::deleteShader() {
 void ShaderManager::changeShader(const std::string& vertex_filepath, const std::string& fragment_filepath) {
     deleteShader();
     shaderProgram = createShader(vertex_filepath, fragment_filepath);
+    if (!shaderProgram) {
+        std::cerr << "Failed to create shader from source." << std::endl;
+        return;
+    }
     glUseProgram(shaderProgram->getShaderID());
 }
 

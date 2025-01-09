@@ -1,20 +1,16 @@
-#include "Fractal.h"
+#include "menger_sponge.h"
 
-class MengerSponge : public Fractal {
-public:
+Mandelbulb::Mandelbulb() {
+    uniformNames = {"mengerSpongeIterations"};
 
-    MengerSponge();
-    std::string getShaderFilePath() const override;
-
-private:
-
-    std::vector<std::string> uniformNames;
+    uniforms["mengerSpongeIterations"] = 8.0f;
     
-};
+    AutoChangeConfig mengerSpongeIterationsConfig;
+    mengerSpongeIterationsConfig.rate = 1.0f;
+    mengerSpongeIterationsConfig.minValue = 1.0f;
+    mengerSpongeIterationsConfig.maxValue = 20.0f;
+    autoChangeUniforms["mengerSpongeIterations"] = mengerSpongeIterationsConfig;
 
-MengerSponge::MengerSponge() {
-    uniformNames = {"Power"};
-    uniforms["Power"] = 8.0f;
 }
 
 std::string MengerSponge::getShaderFilePath() const {

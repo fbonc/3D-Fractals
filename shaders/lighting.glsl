@@ -74,8 +74,6 @@ vec3 calculateLighting(vec3 hitPoint, vec3 normal, vec3 viewDir, vec3 lightDirec
     if (ambientOcclusion){
         //no shadows, only ambient occlusion
         finalColor -= stepFactor;
-    } else if (glowOn) {
-        finalColor += glowColor * stepFactor * glowStrength;
     }
 
     return clamp(finalColor, 0.0, 1.0);

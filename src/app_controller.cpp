@@ -37,7 +37,7 @@ void AppController::init() {
     std::unique_ptr<Fractal> initialFractal = std::make_unique<Mandelbulb>();
     sceneRenderer->setFractal(std::move(initialFractal));
 
-    uiManager = std::make_unique<UIManager>(*sceneRenderer, *shaderManager, window);
+    uiManager = std::make_unique<UIManager>(*sceneRenderer, *shaderManager, window, glslManager);
     uiManager->init();
 }
 

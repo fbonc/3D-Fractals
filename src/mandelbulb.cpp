@@ -8,14 +8,14 @@ Mandelbulb::Mandelbulb() {
     // Define auto-change configuration for "Power" uniform
     AutoChangeConfig powerConfig;
     powerConfig.rate = 1.0f;      // Units per second
-    powerConfig.minValue = 2.0f;
-    powerConfig.maxValue = 16.0f;
+    powerConfig.minValue = 1.0f;
+    powerConfig.maxValue = 20.0f;
     autoChangeUniforms["Power"] = powerConfig;
 
     AutoChangeConfig mandelbulbIterationsConfig;
     mandelbulbIterationsConfig.rate = 1.0f;
-    mandelbulbIterationsConfig.minValue = 10;
-    mandelbulbIterationsConfig.maxValue = 100;
+    mandelbulbIterationsConfig.minValue = 1.001f;
+    mandelbulbIterationsConfig.maxValue = 20.0f;
     autoChangeUniforms["mandelbulbIterations"] = mandelbulbIterationsConfig;
 }
 
