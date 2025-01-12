@@ -169,6 +169,8 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform1f("warpAmount", 0.0001f);
 
     defaultsSet = true;
+
+    std::cout << "Done setting global uniforms" << std::endl;
 }
 
 void SceneRenderer::setFractalUniforms() {
@@ -186,6 +188,12 @@ void SceneRenderer::setFractalUniforms() {
     }
 
     fractalsSet = true;
+    std::cout << "Done setting fractal uniforms" << std::endl;
+}
+
+void SceneRenderer::resetUniformBools() {
+    defaultsSet = false;
+    fractalsSet = false;
 }
 
 void SceneRenderer::setUniformValue(const std::string& name, float value)
@@ -248,6 +256,7 @@ Fractal* SceneRenderer::getCurrentFractal() const
 }
 
 void SceneRenderer::startLoop() {
+    // std::cout << "Using shader program " << shaderManager.getShaderProgram()->getShaderID() << " when drawing." << std::endl;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

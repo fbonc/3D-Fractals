@@ -1,13 +1,14 @@
 #include "shader_managerr.h"
 
-ShaderManager::ShaderManager(const std::string& vertex_filepath, const std::string& fragment_filepath) {
-    shaderProgram = createShader(vertex_filepath, fragment_filepath);
+ShaderManager::ShaderManager(const std::string& vertexSource, const std::string& fragmentSource) {
+    shaderProgram = Shader::CreateFromSource(vertexSource, fragmentSource);
+    if (!shaderProgram) {
+        std::cerr << "Failed to create initial shader program from source." << std::endl;
+        return;
+    }
     glUseProgram(shaderProgram->getShaderID());
 }
 
-std::unique_ptr<Shader> ShaderManager::createShader(const std::string& vertex_filepath, const std::string& fragment_filepath) {
-    return std::make_unique<Shader>(vertex_filepath, fragment_filepath);
-}
 
 const std::unique_ptr<Shader>& ShaderManager::getShaderProgram() const {
     return shaderProgram;
@@ -15,16 +16,19 @@ const std::unique_ptr<Shader>& ShaderManager::getShaderProgram() const {
 
 void ShaderManager::deleteShader() {
     if (shaderProgram) {
+        shaderProgram->deleteShader();
         shaderProgram.reset();
     }
 }
-void ShaderManager::changeShader(const std::string& vertex_filepath, const std::string& fragment_filepath) {
+void ShaderManager::changeShader(const std::string& vertexSource, const std::string& fragmentSource) {
     deleteShader();
-    shaderProgram = createShader(vertex_filepath, fragment_filepath);
+    shaderProgram = Shader::CreateFromSource(vertexSource, fragmentSource);
     if (!shaderProgram) {
         std::cerr << "Failed to create shader from source." << std::endl;
         return;
     }
+
+    std::cout << "ShaderManager: Switched to shader program ID " << shaderProgram->getShaderID() << std::endl;
     glUseProgram(shaderProgram->getShaderID());
 }
 

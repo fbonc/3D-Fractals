@@ -23,7 +23,7 @@ float calculateSoftShadow(vec3 ro, vec3 rd, float k) {
 
         // vec2 distAndColor = apollonianGasketSDF(currentPoint);
         // vec2 distAndColor = mengerSpongeSDF(currentPoint);
-        vec2 distAndColor = mandelbulbSDF(currentPoint);
+        vec2 distAndColor = SDF(currentPoint);
         float h = distAndColor.x;
 
         if (h < 0.001) {

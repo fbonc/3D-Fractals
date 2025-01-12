@@ -44,7 +44,7 @@ std::string GLSLManager::generateFragmentShader(const int& fractalID) {
     fragmentShaderStream << rayMarchingCode << "\n";
     fragmentShaderStream << mainCode << "\n";
 
-    std::cout << fragmentShaderStream.str() <<std::endl;
+    //std::cout << fragmentShaderStream.str() <<std::endl;
 
     return fragmentShaderStream.str();
 }

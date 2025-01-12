@@ -1,22 +1,20 @@
 #pragma once
 
 #include "config.h"
+#include <string>
+#include <memory>
+
 
 class Shader {
-    public:
-        Shader(const std::string& vertex_filepath, const std::string& fragment_filepath);
-        void deleteShader();
-        const unsigned int getShaderID() const;
-        const std::string& getShaderName() const;
+public:
+    static std::unique_ptr<Shader> CreateFromSource(const std::string& vertexSource, const std::string& fragmentSource);
+    void deleteShader();
+    const unsigned int getShaderID() const;
 
 
 
+private:
+    Shader() : shaderID(0) {} //private constructor to enforce creation using factory method
 
-    private:
-        unsigned int makeModule(const std::string& filepath, unsigned int module_type);
-        unsigned int makeShader(const std::string& vertex_filepath, const std::string& fragment_filepath);
-
-        std::string readFile(const std::string& filepath, const unsigned int module_type);
-        unsigned int shaderID;
-        std::string shaderName;
+    unsigned int shaderID;
 };

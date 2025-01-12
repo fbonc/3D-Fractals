@@ -315,6 +315,12 @@ void UIManager::renderColouringSettings()
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Colouring Settings");
+
+    Eigen::Vector3f fractalColourVec = sceneRenderer.getUniformVec3("fractalColour");
+    float fractalColour[3] = { fractalColourVec.x(), fractalColourVec.y(), fractalColourVec.z() };
+    if (ImGui::ColorEdit3("fractalColour", fractalColour)) {
+        sceneRenderer.setUniformValue("fractalColour", fractalColour[0], fractalColour[1], fractalColour[2]);
+    }
     
     float colorModeF = sceneRenderer.getUniformValue("colorMode");
     int colorMode = static_cast<int>(colorModeF);
@@ -427,11 +433,6 @@ void UIManager::renderFractalSettings()
 
     ImGui::Begin("Fractal Settings");
     
-    Eigen::Vector3f fractalColourVec = sceneRenderer.getUniformVec3("fractalColour");
-    float fractalColour[3] = { fractalColourVec.x(), fractalColourVec.y(), fractalColourVec.z() };
-    if (ImGui::ColorEdit3("fractalColour", fractalColour)) {
-        sceneRenderer.setUniformValue("fractalColour", fractalColour[0], fractalColour[1], fractalColour[2]);
-    }
     
     static int currentFractalIndex = 0; // 0: Mandelbulb, 1: Menger Sponge
     const char* fractalTypes[] = { "Mandelbulb", "Menger Sponge" };
@@ -447,6 +448,7 @@ void UIManager::renderFractalSettings()
                 std::cerr << "Failed to generate fragment shader for fractalID: " << newFractalID << std::endl;
             }
             else {
+                
                 std::string vertexShaderCode = glslManager.generateVertexShader();
                 
                 shaderManager.changeShader(vertexShaderCode, newFragmentShaderCode);
@@ -462,14 +464,21 @@ void UIManager::renderFractalSettings()
                     std::cerr << "Unknown fractalID: " << newFractalID << std::endl;
                     return;
                 }
-                
+
+                sceneRenderer.resetUniformBools();
+                sceneRenderer.initialiseUniformLocations();
+                sceneRenderer.setResolutionUniform((float)1920, (float)1080);
                 sceneRenderer.setFractal(std::move(newFractal));
                 sceneRenderer.setFractalUniforms();
-                sceneRenderer.setGlobalUniforms();
                 
                 initializeAutoChangeSettings();
                 
                 previousFractalIndex = currentFractalIndex;
+
+                GLenum err;
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL Error: " << err << "\n";
+                }
             }
         }
     }
@@ -486,7 +495,6 @@ void UIManager::renderFractalSettings()
                 if (ImGui::SliderFloat(name.c_str(), &value, 1.0f, 20.0f)) {
                     sceneRenderer.setUniformValue(name, value);
                 }
-                //auto change controls for Power if applicable
                 if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
                     renderAutoChangeControls(name);
                 }
@@ -496,7 +504,15 @@ void UIManager::renderFractalSettings()
                 if (ImGui::SliderFloat(name.c_str(), &value, 1.001, 20.0)) {
                     sceneRenderer.setUniformValue(name, value * 1.0f);
                 }
-                //auto change controls for Power if applicable
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "mengerSpongeIterations") {
+                if (ImGui::SliderFloat(name.c_str(), &value, 1.001, 20.0)) {
+                    sceneRenderer.setUniformValue(name, value * 1.0f);
+                }
                 if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
                     renderAutoChangeControls(name);
                 }
@@ -507,4 +523,7 @@ void UIManager::renderFractalSettings()
     
     ImGui::End();
 }
+
+
+
 

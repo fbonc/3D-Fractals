@@ -32,6 +32,8 @@ public:
 
     std::unique_ptr<Fractal> currentFractal;
 
+    void resetUniformBools();
+
 
 
 private:

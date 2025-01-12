@@ -2,7 +2,6 @@
 
 MengerSponge::MengerSponge() {
     uniformNames = {"mengerSpongeIterations"};
-
     uniforms["mengerSpongeIterations"] = 8.0f;
     
     AutoChangeConfig mengerSpongeIterationsConfig;

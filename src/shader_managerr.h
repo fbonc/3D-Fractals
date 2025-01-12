@@ -6,13 +6,12 @@
 
 class ShaderManager {
     public:
-        ShaderManager(const std::string& vertex_filepath, const std::string& fragment_filepath);
+        ShaderManager(const std::string& vertexSource, const std::string& fragmentSource);
         void deleteShader();
-        void changeShader(const std::string& vertex_filepath, const std::string& fragment_filepath);
+        void changeShader(const std::string& vertexSource, const std::string& fragmentSource);
         const std::unique_ptr<Shader>& getShaderProgram() const;
 
     private:
-        std::unique_ptr<Shader> createShader(const std::string& vertex_filepath, const std::string& fragment_filepath);
         std::unique_ptr<Shader> shaderProgram;
     
 };

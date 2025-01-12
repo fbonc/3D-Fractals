@@ -1,4 +1,4 @@
-uniform int mengerSpongeIterations; //default 6
+uniform float mengerSpongeIterations; //default 6
 
 
 float cubeSDF(vec3 rayPos, float width) {

@@ -26,7 +26,12 @@ void AppController::init() {
 
     glfwManager.setInputFunctions(cameraController);
 
-    createShader();
+    //initial shader code generation
+    std::string vertexShaderCode = glslManager.generateVertexShader();
+    int initialFractalID = 0; //0 = mandelbulb
+    std::string fragmentShaderCode = glslManager.generateFragmentShader(initialFractalID);
+
+    shaderManager = std::make_unique<ShaderManager>(vertexShaderCode, fragmentShaderCode);
 
     sceneRenderer = std::make_unique<SceneRenderer>(*shaderManager, cameraController);
     sceneRenderer->initialiseQuad();
@@ -36,20 +41,12 @@ void AppController::init() {
     
     std::unique_ptr<Fractal> initialFractal = std::make_unique<Mandelbulb>();
     sceneRenderer->setFractal(std::move(initialFractal));
+    sceneRenderer->setFractalUniforms();
 
     uiManager = std::make_unique<UIManager>(*sceneRenderer, *shaderManager, window, glslManager);
     uiManager->init();
 }
 
-void AppController::createShader() {
-    // using existing vertex and fragment shader files
-    //integrate GLSLManager later to generate them dynamically
-    std::string vertexFile = "shaders/vertex.vert";
-    std::string fragmentFile = "shaders/fragment2.frag";
-
-    shaderManager = std::make_unique<ShaderManager>(vertexFile, fragmentFile);
-    glUseProgram(shaderManager->getShaderProgram()->getShaderID());
-}
 
 bool AppController::shouldClose() {
     GLFWwindow* window = glfwManager.getWindow();
