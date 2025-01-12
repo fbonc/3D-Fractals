@@ -26,6 +26,9 @@ private:
 
     std::string mandelbulbPath = "shaders/mandelbulb.glsl";
     std::string mengerSpongePath = "shaders/menger_sponge.glsl";
+    std::string juliaPath = "shaders/julia.glsl";
+    std::string klenianPath = "shaders/klenian.glsl";
+    std::string mandelboxPath = "shaders/mandelbox.glsl";
 
     std::string readShaderFile(const std::string& filepath) const;
     std::string getFractalCode(const int& fractalID) const;

@@ -43,7 +43,7 @@ void AppController::init() {
     sceneRenderer->setFractal(std::move(initialFractal));
     sceneRenderer->setFractalUniforms();
 
-    uiManager = std::make_unique<UIManager>(*sceneRenderer, *shaderManager, window, glslManager);
+    uiManager = std::make_unique<UIManager>(*sceneRenderer, *shaderManager, window, glslManager, cameraController);
     uiManager->init();
 }
 
@@ -74,7 +74,7 @@ void AppController::run() {
 
         processInput();
 
-        cameraController.updateRotation(Eigen::Vector3f(0.0f,0.0f,0.0f));
+        cameraController.updateRotation();
         cameraController.updateCameraVectors();
 
         uiManager->update(deltaTime);
@@ -82,7 +82,7 @@ void AppController::run() {
 
         Eigen::Vector3f cameraPos = camera.getPosition();
         sceneRenderer->setCameraPosUniform(cameraPos);
-        Eigen::Vector3f target = (cameraController.getMode() == CameraController::Mode::AutoRotation)
+        Eigen::Vector3f target = (cameraController.getMode() == 0)
                                  ? Eigen::Vector3f(0.0f,0.0f,0.0f)
                                  : cameraPos + camera.getFront();
         sceneRenderer->setTargetUniform(target);

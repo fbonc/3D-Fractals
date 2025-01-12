@@ -40,7 +40,7 @@ int main() {
 //     CameraController* cameraController = reinterpret_cast<CameraController*>(glfwGetWindowUserPointer(window));
 //     if (cameraController->getMode() == CameraController::Mode::FreeCam) {
 //         cameraController->processMouseMovement(xoffset, yoffset);  //only process in freeCam mode
-//     }
+//     }z
 // }
 
 // //process keyboard input for movement and switching camera modes

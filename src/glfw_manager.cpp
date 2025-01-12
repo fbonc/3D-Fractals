@@ -5,7 +5,7 @@ float GLFWManager::lastX = 1920.0f / 2.0f;
 float GLFWManager::lastY = 1920.0f / 2.0f;
 bool GLFWManager::firstMouse = true;
 GLFWwindow* GLFWManager::window = nullptr;
-
+bool GLFWManager::isCursorShown = false;
 
 GLFWManager::GLFWManager() 
         :
@@ -74,7 +74,7 @@ void GLFWManager::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     lastY = ypos;
 
     CameraController* cameraController = reinterpret_cast<CameraController*>(glfwGetWindowUserPointer(window));
-    if (cameraController->getMode() == CameraController::Mode::FreeCam) {
+    if (cameraController->getMode() == 1 && !isCursorShown) {
         cameraController->processMouseMovement(xoffset, yoffset);  //only process in freeCam mode
     }
 }
@@ -126,21 +126,6 @@ void GLFWManager::processInput(CameraController& cameraController) {
 
     wasKPressed = isKPressed;
 
-    //switch between autoRotation and freeCam modes
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !modeSwitchPressed) {
-        if (cameraController.getMode() == CameraController::Mode::AutoRotation) {
-            cameraController.setMode(CameraController::Mode::FreeCam);
-            std::cout << "Switched to FreeCam mode\n";
-        } else {
-            cameraController.setMode(CameraController::Mode::AutoRotation);
-            std::cout << "Switched to AutoRotation mode\n";
-        }
-        modeSwitchPressed = true;  //prevent repeated toggling
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE) {
-        modeSwitchPressed = false;
-    }
 }
 
 

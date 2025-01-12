@@ -1,7 +1,7 @@
 #include "ui_manager.h"
 
-UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager)
-    : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window), glslManager(glslManager)
+UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager, CameraController& cameraController)
+    : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window), glslManager(glslManager), cameraController(cameraController)
 {
 }
 
@@ -83,6 +83,7 @@ void UIManager::mainRender()
     renderPostProcessingSettings();
     renderColouringSettings();
     renderTransformationsSettings();
+    renderCameraSettings();
     renderFractalSettings();
 
     ImGui::Render();
@@ -155,14 +156,60 @@ void UIManager::renderRayMarchingSettings()
         sceneRenderer.setUniformValue("repeatFractal", repeatFractal ? 1.0f : 0.0f);
     }
     
-    float repeatCellSize = sceneRenderer.getUniformValue("repeatCellSize");
-    if (ImGui::SliderFloat("repeatCellSize", &repeatCellSize, 1.0f, 10.0f)) {
-        sceneRenderer.setUniformValue("repeatCellSize", repeatCellSize);
+    if (repeatFractal) {
+        float repeatCellSize = sceneRenderer.getUniformValue("repeatCellSize");
+        if (ImGui::SliderFloat("repeatCellSize", &repeatCellSize, 1.0f, 10.0f)) {
+            sceneRenderer.setUniformValue("repeatCellSize", repeatCellSize);
+        }
     }
 
     
     ImGui::End();
 }
+
+void UIManager::renderCameraSettings()
+{
+    ImGui::SetNextWindowPos(ImVec2(1238, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(190, 146), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
+
+    ImGui::Begin("Camera Settings");
+
+    //height (when in inspect or rotate)
+
+    int cameraMode = cameraController.getMode();
+    const char* cameraModes[] = { "AutoRotation", "FreeCam"};
+    if (ImGui::Combo("cameraMode", &cameraMode, cameraModes, IM_ARRAYSIZE(cameraModes))) {
+        cameraController.setMode(cameraMode);
+    }
+
+    if (cameraMode == 0) {
+        float rotationSpeed = cameraController.getRotationSpeed();
+        if (ImGui::SliderFloat("rotationSpeed", &rotationSpeed, 0.0f, 4.0f)) {
+            cameraController.changeRotationSpeed(rotationSpeed);
+        }
+
+        float rotationRadius = cameraController.getRotationRadius();
+        if (ImGui::SliderFloat("rotationRadius", &rotationRadius, 0.01f, 7.0f)) {
+            cameraController.changeRotationRadius(rotationRadius);
+        }
+
+        float rotationHeight = cameraController.getRotationHeight();
+        if (ImGui::SliderFloat("rotationHeight", &rotationHeight, -3.0f, 3.0f)) {
+            cameraController.changeRotationHeight(rotationHeight);
+        }
+    } 
+
+    if (cameraMode == 1) {
+        float movementSpeed = cameraController.getMovementSpeed();
+        if (ImGui::SliderFloat("movementSpeed", &movementSpeed, 0.0f, 5.0f)) {
+            cameraController.changeMovementSpeed(movementSpeed);
+        }
+    } 
+    
+    ImGui::End();
+}
+
 
 void UIManager::renderSceneSettings()
 {
@@ -184,22 +231,25 @@ void UIManager::renderSceneSettings()
         sceneRenderer.setUniformValue("useHalo", useHalo ? 1.0f : 0.0f);
     }
     
+    if (useHalo) {
+        float haloRadius = sceneRenderer.getUniformValue("haloRadius");
+        if (ImGui::SliderFloat("haloRadius", &haloRadius, 1.0f, 50.0f)) {
+            sceneRenderer.setUniformValue("haloRadius", 51.0f - haloRadius);
+        }
+        
+        Eigen::Vector3f haloColorVec = sceneRenderer.getUniformVec3("haloColour");
+        float haloColour[3] = { haloColorVec.x(), haloColorVec.y(), haloColorVec.z() };
+        if (ImGui::ColorEdit3("haloColour", haloColour)) {
+            sceneRenderer.setUniformValue("haloColour", haloColour[0], haloColour[1], haloColour[2]);
+        }
+    }
+    
     float useGradientF = sceneRenderer.getUniformValue("useGradient");
     bool useGradient = (useGradientF != 0.0f);
     if (ImGui::Checkbox("useGradient", &useGradient)) {
         sceneRenderer.setUniformValue("useGradient", useGradient ? 1.0f : 0.0f);
     }
-    
-    float haloRadius = sceneRenderer.getUniformValue("haloRadius");
-    if (ImGui::SliderFloat("haloRadius", &haloRadius, 1.0f, 50.0f)) {
-        sceneRenderer.setUniformValue("haloRadius", 51.0f - haloRadius);
-    }
-    
-    Eigen::Vector3f haloColorVec = sceneRenderer.getUniformVec3("haloColour");
-    float haloColour[3] = { haloColorVec.x(), haloColorVec.y(), haloColorVec.z() };
-    if (ImGui::ColorEdit3("haloColour", haloColour)) {
-        sceneRenderer.setUniformValue("haloColour", haloColour[0], haloColour[1], haloColour[2]);
-    }
+
     
     ImGui::End();
 }
@@ -245,28 +295,31 @@ void UIManager::renderLightingSettings()
     if (ImGui::Checkbox("softShadows", &softShadows)) {
         sceneRenderer.setUniformValue("softShadows", softShadows ? 1.0f : 0.0f);
     }
-    
-    float shadowMaxStepsF = sceneRenderer.getUniformValue("shadowMaxSteps");
-    int shadowMaxSteps = static_cast<int>(shadowMaxStepsF);
-    if (ImGui::SliderInt("shadowMaxSteps", &shadowMaxSteps, 0, 20)) {
-        sceneRenderer.setUniformValue("shadowMaxSteps", static_cast<float>(shadowMaxSteps));
-    }
 
+    if (softShadows) {
+        float shadowMaxStepsF = sceneRenderer.getUniformValue("shadowMaxSteps");
+        int shadowMaxSteps = static_cast<int>(shadowMaxStepsF);
+        if (ImGui::SliderInt("shadowMaxSteps", &shadowMaxSteps, 0, 20)) {
+            sceneRenderer.setUniformValue("shadowMaxSteps", static_cast<float>(shadowMaxSteps));
+        }
     
-    float kSoftShadow = sceneRenderer.getUniformValue("kSoftShadow");
-    if (ImGui::SliderFloat("kSoftShadow", &kSoftShadow, 1.0f, 20.0f)) {
-        sceneRenderer.setUniformValue("kSoftShadow", kSoftShadow);
+        float kSoftShadow = sceneRenderer.getUniformValue("kSoftShadow");
+        if (ImGui::SliderFloat("kSoftShadow", &kSoftShadow, 1.0f, 20.0f)) {
+            sceneRenderer.setUniformValue("kSoftShadow", kSoftShadow);
+        }
+        
+        float lightestShadow = sceneRenderer.getUniformValue("lightestShadow");
+        if (ImGui::SliderFloat("lightestShadow", &lightestShadow, 0.0f, 1.0f)) {
+            sceneRenderer.setUniformValue("lightestShadow", lightestShadow);
+        }
+        
+        float darkestShadow = sceneRenderer.getUniformValue("darkestShadow");
+        if (ImGui::SliderFloat("darkestShadow", &darkestShadow, 0.0f, 1.0f)) {
+            sceneRenderer.setUniformValue("darkestShadow", darkestShadow);
+        }
     }
     
-    float lightestShadow = sceneRenderer.getUniformValue("lightestShadow");
-    if (ImGui::SliderFloat("lightestShadow", &lightestShadow, 0.0f, 1.0f)) {
-        sceneRenderer.setUniformValue("lightestShadow", lightestShadow);
-    }
     
-    float darkestShadow = sceneRenderer.getUniformValue("darkestShadow");
-    if (ImGui::SliderFloat("darkestShadow", &darkestShadow, 0.0f, 1.0f)) {
-        sceneRenderer.setUniformValue("darkestShadow", darkestShadow);
-    }
     
     ImGui::End();
 }
@@ -324,49 +377,53 @@ void UIManager::renderColouringSettings()
     
     float colorModeF = sceneRenderer.getUniformValue("colorMode");
     int colorMode = static_cast<int>(colorModeF);
-    const char* colorModes[] = { "Fractal", "Normal", "Position", "Fractal Iterations" };
+    const char* colorModes[] = { "Base", "Normal", "Position", "Fractal Iterations" };
     if (ImGui::Combo("colorMode", &colorMode, colorModes, IM_ARRAYSIZE(colorModes))) {
         sceneRenderer.setUniformValue("colorMode", static_cast<float>(colorMode));
     }
-    
-    float positionColouringScale = sceneRenderer.getUniformValue("positionColouringScale");
-    if (ImGui::SliderFloat("positionColouringScale", &positionColouringScale, 0.1f, 2.0f)) {
-        sceneRenderer.setUniformValue("positionColouringScale", positionColouringScale);
+
+    if(colorMode == 2) {
+        float positionColouringScale = sceneRenderer.getUniformValue("positionColouringScale");
+        if (ImGui::SliderFloat("positionColouringScale", &positionColouringScale, 0.1f, 2.0f)) {
+            sceneRenderer.setUniformValue("positionColouringScale", positionColouringScale);
+        }
+        
+        Eigen::Vector3f positionColourOneVec = sceneRenderer.getUniformVec3("positionColourOne");
+        float positionColourOne[3] = { positionColourOneVec.x(), positionColourOneVec.y(), positionColourOneVec.z() };
+        if (ImGui::ColorEdit3("positionColourOne", positionColourOne)) {
+            sceneRenderer.setUniformValue("positionColourOne", positionColourOne[0], positionColourOne[1], positionColourOne[2]);
+        }
+        
+        Eigen::Vector3f positionColourTwoVec = sceneRenderer.getUniformVec3("positionColourTwo");
+        float positionColourTwo[3] = { positionColourTwoVec.x(), positionColourTwoVec.y(), positionColourTwoVec.z() };
+        if (ImGui::ColorEdit3("positionColourTwo", positionColourTwo)) {
+            sceneRenderer.setUniformValue("positionColourTwo", positionColourTwo[0], positionColourTwo[1], positionColourTwo[2]);
+        }
     }
-    
-    Eigen::Vector3f positionColourOneVec = sceneRenderer.getUniformVec3("positionColourOne");
-    float positionColourOne[3] = { positionColourOneVec.x(), positionColourOneVec.y(), positionColourOneVec.z() };
-    if (ImGui::ColorEdit3("positionColourOne", positionColourOne)) {
-        sceneRenderer.setUniformValue("positionColourOne", positionColourOne[0], positionColourOne[1], positionColourOne[2]);
+
+    if(colorMode == 3) {
+        float iterationColourVarOne = sceneRenderer.getUniformValue("iterationColourVarOne");
+        if (ImGui::SliderFloat("iterationColourVarOne", &iterationColourVarOne, 0.0f, 2.0f)) {
+            sceneRenderer.setUniformValue("iterationColourVarOne", iterationColourVarOne);
+        }
+        
+        float iterationColourVarTwo = sceneRenderer.getUniformValue("iterationColourVarTwo");
+        if (ImGui::SliderFloat("iterationColourVarTwo", &iterationColourVarTwo, 0.0f, 5.0f)) {
+            sceneRenderer.setUniformValue("iterationColourVarTwo", iterationColourVarTwo);
+        }
+        
+        float iterationColourVarThree = sceneRenderer.getUniformValue("iterationColourVarThree");
+        if (ImGui::SliderFloat("iterationColourVarThree", &iterationColourVarThree, 0.0f, 10.0f)) {
+            sceneRenderer.setUniformValue("iterationColourVarThree", iterationColourVarThree);
+        }
+        
+        Eigen::Vector3f iterationColourVarFourVec = sceneRenderer.getUniformVec3("iterationColourVarFour");
+        float iterationColourVarFour[3] = { iterationColourVarFourVec.x(), iterationColourVarFourVec.y(), iterationColourVarFourVec.z() };
+        if (ImGui::ColorEdit3("iterationColourVarFour", iterationColourVarFour)) {
+            sceneRenderer.setUniformValue("iterationColourVarFour", iterationColourVarFour[0], iterationColourVarFour[1], iterationColourVarFour[2]);
+        }
     }
-    
-    Eigen::Vector3f positionColourTwoVec = sceneRenderer.getUniformVec3("positionColourTwo");
-    float positionColourTwo[3] = { positionColourTwoVec.x(), positionColourTwoVec.y(), positionColourTwoVec.z() };
-    if (ImGui::ColorEdit3("positionColourTwo", positionColourTwo)) {
-        sceneRenderer.setUniformValue("positionColourTwo", positionColourTwo[0], positionColourTwo[1], positionColourTwo[2]);
-    }
-    
-    float iterationColourVarOne = sceneRenderer.getUniformValue("iterationColourVarOne");
-    if (ImGui::SliderFloat("iterationColourVarOne", &iterationColourVarOne, 0.0f, 2.0f)) {
-        sceneRenderer.setUniformValue("iterationColourVarOne", iterationColourVarOne);
-    }
-    
-    float iterationColourVarTwo = sceneRenderer.getUniformValue("iterationColourVarTwo");
-    if (ImGui::SliderFloat("iterationColourVarTwo", &iterationColourVarTwo, 0.0f, 5.0f)) {
-        sceneRenderer.setUniformValue("iterationColourVarTwo", iterationColourVarTwo);
-    }
-    
-    float iterationColourVarThree = sceneRenderer.getUniformValue("iterationColourVarThree");
-    if (ImGui::SliderFloat("iterationColourVarThree", &iterationColourVarThree, 0.0f, 10.0f)) {
-        sceneRenderer.setUniformValue("iterationColourVarThree", iterationColourVarThree);
-    }
-    
-    Eigen::Vector3f iterationColourVarFourVec = sceneRenderer.getUniformVec3("iterationColourVarFour");
-    float iterationColourVarFour[3] = { iterationColourVarFourVec.x(), iterationColourVarFourVec.y(), iterationColourVarFourVec.z() };
-    if (ImGui::ColorEdit3("iterationColourVarFour", iterationColourVarFour)) {
-        sceneRenderer.setUniformValue("iterationColourVarFour", iterationColourVarFour[0], iterationColourVarFour[1], iterationColourVarFour[2]);
-    }
-    
+        
     ImGui::End();
 }
 
@@ -383,21 +440,26 @@ void UIManager::renderTransformationsSettings()
     if (ImGui::Checkbox("useScale", &useScale)) {
         sceneRenderer.setUniformValue("useScale", useScale ? 1.0f : 0.0f);
     }
-    
-    float scaleAmount = sceneRenderer.getUniformValue("scaleAmount");
-    if (ImGui::SliderFloat("scaleAmount", &scaleAmount, 0.1f, 10.0f)) {
-        sceneRenderer.setUniformValue("scaleAmount", scaleAmount);
+
+    if (useScale) {
+        float scaleAmount = sceneRenderer.getUniformValue("scaleAmount");
+        if (ImGui::SliderFloat("scaleAmount", &scaleAmount, 0.1f, 10.0f)) {
+            sceneRenderer.setUniformValue("scaleAmount", scaleAmount);
+        }
     }
     
+
     float useTwistF = sceneRenderer.getUniformValue("useTwist");
     bool useTwist = (useTwistF != 0.0f);
     if (ImGui::Checkbox("useTwist", &useTwist)) {
         sceneRenderer.setUniformValue("useTwist", useTwist ? 1.0f : 0.0f);
     }
     
-    float twistAmount = sceneRenderer.getUniformValue("twistAmount");
-    if (ImGui::SliderFloat("twistAmount", &twistAmount, 0.0f, 10.0f)) {
-        sceneRenderer.setUniformValue("twistAmount", twistAmount);
+    if (useTwist) {
+        float twistAmount = sceneRenderer.getUniformValue("twistAmount");
+        if (ImGui::SliderFloat("twistAmount", &twistAmount, 0.0f, 10.0f)) {
+            sceneRenderer.setUniformValue("twistAmount", twistAmount);
+        }
     }
     
     float useBendF = sceneRenderer.getUniformValue("useBend");
@@ -405,10 +467,12 @@ void UIManager::renderTransformationsSettings()
     if (ImGui::Checkbox("useBend", &useBend)) {
         sceneRenderer.setUniformValue("useBend", useBend ? 1.0f : 0.0f);
     }
-    
-    float bendAmount = sceneRenderer.getUniformValue("bendAmount");
-    if (ImGui::SliderFloat("bendAmount", &bendAmount, 0.0f, 10.0f)) {
-        sceneRenderer.setUniformValue("bendAmount", bendAmount);
+
+    if (useBend) {
+        float bendAmount = sceneRenderer.getUniformValue("bendAmount");
+        if (ImGui::SliderFloat("bendAmount", &bendAmount, 0.0f, 10.0f)) {
+            sceneRenderer.setUniformValue("bendAmount", bendAmount);
+        }
     }
     
     float useWarpF = sceneRenderer.getUniformValue("useWarp");
@@ -417,9 +481,11 @@ void UIManager::renderTransformationsSettings()
         sceneRenderer.setUniformValue("useWarp", useWarp ? 1.0f : 0.0f);
     }
     
-    float warpAmount = sceneRenderer.getUniformValue("warpAmount");
-    if (ImGui::SliderFloat("warpAmount", &warpAmount, 0.0f, 0.002f, "%.5f")) {
-        sceneRenderer.setUniformValue("warpAmount", warpAmount);
+    if (useWarp) {
+        float warpAmount = sceneRenderer.getUniformValue("warpAmount");
+        if (ImGui::SliderFloat("warpAmount", &warpAmount, 0.0f, 0.002f, "%.5f")) {
+            sceneRenderer.setUniformValue("warpAmount", warpAmount);
+        }
     }
     
     ImGui::End();
@@ -435,7 +501,7 @@ void UIManager::renderFractalSettings()
     
     
     static int currentFractalIndex = 0; // 0: Mandelbulb, 1: Menger Sponge
-    const char* fractalTypes[] = { "Mandelbulb", "Menger Sponge" };
+    const char* fractalTypes[] = { "Mandelbulb", "Menger Sponge", "Julia", "Klenian", "Mandelbox"};
     static int previousFractalIndex = 0;
 
     if (ImGui::Combo("Fractal Type", &currentFractalIndex, fractalTypes, IM_ARRAYSIZE(fractalTypes))) {
@@ -459,6 +525,15 @@ void UIManager::renderFractalSettings()
                 }
                 else if (newFractalID == 1) {
                     newFractal = std::make_unique<MengerSponge>();
+                }
+                else if (newFractalID == 2) {
+                    newFractal = std::make_unique<Julia>();
+                }
+                else if (newFractalID == 3) {
+                    newFractal = std::make_unique<Klenian>();
+                }
+                else if (newFractalID == 4) {
+                    newFractal = std::make_unique<Mandelbox>();
                 }
                 else {
                     std::cerr << "Unknown fractalID: " << newFractalID << std::endl;
@@ -501,8 +576,8 @@ void UIManager::renderFractalSettings()
             }
 
             if (name == "mandelbulbIterations") {
-                if (ImGui::SliderFloat(name.c_str(), &value, 1.001, 20.0)) {
-                    sceneRenderer.setUniformValue(name, value * 1.0f);
+                if (ImGui::SliderFloat(name.c_str(), &value, 1.001f, 20.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
                 }
                 if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
                     renderAutoChangeControls(name);
@@ -510,13 +585,113 @@ void UIManager::renderFractalSettings()
             }
 
             if (name == "mengerSpongeIterations") {
-                if (ImGui::SliderFloat(name.c_str(), &value, 1.001, 20.0)) {
-                    sceneRenderer.setUniformValue(name, value * 1.0f);
+                if (ImGui::SliderFloat(name.c_str(), &value, 1.001f, 20.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
                 }
                 if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
                     renderAutoChangeControls(name);
                 }
             }
+
+            if (name == "juliaIterations") {
+                if (ImGui::SliderFloat(name.c_str(), &value, 1.001f, 80.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "klenianIterations") {
+                if (ImGui::SliderFloat(name.c_str(), &value, 1.001f, 20.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "mandelboxIterations") {
+                if (ImGui::SliderFloat(name.c_str(), &value, 1.001f, 20.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "juliaC1") {
+                if (ImGui::SliderFloat(name.c_str(), &value, -1.0f, 1.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "juliaC2") {
+                if (ImGui::SliderFloat(name.c_str(), &value, -1.0f, 1.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "juliaC3") {
+                if (ImGui::SliderFloat(name.c_str(), &value, -1.0f, 1.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "juliaC4") {
+                if (ImGui::SliderFloat(name.c_str(), &value, -1.0f, 1.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "foldingLimit") {
+                if (ImGui::SliderFloat(name.c_str(), &value, -3.0f, 3.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "minRadius2") {
+                if (ImGui::SliderFloat(name.c_str(), &value, -3.0f, 3.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "fixedRadius2") {
+                if (ImGui::SliderFloat(name.c_str(), &value, -3.0f, 3.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
+            if (name == "mbScale") {
+                if (ImGui::SliderFloat(name.c_str(), &value, -3.0f, 3.0f)) {
+                    sceneRenderer.setUniformValue(name, value);
+                }
+                if (fractalAutoChange.find(name) != fractalAutoChange.end()) {
+                    renderAutoChangeControls(name);
+                }
+            }
+
             
         }
     }

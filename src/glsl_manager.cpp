@@ -63,12 +63,17 @@ std::string GLSLManager::readShaderFile(const std::string& filepath) const {
 
 std::string GLSLManager::getFractalCode(const int& fractalID) const {
 
-
     switch (fractalID) {
         case 0:
             return readShaderFile(mandelbulbPath);
         case 1:
             return readShaderFile(mengerSpongePath);
+        case 2:
+            return readShaderFile(juliaPath);
+        case 3:
+            return readShaderFile(klenianPath);
+        case 4:
+            return readShaderFile(mandelboxPath);
         default:
             std::cerr << "Error: Unknown fractalID " << fractalID << std::endl;
             return "";

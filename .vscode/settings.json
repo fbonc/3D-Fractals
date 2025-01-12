@@ -64,7 +64,8 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "codecvt": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "core": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

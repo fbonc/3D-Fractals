@@ -13,7 +13,7 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     if (!success) {
         char infoLog[1024];
         glGetShaderInfoLog(vertexShader, 1024, NULL, infoLog);
-        std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cerr << "ERROR: SHADER VERTEX COMPILATION FAILED\n" << infoLog << std::endl;
         glDeleteShader(vertexShader);
         return nullptr;
     }
@@ -28,7 +28,7 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     if (!success) {
         char infoLog[1024];
         glGetShaderInfoLog(fragmentShader, 1024, NULL, infoLog);
-        std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cerr << "ERROR: SHADER FRAGMENT COMPILATION FAILED\n" << infoLog << std::endl;
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
         return nullptr;
@@ -45,7 +45,7 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     if (!success) {
         char infoLog[1024];
         glGetProgramInfoLog(shaderProgram, 1024, NULL, infoLog);
-        std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        std::cerr << "ERROR: SHADER PROGRAM LINKING FAILED\n" << infoLog << std::endl;
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
         glDeleteProgram(shaderProgram);

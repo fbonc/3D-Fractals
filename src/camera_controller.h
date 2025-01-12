@@ -7,19 +7,28 @@
 
 class CameraController {
 public:
-    enum class Mode { FreeCam, AutoRotation };
 
     CameraController(Camera& camera);
 
-    void setMode(Mode newMode);
-    CameraController::Mode getMode();
+    void setMode(int newMode);
+    int getMode();
     void processKeyboardInput(int key, float deltaTime, bool isShiftPressed);
     void processMouseMovement(float xoffset, float yoffset);
 
-    void updateRotation(const Eigen::Vector3f& rotationCenter);
+    void updateRotation();
+    float getRotationRadius();
+    void changeRotationRadius(float radius);
+
+    float getRotationHeight();
+    void changeRotationHeight(float height);
+
+    float getMovementSpeed();
+    void changeMovementSpeed(float speed);
+
+    float getRotationSpeed();
+    void changeRotationSpeed(float speed);
+
     void updateCameraVectors();
-    void changeMovementSpeed(int speed);
-    void changeRotationSpeed(int speed);
     Camera getCamera();
 
 private:
@@ -27,11 +36,13 @@ private:
     float movementSpeed;
     float mouseSensitivity;
     float rotationSpeed;
+    float rotationRadius;
+    float rotationHeight;
 
     float yaw;
     float pitch;
 
-    Mode mode;
+    int mode;
 
     //update camera orientation based on yaw and pitch
 

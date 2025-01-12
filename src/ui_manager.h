@@ -2,10 +2,14 @@
 
 #include "scene_renderer.h"
 #include "shader_managerr.h"
-#include "config.h"
 #include "glsl_manager.h"
+#include "camera_controller.h"
+#include "config.h"
 #include "mandelbulb.h"
 #include "menger_sponge.h"
+#include "julia.h"
+#include "klenian.h"
+#include "mandelbox.h"
 
 #include <unordered_map>
 #include <string>
@@ -22,7 +26,7 @@ struct AutoChangeSetting {
 
 class UIManager {
 public:
-    UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager);
+    UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager, CameraController& cameraController);
     ~UIManager();
 
     void init();
@@ -39,6 +43,7 @@ private:
     ShaderManager& shaderManager;
     GLFWwindow* window;
     GLSLManager& glslManager;
+    CameraController& cameraController;
 
     std::unordered_map<std::string, AutoChangeSetting> autoChangeSettings;
 
@@ -49,6 +54,7 @@ private:
     void renderColouringSettings();
     void renderTransformationsSettings();
     void renderFractalSettings();
+    void renderCameraSettings();
     void renderAutoChangeControls(const std::string& uniformName);
 
     void initializeAutoChangeSettings();

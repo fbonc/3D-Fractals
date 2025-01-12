@@ -5,21 +5,23 @@ CameraController::CameraController(Camera& camera)
       movementSpeed(1.0f),
       mouseSensitivity(0.125f),
       rotationSpeed(0.2f),
-      mode(Mode::AutoRotation),
+      mode(0),
       yaw(-90.0f), //pointing towards -Z
+      rotationRadius(3.0f),
+      rotationHeight(0.0f),
       pitch(0.0f) {}
 
-void CameraController::setMode(Mode newMode) {
+void CameraController::setMode(int newMode) {
     mode = newMode;
 }
 
-CameraController::Mode CameraController::getMode() {
+int CameraController::getMode() {
     return mode;
 }
 
 void CameraController::processKeyboardInput(int key, float deltaTime, bool isShiftPressed) {
     float velocity = movementSpeed * deltaTime;
-    if (mode == Mode::FreeCam) {
+    if (mode == 1) {
         if (isShiftPressed) {
             velocity *= 6.0f;
         }
@@ -43,18 +45,12 @@ void CameraController::processKeyboardInput(int key, float deltaTime, bool isShi
             camera.setPosition(camera.getPosition() - camera.getWorldUp() * velocity);
             std::cout << "ctrl" << std::endl;
         }
-        if (key == GLFW_KEY_UP) {
-            changeMovementSpeed(1);
-        }
-        if (key == GLFW_KEY_DOWN) {
-            changeMovementSpeed(-1);
-        }
         
     }
 }
 
 void CameraController::processMouseMovement(float xoffset, float yoffset) {
-    if (mode == Mode::FreeCam) {
+    if (mode == 1) {
         xoffset *= mouseSensitivity;
         yoffset *= mouseSensitivity;
 
@@ -70,23 +66,52 @@ void CameraController::processMouseMovement(float xoffset, float yoffset) {
     }
 }
 
-void CameraController::updateRotation(const Eigen::Vector3f& rotationCenter) {
-    if (mode == Mode::AutoRotation) {
+void CameraController::updateRotation() {
+    if (mode == 0) {
         float time = glfwGetTime() * rotationSpeed;
-        camera.rotateAroundPoint(time, rotationCenter, 3.0f);
+        camera.rotateAroundPoint(time, Eigen::Vector3f(0.0f,rotationHeight,0.0f), rotationRadius);
     }
 }
 
-void CameraController::changeRotationSpeed(int speed) {
+float CameraController::getRotationHeight() {
+    return rotationHeight;
+}
+
+void CameraController::changeRotationHeight(float height) {
+    rotationHeight = height;
+}
+
+
+
+float CameraController::getRotationRadius() {
+    return rotationRadius;
+}
+
+void CameraController::changeRotationRadius(float radius) {
+    rotationRadius = radius;
+}
+
+
+float CameraController::getRotationSpeed() {
+    return rotationSpeed;
+}
+
+void CameraController::changeRotationSpeed(float speed) {
     rotationSpeed = speed;
 }
 
-void CameraController::updateCameraVectors() {
-    camera.updateCameraVectors(yaw, pitch);
+
+float CameraController::getMovementSpeed() {
+    return movementSpeed;
 }
 
-void CameraController::changeMovementSpeed(int speed) {
+void CameraController::changeMovementSpeed(float speed) {
     movementSpeed = speed;
+}
+
+
+void CameraController::updateCameraVectors() {
+    camera.updateCameraVectors(yaw, pitch);
 }
 
 Camera CameraController::getCamera(){
