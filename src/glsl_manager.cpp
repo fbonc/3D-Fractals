@@ -71,7 +71,7 @@ std::string GLSLManager::getFractalCode(const int& fractalID) const {
         case 2:
             return readShaderFile(juliaPath);
         case 3:
-            return readShaderFile(klenianPath);
+            return readShaderFile(kleinianPath);
         case 4:
             return readShaderFile(mandelboxPath);
         default:

@@ -1,11 +1,11 @@
-uniform float klenianIterations; // 6
+uniform float kleinianIterations; // 6
 
 
 vec2 SDF(in vec3 pos)
 {
     float scale = 1.0;
 
-    for(int i = 0; i < int(klenianIterations); i++)
+    for(int i = 0; i < int(kleinianIterations); i++)
     {
 
         //fold space [-1,1]

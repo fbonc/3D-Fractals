@@ -501,7 +501,7 @@ void UIManager::renderFractalSettings()
     
     
     static int currentFractalIndex = 0; // 0: Mandelbulb, 1: Menger Sponge
-    const char* fractalTypes[] = { "Mandelbulb", "Menger Sponge", "Julia", "Klenian", "Mandelbox"};
+    const char* fractalTypes[] = { "Mandelbulb", "Menger Sponge", "Julia", "Kleinian", "Mandelbox"};
     static int previousFractalIndex = 0;
 
     if (ImGui::Combo("Fractal Type", &currentFractalIndex, fractalTypes, IM_ARRAYSIZE(fractalTypes))) {
@@ -530,7 +530,7 @@ void UIManager::renderFractalSettings()
                     newFractal = std::make_unique<Julia>();
                 }
                 else if (newFractalID == 3) {
-                    newFractal = std::make_unique<Klenian>();
+                    newFractal = std::make_unique<Kleinian>();
                 }
                 else if (newFractalID == 4) {
                     newFractal = std::make_unique<Mandelbox>();
@@ -602,7 +602,7 @@ void UIManager::renderFractalSettings()
                 }
             }
 
-            if (name == "klenianIterations") {
+            if (name == "kleinianIterations") {
                 if (ImGui::SliderFloat(name.c_str(), &value, 1.001f, 20.0f)) {
                     sceneRenderer.setUniformValue(name, value);
                 }
