@@ -8,7 +8,7 @@
 #include "mandelbulb.h"
 #include "menger_sponge.h"
 #include "julia.h"
-#include "klenian.h"
+#include "kleinian.h"
 #include "mandelbox.h"
 
 #include <unordered_map>
