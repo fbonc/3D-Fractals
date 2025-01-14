@@ -34,8 +34,6 @@ public:
 
     void resetUniformBools();
 
-
-
 private:
     bool defaultsSet = false;
     bool fractalsSet = false;

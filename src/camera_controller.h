@@ -44,6 +44,4 @@ private:
 
     int mode;
 
-    //update camera orientation based on yaw and pitch
-
 };

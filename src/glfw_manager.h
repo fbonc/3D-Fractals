@@ -21,8 +21,6 @@ private:
     static bool isCursorShown;
     bool wasKPressed = false;
 
-
-    
 public:
 
     void processInput(CameraController& cameraController);
