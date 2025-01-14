@@ -280,7 +280,7 @@ void UIManager::renderLightingSettings()
     }
     
     float shininess = sceneRenderer.getUniformValue("shininess");
-    if (ImGui::SliderFloat("shininess", &shininess, 1.0f, 128.0f)) {
+    if (ImGui::SliderFloat("shininess", &shininess, 1.0f, 4.0f)) {
         sceneRenderer.setUniformValue("shininess", shininess);
     }
     
