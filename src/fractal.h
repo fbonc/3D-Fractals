@@ -1,4 +1,3 @@
-// Fractal.h
 #pragma once
 #include <string>
 #include <unordered_map>
@@ -19,10 +18,8 @@ public:
 
     const std::unordered_map<std::string, AutoChangeConfig>& getAutoChangeUniforms() const;
 
-
 protected:
     std::unordered_map<std::string, float> uniforms;
     std::vector<std::string> uniformNames;
     std::unordered_map<std::string, AutoChangeConfig> autoChangeUniforms;
-
 };

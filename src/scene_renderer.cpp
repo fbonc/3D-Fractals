@@ -1,4 +1,3 @@
-// SceneRenderer.cpp
 #include "scene_renderer.h"
 
 SceneRenderer::SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController)
@@ -134,7 +133,7 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform3f("ambientColor", 0.9137f, 0.9137f, 0.9137f);
     setUniform3f("lightSourceDir", 1.0f, 1.0f, 1.0f);
     setUniform1f("specularStrength", 0.5f);
-    setUniform1f("shininess", 32.0f);
+    setUniform1f("shininess", 4.0f);
 
     setUniform1i("ambientOcclusion", 1); // true
     setUniform1i("softShadows", 1); // true

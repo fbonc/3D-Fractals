@@ -41,7 +41,7 @@ int GLFWManager::initialiseGLFW() {
 		return -1;
 	}
 	
-	window = glfwCreateWindow(resolutionX, resolutionY, "Fractalator", NULL, NULL);
+	window = glfwCreateWindow(resolutionX, resolutionY, "3D Fractal Generation", NULL, NULL);
 	if (!window) {
 		std::cout << "Failed to create GFLW window" << std::endl;
 		glfwTerminate();

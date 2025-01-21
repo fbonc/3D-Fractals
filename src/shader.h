@@ -11,8 +11,6 @@ public:
     void deleteShader();
     const unsigned int getShaderID() const;
 
-
-
 private:
     Shader() : shaderID(0) {} //private constructor to enforce creation using factory method
 
