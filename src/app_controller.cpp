@@ -15,7 +15,7 @@ AppController::~AppController() {
 }
 
 void AppController::init() {
-    std::filesystem::current_path("C:/Users/felip/Desktop/Projects/NEA");
+    std::filesystem::current_path("C:/Users/felip/Desktop/dev/NEA");
     std::cout << "Working directory: " << std::filesystem::current_path() << std::endl;
 
     GLFWwindow* window = glfwManager.getWindow();
@@ -83,8 +83,8 @@ void AppController::run() {
         Eigen::Vector3f cameraPos = camera.getPosition();
         sceneRenderer->setCameraPosUniform(cameraPos);
         Eigen::Vector3f target = (cameraController.getMode() == 0)
-                                 ? Eigen::Vector3f(0.0f,0.0f,0.0f)
-                                 : cameraPos + camera.getFront();
+                                    ? Eigen::Vector3f(0.0f,0.0f,0.0f)
+                                    : cameraPos + camera.getFront();
         sceneRenderer->setTargetUniform(target);
 
         sceneRenderer->setGlobalUniforms();
