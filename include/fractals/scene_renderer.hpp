@@ -1,7 +1,7 @@
 #pragma once
-#include "Fractal.h"
-#include "shader_managerr.h"
-#include "camera_controller.h"
+#include <fractals/fractal.hpp>
+#include "internal/shader_manager.hpp"
+#include <fractals/camera_controller.hpp>
 #include "config.h"
 #include <memory>
 

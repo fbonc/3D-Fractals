@@ -1,4 +1,4 @@
-#include "fractal.h"
+#include <fractals/fractal.hpp>
 #include <iostream>
 
 

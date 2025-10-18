@@ -27,8 +27,6 @@ vec2 SDF(in vec3 pos)
                              dot(pos.yz, pos.yz)),
                              dot(pos.zx, pos.zx))) - 0.02;
     float d2  = abs(pos.y);
-
-    // pick whichever is smaller
     float dmi = d2;
     //adr becomes the pattern factor for color
     float adr = 0.7 * floor((0.5 * pos.y + 0.5) * 8.0);
@@ -43,6 +41,5 @@ vec2 SDF(in vec3 pos)
 
     float colorFactor = adr;
 
-    // Return them as (distance, colorFactor)
     return vec2(distanceEstimate, colorFactor);
 }

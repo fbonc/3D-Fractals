@@ -1,4 +1,4 @@
-#include "shader.h"
+#include "internal/shader.h"
 
 
 std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource, const std::string& fragmentSource) {

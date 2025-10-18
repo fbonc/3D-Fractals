@@ -1,4 +1,4 @@
-#include "ui_manager.h"
+#include "internal/ui_manager.h"
 
 UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager, CameraController& cameraController)
     : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window), glslManager(glslManager), cameraController(cameraController)

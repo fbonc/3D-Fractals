@@ -1,5 +1,5 @@
 #include "config.h"
-#include "camera_controller.h"
+#include <fractals/camera_controller.hpp>
 
 
 class GLFWManager

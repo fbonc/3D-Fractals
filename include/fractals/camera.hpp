@@ -1,7 +1,7 @@
 #pragma once
 
 #include "config.h"
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 
 class Camera {
 public:

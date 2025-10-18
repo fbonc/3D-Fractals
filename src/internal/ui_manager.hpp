@@ -1,15 +1,11 @@
 #pragma once
 
-#include "scene_renderer.h"
-#include "shader_managerr.h"
-#include "glsl_manager.h"
-#include "camera_controller.h"
+#include <fractals/scene_renderer.hpp>
+#include "internal/shader_manager.hpp"
+#include <fractals/glsl_manager.hpp>
+#include <fractals/camera_controller.hpp>
 #include "config.h"
-#include "mandelbulb.h"
-#include "menger_sponge.h"
-#include "julia.h"
-#include "kleinian.h"
-#include "mandelbox.h"
+#include <fractals/fractals.hpp>
 
 #include <unordered_map>
 #include <string>

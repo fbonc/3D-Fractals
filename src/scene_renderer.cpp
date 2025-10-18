@@ -1,4 +1,4 @@
-#include "scene_renderer.h"
+#include <fractals/scene_renderer.hpp>
 
 SceneRenderer::SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController)
     : shaderManager(shaderManager), cameraController(cameraController), currentFractal(nullptr), VAO(0), VBO(0) {}

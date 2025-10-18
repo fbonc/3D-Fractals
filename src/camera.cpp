@@ -1,4 +1,4 @@
-#include "camera.h"
+#include <fractals/camera.hpp>
 
 Camera::Camera()
     :   front(Eigen::Vector3f(0.0f, 0.0f, -1.0f)),

@@ -1,4 +1,4 @@
-#include "glsl_manager.h"
+#include <fractals/glsl_manager.hpp>
 #include <fstream>
 #include <sstream>
 #include <iostream>

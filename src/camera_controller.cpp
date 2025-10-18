@@ -1,4 +1,7 @@
-#include "camera_controller.h"
+#include <fractals/camera_controller.hpp>
+
+#include <Eigen/Dense>
+#include <GLFW/glfw3.h>
 
 CameraController::CameraController(Camera& camera)
     : camera(camera),

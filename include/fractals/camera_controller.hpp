@@ -1,8 +1,6 @@
 #pragma once
 
-#include "config.h"
-#include "Eigen/Dense"
-#include "camera.h"
+#include <fractals/camera.hpp>
 
 
 class CameraController {

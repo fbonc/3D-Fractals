@@ -1,4 +1,4 @@
-#include "shader_managerr.h"
+#include <fractals/shader_manager.hpp>
 
 ShaderManager::ShaderManager(const std::string& vertexSource, const std::string& fragmentSource) {
     shaderProgram = Shader::CreateFromSource(vertexSource, fragmentSource);

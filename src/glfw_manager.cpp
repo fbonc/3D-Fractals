@@ -1,5 +1,5 @@
 
-#include "glfw_manager.h"
+#include <fractals/glfw_manager.hpp>
 
 float GLFWManager::lastX = 1920.0f / 2.0f;
 float GLFWManager::lastY = 1920.0f / 2.0f;

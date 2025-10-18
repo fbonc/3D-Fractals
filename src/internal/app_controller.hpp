@@ -1,15 +1,15 @@
 #pragma once
 
 #include "config.h"
-#include "glfw_manager.h"
-#include "glsl_manager.h"
-#include "shader_managerr.h"
-#include "camera.h"
-#include "camera_controller.h"
-#include "scene_renderer.h"
-#include "mandelbulb.h"
-#include "ui_manager.h"
-#include "glsl_manager.h"
+#include "internal/glfw_manager.hpp"
+#include <fractals/glsl_manager.hpp>
+#include "internal/shader_manager.hpp"
+#include <fractals/camera.hpp>
+#include <fractals/camera_controller.hpp>
+#include <fractals/scene_renderer.hpp>
+#include <fractals/fractals.hpp>
+#include "internal/ui_manager.hpp"
+#include <fractals/glsl_manager.hpp>
 #include <memory>
 
 
