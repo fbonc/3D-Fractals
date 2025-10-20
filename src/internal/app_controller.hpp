@@ -7,9 +7,7 @@
 #include <fractals/camera.hpp>
 #include <fractals/camera_controller.hpp>
 #include <fractals/scene_renderer.hpp>
-#include <fractals/fractals.hpp>
 #include "internal/ui_manager.hpp"
-#include <fractals/glsl_manager.hpp>
 #include <memory>
 
 

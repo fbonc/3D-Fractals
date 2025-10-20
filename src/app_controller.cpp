@@ -1,5 +1,8 @@
 #include "internal/app_controller.h"
 #include <filesystem>
+#include <glad/glad.h>
+#include <fractals/fractals.hpp>
+
 
 AppController::AppController()
     : camera(), 
