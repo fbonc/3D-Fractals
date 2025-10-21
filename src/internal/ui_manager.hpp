@@ -4,12 +4,10 @@
 #include "internal/shader_manager.hpp"
 #include <fractals/glsl_manager.hpp>
 #include <fractals/camera_controller.hpp>
-#include "config.h"
 #include <fractals/fractals.hpp>
 
-#include <unordered_map>
-#include <string>
-#include <optional>
+
+
 
 struct AutoChangeSetting {
     bool enabled;

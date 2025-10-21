@@ -1,4 +1,3 @@
-#include "config.h"
 #include <fractals/camera_controller.hpp>
 
 

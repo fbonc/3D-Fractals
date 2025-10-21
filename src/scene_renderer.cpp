@@ -1,5 +1,8 @@
 #include <fractals/scene_renderer.hpp>
 
+#include <glad/glad.h>
+
+
 SceneRenderer::SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController)
     : shaderManager(shaderManager), cameraController(cameraController), currentFractal(nullptr), VAO(0), VBO(0) {}
 

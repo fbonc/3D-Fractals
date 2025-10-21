@@ -1,5 +1,10 @@
 #include <fractals/camera.hpp>
 
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+
 Camera::Camera()
     :   front(Eigen::Vector3f(0.0f, 0.0f, -1.0f)),
         worldUp(Eigen::Vector3f(0.0f, 1.0f, 0.0f)) {

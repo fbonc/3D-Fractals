@@ -1,5 +1,15 @@
 #include "internal/ui_manager.h"
 
+#include <unordered_map>
+#include <string>
+#include <optional>
+
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <dearimgui/imgui.h>
+#include <dearimgui/backends/imgui_impl_glfw.h>
+#include <dearimgui/backends/imgui_impl_opengl3.h>
+
+
 UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager, CameraController& cameraController)
     : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window), glslManager(glslManager), cameraController(cameraController)
 {

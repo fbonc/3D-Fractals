@@ -1,6 +1,5 @@
 #pragma once
 
-#include "config.h"
 #include "internal/glfw_manager.hpp"
 #include <fractals/glsl_manager.hpp>
 #include "internal/shader_manager.hpp"
@@ -8,7 +7,6 @@
 #include <fractals/camera_controller.hpp>
 #include <fractals/scene_renderer.hpp>
 #include "internal/ui_manager.hpp"
-#include <memory>
 
 
 class AppController {

@@ -2,7 +2,6 @@
 #include <fractals/fractal.hpp>
 #include "internal/shader_manager.hpp"
 #include <fractals/camera_controller.hpp>
-#include "config.h"
 #include <memory>
 
 class SceneRenderer {

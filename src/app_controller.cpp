@@ -2,7 +2,10 @@
 #include <filesystem>
 #include <glad/glad.h>
 #include <fractals/fractals.hpp>
+#include <GLFW/glfw3.h>
+#include <memory>
 
+#include <iostream>
 
 AppController::AppController()
     : camera(), 
