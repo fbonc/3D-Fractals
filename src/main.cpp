@@ -1,4 +1,4 @@
-#include "internal/app_controller.hpp"
+#include <fractals/app_controller.hpp>
 
 int main() {
     AppController app;

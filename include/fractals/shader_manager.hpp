@@ -1,6 +1,6 @@
 #pragma once
 
-#include "internal/shader.hpp"
+#include <fractals/shader.hpp>
 #include <memory>
 
 class ShaderManager {

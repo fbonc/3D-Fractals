@@ -1,4 +1,6 @@
 #include <fractals/camera_controller.hpp>
+#include <glfw3.h>
+
 
 
 class GLFWManager

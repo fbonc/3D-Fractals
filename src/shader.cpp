@@ -1,4 +1,7 @@
-#include "internal/shader.h"
+#include <fractals/shader.hpp>
+#include <khrplatform.h>
+#include <glad.h>
+#include <iostream>
 
 
 std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource, const std::string& fragmentSource) {

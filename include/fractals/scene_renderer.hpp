@@ -1,6 +1,6 @@
 #pragma once
 #include <fractals/fractal.hpp>
-#include "internal/shader_manager.hpp"
+#include <fractals/shader_manager.hpp>
 #include <fractals/camera_controller.hpp>
 #include <memory>
 

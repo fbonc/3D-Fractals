@@ -1,13 +1,14 @@
-#include "internal/ui_manager.h"
+#include <fractals/ui_manager.hpp>
 
 #include <unordered_map>
 #include <string>
 #include <optional>
+#include <iostream>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include <dearimgui/imgui.h>
-#include <dearimgui/backends/imgui_impl_glfw.h>
-#include <dearimgui/backends/imgui_impl_opengl3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 
 UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager, CameraController& cameraController)

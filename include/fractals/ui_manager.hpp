@@ -1,12 +1,11 @@
 #pragma once
 
 #include <fractals/scene_renderer.hpp>
-#include "internal/shader_manager.hpp"
+#include <fractals/shader_manager.hpp>
 #include <fractals/glsl_manager.hpp>
 #include <fractals/camera_controller.hpp>
 #include <fractals/fractals.hpp>
-
-
+#include <glfw3.h>
 
 
 struct AutoChangeSetting {

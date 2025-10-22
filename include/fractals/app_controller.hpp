@@ -1,12 +1,12 @@
 #pragma once
 
-#include "internal/glfw_manager.hpp"
+#include <fractals/glfw_manager.hpp>
 #include <fractals/glsl_manager.hpp>
-#include "internal/shader_manager.hpp"
+#include <fractals/shader_manager.hpp>
 #include <fractals/camera.hpp>
 #include <fractals/camera_controller.hpp>
 #include <fractals/scene_renderer.hpp>
-#include "internal/ui_manager.hpp"
+#include <fractals/ui_manager.hpp>
 
 
 class AppController {

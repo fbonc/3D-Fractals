@@ -1,4 +1,6 @@
 #include <fractals/shader_manager.hpp>
+#include <glad.h>
+#include <iostream>
 
 ShaderManager::ShaderManager(const std::string& vertexSource, const std::string& fragmentSource) {
     shaderProgram = Shader::CreateFromSource(vertexSource, fragmentSource);
