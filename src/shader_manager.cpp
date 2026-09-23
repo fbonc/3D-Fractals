@@ -30,7 +30,5 @@ void ShaderManager::changeShader(const std::string& vertexSource, const std::str
         return;
     }
 
-    std::cout << "ShaderManager: Switched to shader program ID " << shaderProgram->getShaderID() << std::endl;
     glUseProgram(shaderProgram->getShaderID());
 }
-

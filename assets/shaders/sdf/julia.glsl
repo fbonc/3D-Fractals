@@ -1,5 +1,4 @@
 uniform float juliaIterations;
-//uniform vec4  juliaC;                 // e.g. vec4(0.32, 0.04, 0.12, -0.63)
 uniform float juliaC1;
 uniform float juliaC2;
 uniform float juliaC3;

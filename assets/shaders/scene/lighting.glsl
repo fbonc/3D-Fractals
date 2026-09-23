@@ -21,8 +21,6 @@ float calculateSoftShadow(vec3 ro, vec3 rd, float k) {
     for (int i = 0; i < shadowMaxSteps; i++) {
         vec3 currentPoint = ro + rd * t;
 
-        // vec2 distAndColor = apollonianGasketSDF(currentPoint);
-        // vec2 distAndColor = mengerSpongeSDF(currentPoint);
         vec2 distAndColor = SDF(currentPoint);
         float h = distAndColor.x;
 

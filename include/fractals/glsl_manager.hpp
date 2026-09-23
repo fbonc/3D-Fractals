@@ -1,14 +1,9 @@
 #pragma once
 
 #include <string>
-#include <vector>
-#include <unordered_map>
 
 class GLSLManager {
 public:
-
-    GLSLManager();
-    ~GLSLManager();
 
     std::string generateVertexShader();
     std::string generateFragmentShader(const int& fractalID);

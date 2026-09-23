@@ -3,7 +3,6 @@
 #include <Dense>
 #include <glfw3.h>
 
-#include <iostream>
 
 
 CameraController::CameraController(Camera& camera)
@@ -45,11 +44,9 @@ void CameraController::processKeyboardInput(int key, float deltaTime, bool isShi
         }
         if (key == GLFW_KEY_SPACE) {
             camera.setPosition(camera.getPosition() + camera.getWorldUp() * velocity);
-            std::cout << "space" << std::endl;
         }
         if (key == GLFW_KEY_LEFT_CONTROL) {
             camera.setPosition(camera.getPosition() - camera.getWorldUp() * velocity);
-            std::cout << "ctrl" << std::endl;
         }
         
     }

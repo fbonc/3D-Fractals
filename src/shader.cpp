@@ -1,5 +1,4 @@
 #include <fractals/shader.hpp>
-#include <khrplatform.h>
 #include <glad.h>
 #include <iostream>
 
@@ -63,7 +62,6 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     std::unique_ptr<Shader> shader(new Shader());
     shader->shaderID = shaderProgram;
 
-    std::cout << "Shader: Shader program created successfully. Program ID: " << shaderProgram << std::endl;
     
     return shader;
 }
@@ -80,6 +78,5 @@ void Shader::deleteShader() {
         shaderID = 0;
     }
 }
-
 
 

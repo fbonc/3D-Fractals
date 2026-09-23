@@ -12,7 +12,6 @@
 class AppController {
 public:
     AppController();
-    ~AppController();
 
     void run();
 

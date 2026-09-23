@@ -15,13 +15,8 @@ AppController::AppController()
     init();
 }
 
-AppController::~AppController() {
-    // GLFW cleanup
-}
-
 void AppController::init() {
     std::filesystem::current_path("C:/Users/felip/Desktop/dev/NEA");
-    std::cout << "Working directory: " << std::filesystem::current_path() << std::endl;
 
     GLFWwindow* window = glfwManager.getWindow();
     if (!window) {

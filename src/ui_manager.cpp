@@ -1,8 +1,6 @@
 #include <fractals/ui_manager.hpp>
 
-#include <unordered_map>
 #include <string>
-#include <optional>
 #include <iostream>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -709,7 +707,6 @@ void UIManager::renderFractalSettings()
     
     ImGui::End();
 }
-
 
 
 

@@ -3,12 +3,6 @@
 #include <sstream>
 #include <iostream>
 
-GLSLManager::GLSLManager() {
-}
-
-GLSLManager::~GLSLManager() {
-}
-
 std::string GLSLManager::generateVertexShader() {
     std::string vertexShaderCode = readShaderFile("shaders/vertex.vert");
     return vertexShaderCode;
@@ -43,8 +37,6 @@ std::string GLSLManager::generateFragmentShader(const int& fractalID) {
     fragmentShaderStream << postProcessingCode << "\n";
     fragmentShaderStream << rayMarchingCode << "\n";
     fragmentShaderStream << mainCode << "\n";
-
-    //std::cout << fragmentShaderStream.str() <<std::endl;
 
     return fragmentShaderStream.str();
 }
