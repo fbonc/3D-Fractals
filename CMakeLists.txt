@@ -4,6 +4,17 @@ project(fractals LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(FetchContent)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG 3.4
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(glfw)
+
 file(GLOB_RECURSE SRC
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
     "${CMAKE_SOURCE_DIR}/external/dearimgui/*.cpp"
@@ -25,7 +36,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_SOURCE_DIR}/external/"
     "${CMAKE_SOURCE_DIR}/external/dearimgui"
     "${CMAKE_SOURCE_DIR}/external/dearimgui/backends"
-    "${CMAKE_SOURCE_DIR}/external/GLFW"
+    "${glfw_SOURCE_DIR}/include/GLFW"
 )
 
 
@@ -33,6 +44,7 @@ find_package(OpenGL REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glad
+    glfw
     OpenGL::GL
 )
 
