@@ -1,7 +1,7 @@
 #include <filesystem>
 #include <fractals/app_controller.hpp>
 #include <fractals/fractals.hpp>
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 #include <memory>
 
 #include <iostream>

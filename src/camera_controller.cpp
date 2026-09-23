@@ -1,7 +1,7 @@
 #include <fractals/camera_controller.hpp>
 
 #include <Eigen/Dense>
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 
 CameraController::CameraController(Camera& camera)
     : camera(camera), movementSpeed(1.0f), mouseSensitivity(0.125f), rotationSpeed(0.2f), mode(0),

@@ -5,7 +5,7 @@
 #include <fractals/glsl_manager.hpp>
 #include <fractals/scene_renderer.hpp>
 #include <fractals/shader_manager.hpp>
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 
 struct AutoChangeSetting {
     bool enabled;

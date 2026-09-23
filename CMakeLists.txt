@@ -28,14 +28,23 @@ add_library(eigen_headers INTERFACE)
 add_library(Eigen3::Eigen ALIAS eigen_headers)
 target_include_directories(eigen_headers SYSTEM INTERFACE "${eigen_SOURCE_DIR}")
 
-file(GLOB_RECURSE SRC
-    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+add_executable(${PROJECT_NAME}
+    src/app_controller.cpp
+    src/camera.cpp
+    src/camera_controller.cpp
+    src/fractal.cpp
+    src/fractals.cpp
+    src/glfw_manager.cpp
+    src/glsl_manager.cpp
+    src/main.cpp
+    src/scene_renderer.cpp
+    src/shader.cpp
+    src/shader_manager.cpp
+    src/ui_manager.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SRC})
-
 add_library(glad STATIC external/glad/glad.c)
-target_include_directories(glad PUBLIC external)
+target_include_directories(glad PUBLIC external external/glad)
 
 add_library(imgui STATIC
     external/dearimgui/imgui.cpp
@@ -51,23 +60,18 @@ target_include_directories(imgui
 )
 target_link_libraries(imgui PUBLIC glfw)
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-    "${CMAKE_SOURCE_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/src"
-    "${CMAKE_SOURCE_DIR}/external/glad"
-    "${CMAKE_SOURCE_DIR}/external/KHR"
-    "${CMAKE_SOURCE_DIR}/external/"
-    "${CMAKE_SOURCE_DIR}/external/dearimgui"
-    "${CMAKE_SOURCE_DIR}/external/dearimgui/backends"
-    "${glfw_SOURCE_DIR}/include/GLFW"
-)
+target_include_directories(${PROJECT_NAME} PRIVATE include)
 
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+endif()
 
 find_package(OpenGL REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glad
-    glfw
     imgui
     Eigen3::Eigen
     OpenGL::GL
