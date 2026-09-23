@@ -6,13 +6,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB_RECURSE SRC
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
-    "${CMAKE_SOURCE_DIR}/external/glad/glad.c"
     "${CMAKE_SOURCE_DIR}/external/dearimgui/*.cpp"
     "${CMAKE_SOURCE_DIR}/external/dearimgui/backends/imgui_impl_glfw*.cpp"
     "${CMAKE_SOURCE_DIR}/external/dearimgui/backends/imgui_impl_opengl3*.cpp"
 )
 
 add_executable(${PROJECT_NAME} ${SRC})
+
+add_library(glad STATIC external/glad/glad.c)
+target_include_directories(glad PUBLIC external)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_SOURCE_DIR}/include"
@@ -30,6 +32,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 find_package(OpenGL REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    glad
     OpenGL::GL
 )
 
