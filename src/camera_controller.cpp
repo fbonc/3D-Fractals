@@ -1,6 +1,6 @@
 #include <fractals/camera_controller.hpp>
 
-#include <Dense>
+#include <Eigen/Dense>
 #include <glfw3.h>
 
 CameraController::CameraController(Camera& camera)

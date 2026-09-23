@@ -15,6 +15,19 @@ FetchContent_Declare(glfw
 )
 FetchContent_MakeAvailable(glfw)
 
+set(EIGEN_BUILD_DOC OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(eigen
+    URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+    URL_HASH SHA256=8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    SOURCE_SUBDIR Eigen
+)
+FetchContent_MakeAvailable(eigen)
+add_library(eigen_headers INTERFACE)
+add_library(Eigen3::Eigen ALIAS eigen_headers)
+target_include_directories(eigen_headers SYSTEM INTERFACE "${eigen_SOURCE_DIR}")
+
 file(GLOB_RECURSE SRC
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
 )
@@ -41,7 +54,6 @@ target_link_libraries(imgui PUBLIC glfw)
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_SOURCE_DIR}/include"
     "${CMAKE_SOURCE_DIR}/src"
-    "${CMAKE_SOURCE_DIR}/external/Eigen"
     "${CMAKE_SOURCE_DIR}/external/glad"
     "${CMAKE_SOURCE_DIR}/external/KHR"
     "${CMAKE_SOURCE_DIR}/external/"
@@ -57,6 +69,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     glad
     glfw
     imgui
+    Eigen3::Eigen
     OpenGL::GL
 )
 
