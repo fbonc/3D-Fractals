@@ -1,19 +1,15 @@
 #include <fractals/camera_controller.hpp>
 #include <glfw3.h>
 
-
-
-class GLFWManager
-{
+class GLFWManager {
 private:
-
     static float lastX;
     static float lastY;
     static bool firstMouse;
     bool modeSwitchPressed;
 
-    float deltaTime;  //time between current frame and last frame
-    float lastFrame;  //time of last frame
+    float deltaTime; // time between current frame and last frame
+    float lastFrame; // time of last frame
 
     static GLFWwindow* window;
 
@@ -23,12 +19,10 @@ private:
     bool wasKPressed = false;
 
 public:
-
     void processInput(CameraController& cameraController);
     GLFWwindow* getWindow();
     void setInputFunctions(CameraController& cameraController);
     GLFWManager(/* args */);
     ~GLFWManager();
     void endLoop();
-
 };

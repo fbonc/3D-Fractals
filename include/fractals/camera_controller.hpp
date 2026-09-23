@@ -2,10 +2,8 @@
 
 #include <fractals/camera.hpp>
 
-
 class CameraController {
 public:
-
     CameraController(Camera& camera);
 
     void setMode(int newMode);
@@ -30,7 +28,7 @@ public:
     Camera getCamera();
 
 private:
-    Camera& camera;  //the camera this controller is managing
+    Camera& camera; // the camera this controller is managing
     float movementSpeed;
     float mouseSensitivity;
     float rotationSpeed;
@@ -41,5 +39,4 @@ private:
     float pitch;
 
     int mode;
-
 };

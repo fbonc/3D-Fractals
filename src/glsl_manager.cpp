@@ -1,7 +1,7 @@
 #include <fractals/glsl_manager.hpp>
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
 std::string GLSLManager::generateVertexShader() {
     std::string vertexShaderCode = readShaderFile("shaders/vertex.vert");
@@ -19,10 +19,10 @@ std::string GLSLManager::generateFragmentShader(const int& fractalID) {
     std::string rayMarchingCode = readShaderFile(rayMarchingPath);
     std::string mainCode = readShaderFile(mainPath);
 
-    //fractal specific code based on fractalID
+    // fractal specific code based on fractalID
     std::string fractalCode = getFractalCode(fractalID);
 
-    //full fragment shader code
+    // full fragment shader code
     std::ostringstream fragmentShaderStream;
     fragmentShaderStream << "#version 330 core\n\n";
     fragmentShaderStream << "out vec4 screenColor;\n\n";
@@ -56,18 +56,18 @@ std::string GLSLManager::readShaderFile(const std::string& filepath) const {
 std::string GLSLManager::getFractalCode(const int& fractalID) const {
 
     switch (fractalID) {
-        case 0:
-            return readShaderFile(mandelbulbPath);
-        case 1:
-            return readShaderFile(mengerSpongePath);
-        case 2:
-            return readShaderFile(juliaPath);
-        case 3:
-            return readShaderFile(kleinianPath);
-        case 4:
-            return readShaderFile(mandelboxPath);
-        default:
-            std::cerr << "Error: Unknown fractalID " << fractalID << std::endl;
-            return "";
+    case 0:
+        return readShaderFile(mandelbulbPath);
+    case 1:
+        return readShaderFile(mengerSpongePath);
+    case 2:
+        return readShaderFile(juliaPath);
+    case 3:
+        return readShaderFile(kleinianPath);
+    case 4:
+        return readShaderFile(mandelboxPath);
+    default:
+        std::cerr << "Error: Unknown fractalID " << fractalID << std::endl;
+        return "";
     }
 }

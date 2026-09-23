@@ -14,7 +14,7 @@ public:
 
     void updateCameraVectors(float yaw, float pitch);
 
-    //getters for direction vectors
+    // getters for direction vectors
     const Eigen::Vector3f& getFront() const;
     const Eigen::Vector3f& getRight() const;
     const Eigen::Vector3f& getUp() const;

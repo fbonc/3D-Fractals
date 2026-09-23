@@ -11,10 +11,7 @@ ShaderManager::ShaderManager(const std::string& vertexSource, const std::string&
     glUseProgram(shaderProgram->getShaderID());
 }
 
-
-const std::unique_ptr<Shader>& ShaderManager::getShaderProgram() const {
-    return shaderProgram;
-}
+const std::unique_ptr<Shader>& ShaderManager::getShaderProgram() const { return shaderProgram; }
 
 void ShaderManager::deleteShader() {
     if (shaderProgram) {
@@ -22,7 +19,8 @@ void ShaderManager::deleteShader() {
         shaderProgram.reset();
     }
 }
-void ShaderManager::changeShader(const std::string& vertexSource, const std::string& fragmentSource) {
+void ShaderManager::changeShader(const std::string& vertexSource,
+                                 const std::string& fragmentSource) {
     deleteShader();
     shaderProgram = Shader::CreateFromSource(vertexSource, fragmentSource);
     if (!shaderProgram) {

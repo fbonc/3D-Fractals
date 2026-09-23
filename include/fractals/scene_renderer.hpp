@@ -1,7 +1,7 @@
 #pragma once
+#include <fractals/camera_controller.hpp>
 #include <fractals/fractal.hpp>
 #include <fractals/shader_manager.hpp>
-#include <fractals/camera_controller.hpp>
 #include <memory>
 
 class SceneRenderer {
@@ -9,7 +9,7 @@ public:
     SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController);
     ~SceneRenderer();
 
-    void setFractal(std::unique_ptr<Fractal> fractal); //set active fractal
+    void setFractal(std::unique_ptr<Fractal> fractal); // set active fractal
     void initialiseUniformLocations();
     void initialiseQuad();
     void startLoop();

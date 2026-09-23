@@ -1,49 +1,43 @@
 #include <fractals/ui_manager.hpp>
 
-#include <string>
 #include <iostream>
+#include <string>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window,
+                     GLSLManager& glslManager, CameraController& cameraController)
+    : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window),
+      glslManager(glslManager), cameraController(cameraController) {}
 
-UIManager::UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager, CameraController& cameraController)
-    : sceneRenderer(sceneRenderer), shaderManager(shaderManager), window(window), glslManager(glslManager), cameraController(cameraController)
-{
-}
+UIManager::~UIManager() { shutdown(); }
 
-UIManager::~UIManager()
-{
-    shutdown();
-}
-
-void UIManager::init()
-{
+void UIManager::init() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
 
     io.IniFilename = nullptr;
-    
+
     ImGui::StyleColorsClassic();
-    
+
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
-    
+
     initializeAutoChangeSettings();
 }
 
-void UIManager::shutdown()
-{
+void UIManager::shutdown() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
 
-void UIManager::initializeAutoChangeSettings()
-{
+void UIManager::initializeAutoChangeSettings() {
     auto fractal = sceneRenderer.getCurrentFractal();
     if (fractal) {
         const auto& fractalAutoChange = fractal->getAutoChangeUniforms();
@@ -60,32 +54,28 @@ void UIManager::initializeAutoChangeSettings()
     }
 }
 
-void UIManager::cleanupAutoChangeSettings()
-{
+void UIManager::cleanupAutoChangeSettings() {
     auto fractal = sceneRenderer.getCurrentFractal();
     if (fractal) {
         const auto& fractalAutoChange = fractal->getAutoChangeUniforms();
-        //remove settings not in fractalAutoChange
-        for (auto it = autoChangeSettings.begin(); it != autoChangeSettings.end(); ) {
+        // remove settings not in fractalAutoChange
+        for (auto it = autoChangeSettings.begin(); it != autoChangeSettings.end();) {
             if (fractalAutoChange.find(it->first) == fractalAutoChange.end()) {
                 it = autoChangeSettings.erase(it);
-            }
-            else {
+            } else {
                 ++it;
             }
         }
     }
 }
 
-void UIManager::initRender()
-{
+void UIManager::initRender() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
-void UIManager::mainRender() 
-{
+void UIManager::mainRender() {
     renderRayMarchingSettings();
     renderSceneSettings();
     renderLightingSettings();
@@ -99,8 +89,7 @@ void UIManager::mainRender()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void UIManager::update(float deltaTime)
-{
+void UIManager::update(float deltaTime) {
     for (auto& [name, setting] : autoChangeSettings) {
         if (setting.enabled) {
             float delta = setting.rate * deltaTime;
@@ -110,8 +99,7 @@ void UIManager::update(float deltaTime)
                     setting.currentValue = setting.maxValue;
                     setting.increasing = false;
                 }
-            }
-            else {
+            } else {
                 setting.currentValue -= delta;
                 if (setting.currentValue <= setting.minValue) {
                     setting.currentValue = setting.minValue;
@@ -123,8 +111,7 @@ void UIManager::update(float deltaTime)
     }
 }
 
-void UIManager::renderAutoChangeControls(const std::string& uniformName)
-{
+void UIManager::renderAutoChangeControls(const std::string& uniformName) {
     auto it = autoChangeSettings.find(uniformName);
     if (it != autoChangeSettings.end()) {
         AutoChangeSetting& setting = it->second;
@@ -135,36 +122,35 @@ void UIManager::renderAutoChangeControls(const std::string& uniformName)
     }
 }
 
-void UIManager::renderRayMarchingSettings()
-{
+void UIManager::renderRayMarchingSettings() {
     ImGui::SetNextWindowPos(ImVec2(152, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(190, 146), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Ray Marching Settings");
-    
+
     float maxDist = sceneRenderer.getUniformValue("MAX_DIST");
     if (ImGui::SliderFloat("MAX_DIST", &maxDist, 0.0f, 1500.0f)) {
         sceneRenderer.setUniformValue("MAX_DIST", maxDist);
     }
-    
+
     float maxStepsF = sceneRenderer.getUniformValue("MAX_STEPS");
     int maxSteps = static_cast<int>(maxStepsF);
     if (ImGui::SliderInt("MAX_STEPS", &maxSteps, 50, 1000)) {
         sceneRenderer.setUniformValue("MAX_STEPS", static_cast<float>(maxSteps));
     }
-    
+
     float epsilon = sceneRenderer.getUniformValue("EPSILON");
     if (ImGui::SliderFloat("EPSILON", &epsilon, 0.00001f, 0.01f, "%.5f")) {
         sceneRenderer.setUniformValue("EPSILON", epsilon);
     }
-    
+
     float repeatFractalF = sceneRenderer.getUniformValue("repeatFractal");
     bool repeatFractal = (repeatFractalF != 0.0f);
     if (ImGui::Checkbox("repeatFractal", &repeatFractal)) {
         sceneRenderer.setUniformValue("repeatFractal", repeatFractal ? 1.0f : 0.0f);
     }
-    
+
     if (repeatFractal) {
         float repeatCellSize = sceneRenderer.getUniformValue("repeatCellSize");
         if (ImGui::SliderFloat("repeatCellSize", &repeatCellSize, 1.0f, 10.0f)) {
@@ -172,22 +158,20 @@ void UIManager::renderRayMarchingSettings()
         }
     }
 
-    
     ImGui::End();
 }
 
-void UIManager::renderCameraSettings()
-{
+void UIManager::renderCameraSettings() {
     ImGui::SetNextWindowPos(ImVec2(1238, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(190, 146), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Camera Settings");
 
-    //height (when in inspect or rotate)
+    // height (when in inspect or rotate)
 
     int cameraMode = cameraController.getMode();
-    const char* cameraModes[] = { "AutoRotation", "FreeCam"};
+    const char* cameraModes[] = {"AutoRotation", "FreeCam"};
     if (ImGui::Combo("cameraMode", &cameraMode, cameraModes, IM_ARRAYSIZE(cameraModes))) {
         cameraController.setMode(cameraMode);
     }
@@ -207,98 +191,98 @@ void UIManager::renderCameraSettings()
         if (ImGui::SliderFloat("rotationHeight", &rotationHeight, -3.0f, 3.0f)) {
             cameraController.changeRotationHeight(rotationHeight);
         }
-    } 
+    }
 
     if (cameraMode == 1) {
         float movementSpeed = cameraController.getMovementSpeed();
         if (ImGui::SliderFloat("movementSpeed", &movementSpeed, 0.0f, 5.0f)) {
             cameraController.changeMovementSpeed(movementSpeed);
         }
-    } 
-    
+    }
+
     ImGui::End();
 }
 
-
-void UIManager::renderSceneSettings()
-{
+void UIManager::renderSceneSettings() {
     ImGui::SetNextWindowPos(ImVec2(550, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(144, 146), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Scene Settings");
-    
+
     Eigen::Vector3f bgColorVec = sceneRenderer.getUniformVec3("backgroundColour");
-    float backgroundColour[3] = { bgColorVec.x(), bgColorVec.y(), bgColorVec.z() };
+    float backgroundColour[3] = {bgColorVec.x(), bgColorVec.y(), bgColorVec.z()};
     if (ImGui::ColorEdit3("backgroundColour", backgroundColour)) {
-        sceneRenderer.setUniformValue("backgroundColour", backgroundColour[0], backgroundColour[1], backgroundColour[2]);
+        sceneRenderer.setUniformValue("backgroundColour", backgroundColour[0], backgroundColour[1],
+                                      backgroundColour[2]);
     }
-    
+
     float useHaloF = sceneRenderer.getUniformValue("useHalo");
     bool useHalo = (useHaloF != 0.0f);
     if (ImGui::Checkbox("useHalo", &useHalo)) {
         sceneRenderer.setUniformValue("useHalo", useHalo ? 1.0f : 0.0f);
     }
-    
+
     if (useHalo) {
         float haloRadius = sceneRenderer.getUniformValue("haloRadius");
         if (ImGui::SliderFloat("haloRadius", &haloRadius, 1.0f, 50.0f)) {
             sceneRenderer.setUniformValue("haloRadius", 51.0f - haloRadius);
         }
-        
+
         Eigen::Vector3f haloColorVec = sceneRenderer.getUniformVec3("haloColour");
-        float haloColour[3] = { haloColorVec.x(), haloColorVec.y(), haloColorVec.z() };
+        float haloColour[3] = {haloColorVec.x(), haloColorVec.y(), haloColorVec.z()};
         if (ImGui::ColorEdit3("haloColour", haloColour)) {
-            sceneRenderer.setUniformValue("haloColour", haloColour[0], haloColour[1], haloColour[2]);
+            sceneRenderer.setUniformValue("haloColour", haloColour[0], haloColour[1],
+                                          haloColour[2]);
         }
     }
-    
+
     float useGradientF = sceneRenderer.getUniformValue("useGradient");
     bool useGradient = (useGradientF != 0.0f);
     if (ImGui::Checkbox("useGradient", &useGradient)) {
         sceneRenderer.setUniformValue("useGradient", useGradient ? 1.0f : 0.0f);
     }
 
-    
     ImGui::End();
 }
 
-void UIManager::renderLightingSettings()
-{
+void UIManager::renderLightingSettings() {
     ImGui::SetNextWindowPos(ImVec2(862, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(163, 330), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Lighting Settings");
-    
+
     Eigen::Vector3f ambientColorVec = sceneRenderer.getUniformVec3("ambientColor");
-    float ambientColor[3] = { ambientColorVec.x(), ambientColorVec.y(), ambientColorVec.z() };
+    float ambientColor[3] = {ambientColorVec.x(), ambientColorVec.y(), ambientColorVec.z()};
     if (ImGui::ColorEdit3("ambientColor", ambientColor)) {
-        sceneRenderer.setUniformValue("ambientColor", ambientColor[0], ambientColor[1], ambientColor[2]);
+        sceneRenderer.setUniformValue("ambientColor", ambientColor[0], ambientColor[1],
+                                      ambientColor[2]);
     }
-    
+
     Eigen::Vector3f lightSourceDirVec = sceneRenderer.getUniformVec3("lightSourceDir");
-    float lightSourceDir[3] = { lightSourceDirVec.x(), lightSourceDirVec.y(), lightSourceDirVec.z() };
+    float lightSourceDir[3] = {lightSourceDirVec.x(), lightSourceDirVec.y(), lightSourceDirVec.z()};
     if (ImGui::InputFloat3("lightSourceDir", lightSourceDir)) {
-        sceneRenderer.setUniformValue("lightSourceDir", lightSourceDir[0], lightSourceDir[1], lightSourceDir[2]);
+        sceneRenderer.setUniformValue("lightSourceDir", lightSourceDir[0], lightSourceDir[1],
+                                      lightSourceDir[2]);
     }
-    
+
     float specularStrength = sceneRenderer.getUniformValue("specularStrength");
     if (ImGui::SliderFloat("specularStrength", &specularStrength, 0.0f, 1.0f)) {
         sceneRenderer.setUniformValue("specularStrength", specularStrength);
     }
-    
+
     float shininess = sceneRenderer.getUniformValue("shininess");
     if (ImGui::SliderFloat("shininess", &shininess, 1.0f, 4.0f)) {
         sceneRenderer.setUniformValue("shininess", shininess);
     }
-    
+
     float ambientOcclusionF = sceneRenderer.getUniformValue("ambientOcclusion");
     bool ambientOcclusion = (ambientOcclusionF != 0.0f);
     if (ImGui::Checkbox("ambientOcclusion", &ambientOcclusion)) {
         sceneRenderer.setUniformValue("ambientOcclusion", ambientOcclusion ? 1.0f : 0.0f);
     }
-    
+
     float softShadowsF = sceneRenderer.getUniformValue("softShadows");
     bool softShadows = (softShadowsF != 0.0f);
     if (ImGui::Checkbox("softShadows", &softShadows)) {
@@ -311,67 +295,65 @@ void UIManager::renderLightingSettings()
         if (ImGui::SliderInt("shadowMaxSteps", &shadowMaxSteps, 0, 20)) {
             sceneRenderer.setUniformValue("shadowMaxSteps", static_cast<float>(shadowMaxSteps));
         }
-    
+
         float kSoftShadow = sceneRenderer.getUniformValue("kSoftShadow");
         if (ImGui::SliderFloat("kSoftShadow", &kSoftShadow, 1.0f, 20.0f)) {
             sceneRenderer.setUniformValue("kSoftShadow", kSoftShadow);
         }
-        
+
         float lightestShadow = sceneRenderer.getUniformValue("lightestShadow");
         if (ImGui::SliderFloat("lightestShadow", &lightestShadow, 0.0f, 1.0f)) {
             sceneRenderer.setUniformValue("lightestShadow", lightestShadow);
         }
-        
+
         float darkestShadow = sceneRenderer.getUniformValue("darkestShadow");
         if (ImGui::SliderFloat("darkestShadow", &darkestShadow, 0.0f, 1.0f)) {
             sceneRenderer.setUniformValue("darkestShadow", darkestShadow);
         }
     }
-    
-    
-    
+
     ImGui::End();
 }
 
-void UIManager::renderPostProcessingSettings()
-{
+void UIManager::renderPostProcessingSettings() {
     ImGui::SetNextWindowPos(ImVec2(1024, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(215, 146), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Post Processing Settings");
-    
+
     float gammaAmount = sceneRenderer.getUniformValue("gammaAmount");
     if (ImGui::SliderFloat("gammaAmount", &gammaAmount, 1.0f, 3.0f)) {
         sceneRenderer.setUniformValue("gammaAmount", gammaAmount);
     }
-    
+
     float contrastAmount = sceneRenderer.getUniformValue("contrastAmount");
     if (ImGui::SliderFloat("contrastAmount", &contrastAmount, 0.0f, 1.0f)) {
         sceneRenderer.setUniformValue("contrastAmount", contrastAmount);
     }
-    
+
     float saturationAmount = sceneRenderer.getUniformValue("saturationAmount");
     if (ImGui::SliderFloat("saturationAmount", &saturationAmount, 0.0f, 2.0f)) {
         sceneRenderer.setUniformValue("saturationAmount", saturationAmount);
     }
-    
+
     float vignetteAmount = sceneRenderer.getUniformValue("vignetteAmount");
     if (ImGui::SliderFloat("vignetteAmount", &vignetteAmount, 0.0f, 1.0f)) {
         sceneRenderer.setUniformValue("vignetteAmount", vignetteAmount);
     }
-    
+
     Eigen::Vector3f luminanceColourVec = sceneRenderer.getUniformVec3("luminanceColour");
-    float luminanceColour[3] = { luminanceColourVec.x(), luminanceColourVec.y(), luminanceColourVec.z() };
+    float luminanceColour[3] = {luminanceColourVec.x(), luminanceColourVec.y(),
+                                luminanceColourVec.z()};
     if (ImGui::ColorEdit3("luminanceColour", luminanceColour)) {
-        sceneRenderer.setUniformValue("luminanceColour", luminanceColour[0], luminanceColour[1], luminanceColour[2]);
+        sceneRenderer.setUniformValue("luminanceColour", luminanceColour[0], luminanceColour[1],
+                                      luminanceColour[2]);
     }
-    
+
     ImGui::End();
 }
 
-void UIManager::renderColouringSettings()
-{
+void UIManager::renderColouringSettings() {
     ImGui::SetNextWindowPos(ImVec2(693, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(170, 215), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
@@ -379,71 +361,79 @@ void UIManager::renderColouringSettings()
     ImGui::Begin("Colouring Settings");
 
     Eigen::Vector3f fractalColourVec = sceneRenderer.getUniformVec3("fractalColour");
-    float fractalColour[3] = { fractalColourVec.x(), fractalColourVec.y(), fractalColourVec.z() };
+    float fractalColour[3] = {fractalColourVec.x(), fractalColourVec.y(), fractalColourVec.z()};
     if (ImGui::ColorEdit3("fractalColour", fractalColour)) {
-        sceneRenderer.setUniformValue("fractalColour", fractalColour[0], fractalColour[1], fractalColour[2]);
+        sceneRenderer.setUniformValue("fractalColour", fractalColour[0], fractalColour[1],
+                                      fractalColour[2]);
     }
-    
+
     float colorModeF = sceneRenderer.getUniformValue("colorMode");
     int colorMode = static_cast<int>(colorModeF);
-    const char* colorModes[] = { "Base", "Normal", "Position", "Fractal Iterations" };
+    const char* colorModes[] = {"Base", "Normal", "Position", "Fractal Iterations"};
     if (ImGui::Combo("colorMode", &colorMode, colorModes, IM_ARRAYSIZE(colorModes))) {
         sceneRenderer.setUniformValue("colorMode", static_cast<float>(colorMode));
     }
 
-    if(colorMode == 2) {
+    if (colorMode == 2) {
         float positionColouringScale = sceneRenderer.getUniformValue("positionColouringScale");
         if (ImGui::SliderFloat("positionColouringScale", &positionColouringScale, 0.1f, 2.0f)) {
             sceneRenderer.setUniformValue("positionColouringScale", positionColouringScale);
         }
-        
+
         Eigen::Vector3f positionColourOneVec = sceneRenderer.getUniformVec3("positionColourOne");
-        float positionColourOne[3] = { positionColourOneVec.x(), positionColourOneVec.y(), positionColourOneVec.z() };
+        float positionColourOne[3] = {positionColourOneVec.x(), positionColourOneVec.y(),
+                                      positionColourOneVec.z()};
         if (ImGui::ColorEdit3("positionColourOne", positionColourOne)) {
-            sceneRenderer.setUniformValue("positionColourOne", positionColourOne[0], positionColourOne[1], positionColourOne[2]);
+            sceneRenderer.setUniformValue("positionColourOne", positionColourOne[0],
+                                          positionColourOne[1], positionColourOne[2]);
         }
-        
+
         Eigen::Vector3f positionColourTwoVec = sceneRenderer.getUniformVec3("positionColourTwo");
-        float positionColourTwo[3] = { positionColourTwoVec.x(), positionColourTwoVec.y(), positionColourTwoVec.z() };
+        float positionColourTwo[3] = {positionColourTwoVec.x(), positionColourTwoVec.y(),
+                                      positionColourTwoVec.z()};
         if (ImGui::ColorEdit3("positionColourTwo", positionColourTwo)) {
-            sceneRenderer.setUniformValue("positionColourTwo", positionColourTwo[0], positionColourTwo[1], positionColourTwo[2]);
+            sceneRenderer.setUniformValue("positionColourTwo", positionColourTwo[0],
+                                          positionColourTwo[1], positionColourTwo[2]);
         }
     }
 
-    if(colorMode == 3) {
+    if (colorMode == 3) {
         float iterationColourVarOne = sceneRenderer.getUniformValue("iterationColourVarOne");
         if (ImGui::SliderFloat("iterationColourVarOne", &iterationColourVarOne, 0.0f, 2.0f)) {
             sceneRenderer.setUniformValue("iterationColourVarOne", iterationColourVarOne);
         }
-        
+
         float iterationColourVarTwo = sceneRenderer.getUniformValue("iterationColourVarTwo");
         if (ImGui::SliderFloat("iterationColourVarTwo", &iterationColourVarTwo, 0.0f, 5.0f)) {
             sceneRenderer.setUniformValue("iterationColourVarTwo", iterationColourVarTwo);
         }
-        
+
         float iterationColourVarThree = sceneRenderer.getUniformValue("iterationColourVarThree");
         if (ImGui::SliderFloat("iterationColourVarThree", &iterationColourVarThree, 0.0f, 10.0f)) {
             sceneRenderer.setUniformValue("iterationColourVarThree", iterationColourVarThree);
         }
-        
-        Eigen::Vector3f iterationColourVarFourVec = sceneRenderer.getUniformVec3("iterationColourVarFour");
-        float iterationColourVarFour[3] = { iterationColourVarFourVec.x(), iterationColourVarFourVec.y(), iterationColourVarFourVec.z() };
+
+        Eigen::Vector3f iterationColourVarFourVec =
+            sceneRenderer.getUniformVec3("iterationColourVarFour");
+        float iterationColourVarFour[3] = {iterationColourVarFourVec.x(),
+                                           iterationColourVarFourVec.y(),
+                                           iterationColourVarFourVec.z()};
         if (ImGui::ColorEdit3("iterationColourVarFour", iterationColourVarFour)) {
-            sceneRenderer.setUniformValue("iterationColourVarFour", iterationColourVarFour[0], iterationColourVarFour[1], iterationColourVarFour[2]);
+            sceneRenderer.setUniformValue("iterationColourVarFour", iterationColourVarFour[0],
+                                          iterationColourVarFour[1], iterationColourVarFour[2]);
         }
     }
-        
+
     ImGui::End();
 }
 
-void UIManager::renderTransformationsSettings()
-{
+void UIManager::renderTransformationsSettings() {
     ImGui::SetNextWindowPos(ImVec2(341, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(210, 215), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Transformations Settings");
-    
+
     float useScaleF = sceneRenderer.getUniformValue("useScale");
     bool useScale = (useScaleF != 0.0f);
     if (ImGui::Checkbox("useScale", &useScale)) {
@@ -456,21 +446,20 @@ void UIManager::renderTransformationsSettings()
             sceneRenderer.setUniformValue("scaleAmount", scaleAmount);
         }
     }
-    
 
     float useTwistF = sceneRenderer.getUniformValue("useTwist");
     bool useTwist = (useTwistF != 0.0f);
     if (ImGui::Checkbox("useTwist", &useTwist)) {
         sceneRenderer.setUniformValue("useTwist", useTwist ? 1.0f : 0.0f);
     }
-    
+
     if (useTwist) {
         float twistAmount = sceneRenderer.getUniformValue("twistAmount");
         if (ImGui::SliderFloat("twistAmount", &twistAmount, 0.0f, 10.0f)) {
             sceneRenderer.setUniformValue("twistAmount", twistAmount);
         }
     }
-    
+
     float useBendF = sceneRenderer.getUniformValue("useBend");
     bool useBend = (useBendF != 0.0f);
     if (ImGui::Checkbox("useBend", &useBend)) {
@@ -483,68 +472,62 @@ void UIManager::renderTransformationsSettings()
             sceneRenderer.setUniformValue("bendAmount", bendAmount);
         }
     }
-    
+
     float useWarpF = sceneRenderer.getUniformValue("useWarp");
     bool useWarp = (useWarpF != 0.0f);
     if (ImGui::Checkbox("useWarp", &useWarp)) {
         sceneRenderer.setUniformValue("useWarp", useWarp ? 1.0f : 0.0f);
     }
-    
+
     if (useWarp) {
         float warpAmount = sceneRenderer.getUniformValue("warpAmount");
         if (ImGui::SliderFloat("warpAmount", &warpAmount, 0.0f, 0.002f, "%.5f")) {
             sceneRenderer.setUniformValue("warpAmount", warpAmount);
         }
     }
-    
+
     ImGui::End();
 }
 
-void UIManager::renderFractalSettings()
-{
+void UIManager::renderFractalSettings() {
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(154, 77), ImGuiCond_FirstUseEver); // Adjusted size for ComboBox
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Fractal Settings");
-    
-    
+
     static int currentFractalIndex = 0; // 0: Mandelbulb, 1: Menger Sponge
-    const char* fractalTypes[] = { "Mandelbulb", "Menger Sponge", "Julia", "Kleinian", "Mandelbox"};
+    const char* fractalTypes[] = {"Mandelbulb", "Menger Sponge", "Julia", "Kleinian", "Mandelbox"};
     static int previousFractalIndex = 0;
 
-    if (ImGui::Combo("Fractal Type", &currentFractalIndex, fractalTypes, IM_ARRAYSIZE(fractalTypes))) {
+    if (ImGui::Combo("Fractal Type", &currentFractalIndex, fractalTypes,
+                     IM_ARRAYSIZE(fractalTypes))) {
         if (currentFractalIndex != previousFractalIndex) {
             int newFractalID = currentFractalIndex;
-            
+
             std::string newFragmentShaderCode = glslManager.generateFragmentShader(newFractalID);
-            
+
             if (newFragmentShaderCode.empty()) {
-                std::cerr << "Failed to generate fragment shader for fractalID: " << newFractalID << std::endl;
-            }
-            else {
-                
+                std::cerr << "Failed to generate fragment shader for fractalID: " << newFractalID
+                          << std::endl;
+            } else {
+
                 std::string vertexShaderCode = glslManager.generateVertexShader();
-                
+
                 shaderManager.changeShader(vertexShaderCode, newFragmentShaderCode);
-                
+
                 std::unique_ptr<Fractal> newFractal;
                 if (newFractalID == 0) {
                     newFractal = std::make_unique<Mandelbulb>();
-                }
-                else if (newFractalID == 1) {
+                } else if (newFractalID == 1) {
                     newFractal = std::make_unique<MengerSponge>();
-                }
-                else if (newFractalID == 2) {
+                } else if (newFractalID == 2) {
                     newFractal = std::make_unique<Julia>();
-                }
-                else if (newFractalID == 3) {
+                } else if (newFractalID == 3) {
                     newFractal = std::make_unique<Kleinian>();
-                }
-                else if (newFractalID == 4) {
+                } else if (newFractalID == 4) {
                     newFractal = std::make_unique<Mandelbox>();
-                }
-                else {
+                } else {
                     std::cerr << "Unknown fractalID: " << newFractalID << std::endl;
                     return;
                 }
@@ -554,9 +537,9 @@ void UIManager::renderFractalSettings()
                 sceneRenderer.setResolutionUniform((float)1920, (float)1080);
                 sceneRenderer.setFractal(std::move(newFractal));
                 sceneRenderer.setFractalUniforms();
-                
+
                 initializeAutoChangeSettings();
-                
+
                 previousFractalIndex = currentFractalIndex;
 
                 GLenum err;
@@ -566,15 +549,15 @@ void UIManager::renderFractalSettings()
             }
         }
     }
-    
-    //render uniform controls for the current fractal
+
+    // render uniform controls for the current fractal
     Fractal* fractal = sceneRenderer.getCurrentFractal();
     if (fractal) {
         const auto& fractalUniforms = fractal->getUniformNames();
         const auto& fractalAutoChange = fractal->getAutoChangeUniforms();
         for (const auto& name : fractalUniforms) {
             float value = sceneRenderer.getUniformValue(name);
-            
+
             if (name == "Power") {
                 if (ImGui::SliderFloat(name.c_str(), &value, 1.0f, 20.0f)) {
                     sceneRenderer.setUniformValue(name, value);
@@ -700,13 +683,8 @@ void UIManager::renderFractalSettings()
                     renderAutoChangeControls(name);
                 }
             }
-
-            
         }
     }
-    
+
     ImGui::End();
 }
-
-
-

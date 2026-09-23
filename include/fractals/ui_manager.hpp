@@ -1,12 +1,11 @@
 #pragma once
 
-#include <fractals/scene_renderer.hpp>
-#include <fractals/shader_manager.hpp>
-#include <fractals/glsl_manager.hpp>
 #include <fractals/camera_controller.hpp>
 #include <fractals/fractals.hpp>
+#include <fractals/glsl_manager.hpp>
+#include <fractals/scene_renderer.hpp>
+#include <fractals/shader_manager.hpp>
 #include <glfw3.h>
-
 
 struct AutoChangeSetting {
     bool enabled;
@@ -19,7 +18,8 @@ struct AutoChangeSetting {
 
 class UIManager {
 public:
-    UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window, GLSLManager& glslManager, CameraController& cameraController);
+    UIManager(SceneRenderer& sceneRenderer, ShaderManager& shaderManager, GLFWwindow* window,
+              GLSLManager& glslManager, CameraController& cameraController);
     ~UIManager();
 
     void init();

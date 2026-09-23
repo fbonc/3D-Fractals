@@ -1,7 +1,6 @@
 #include <fractals/fractals.hpp>
 
-Julia::Julia()
-{
+Julia::Julia() {
     uniformNames = {"juliaIterations", "juliaC1", "juliaC2", "juliaC3", "juliaC4"};
 
     uniforms["juliaIterations"] = 40.0f;
@@ -43,9 +42,7 @@ Julia::Julia()
     autoChangeUniforms["juliaC4"] = juliaC4Config;
 }
 
-
-Kleinian::Kleinian()
-{
+Kleinian::Kleinian() {
     uniformNames = {"kleinianIterations"};
 
     uniforms["kleinianIterations"] = 6.0f;
@@ -55,13 +52,9 @@ Kleinian::Kleinian()
     kleinianIterationsConfig.minValue = 1.001f;
     kleinianIterationsConfig.maxValue = 20.0f;
     autoChangeUniforms["kleinianIterations"] = kleinianIterationsConfig;
-
 }
 
-
-
-Mandelbox::Mandelbox()
-{
+Mandelbox::Mandelbox() {
     uniformNames = {"mandelboxIterations", "foldingLimit", "minRadius2", "fixedRadius2", "mbScale"};
 
     uniforms["mandelboxIterations"] = 10.0f;
@@ -99,19 +92,16 @@ Mandelbox::Mandelbox()
     mbScaleConfig.minValue = -3.0f;
     mbScaleConfig.maxValue = 3.0f;
     autoChangeUniforms["mbScale"] = mbScaleConfig;
-
 }
-
-
 
 Mandelbulb::Mandelbulb() {
     uniformNames = {"Power", "mandelbulbIterations"};
     uniforms["Power"] = 8.0f;
     uniforms["mandelbulbIterations"] = 40.0f;
-    
+
     // Define auto-change configuration for "Power" uniform
     AutoChangeConfig powerConfig;
-    powerConfig.rate = 1.0f;      // Units per second
+    powerConfig.rate = 1.0f; // Units per second
     powerConfig.minValue = 1.0f;
     powerConfig.maxValue = 20.0f;
     autoChangeUniforms["Power"] = powerConfig;
@@ -123,18 +113,13 @@ Mandelbulb::Mandelbulb() {
     autoChangeUniforms["mandelbulbIterations"] = mandelbulbIterationsConfig;
 }
 
-
-
-
 MengerSponge::MengerSponge() {
     uniformNames = {"mengerSpongeIterations"};
     uniforms["mengerSpongeIterations"] = 8.0f;
-    
+
     AutoChangeConfig mengerSpongeIterationsConfig;
     mengerSpongeIterationsConfig.rate = 1.0f;
     mengerSpongeIterationsConfig.minValue = 1.0f;
     mengerSpongeIterationsConfig.maxValue = 20.0f;
     autoChangeUniforms["mengerSpongeIterations"] = mengerSpongeIterationsConfig;
-
 }
-

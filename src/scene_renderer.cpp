@@ -4,7 +4,8 @@
 #include <iostream>
 
 SceneRenderer::SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController)
-    : shaderManager(shaderManager), cameraController(cameraController), currentFractal(nullptr), VAO(0), VBO(0) {}
+    : shaderManager(shaderManager), cameraController(cameraController), currentFractal(nullptr),
+      VAO(0), VBO(0) {}
 
 SceneRenderer::~SceneRenderer() {
     glDeleteVertexArrays(1, &VAO);
@@ -17,14 +18,10 @@ void SceneRenderer::setFractal(std::unique_ptr<Fractal> fractal) {
 }
 
 void SceneRenderer::initialiseQuad() {
-    float quadVertices[] = {
-        -1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-         1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-        -1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-         1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-         1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f
-    };
+    float quadVertices[] = {-1.0f, 1.0f, 0.0f, 1.0f, 0.0f,  0.0f, -1.0f, -1.0f, 0.0f,
+                            0.0f,  1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f,  0.0f,  1.0f,
+                            -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,  0.0f, 1.0f,  -1.0f, 0.0f,
+                            0.0f,  0.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f,  1.0f,  0.0f};
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -44,27 +41,63 @@ void SceneRenderer::initialiseUniformLocations() {
     uniformLocations.clear();
     if (currentFractal) {
         for (const auto& name : currentFractal->getUniformNames()) {
-            int location = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), name.c_str());
+            int location =
+                glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), name.c_str());
             if (location != -1) {
                 uniformLocations[name] = location;
             }
         }
     }
 
-    std::vector<std::string> globalUniforms = {
-    "cameraPos", "target", "resolution",
-    "MAX_DIST", "MAX_STEPS", "EPSILON", "repeatFractal", "repeatCellSize",
-    "backgroundColour", "useHalo", "useGradient", "haloRadius", "haloColour", "fractalColour",
-    "ambientColor", "lightSourceDir", "specularStrength", "shininess", "ambientOcclusion", 
-    "softShadows", "shadowMaxSteps", "kSoftShadow", "lightestShadow", "darkestShadow",
-    "gammaAmount", "contrastAmount", "saturationAmount", "vignetteAmount", "luminanceColour",
-    "colorMode", "positionColouringScale", "positionColourOne", "positionColourTwo",
-    "iterationColourVarOne", "iterationColourVarTwo", "iterationColourVarThree", "iterationColourVarFour",
-    "useScale", "scaleAmount", "useTwist", "twistAmount", "useBend", "bendAmount", "useWarp", "warpAmount"
-    };
+    std::vector<std::string> globalUniforms = {"cameraPos",
+                                               "target",
+                                               "resolution",
+                                               "MAX_DIST",
+                                               "MAX_STEPS",
+                                               "EPSILON",
+                                               "repeatFractal",
+                                               "repeatCellSize",
+                                               "backgroundColour",
+                                               "useHalo",
+                                               "useGradient",
+                                               "haloRadius",
+                                               "haloColour",
+                                               "fractalColour",
+                                               "ambientColor",
+                                               "lightSourceDir",
+                                               "specularStrength",
+                                               "shininess",
+                                               "ambientOcclusion",
+                                               "softShadows",
+                                               "shadowMaxSteps",
+                                               "kSoftShadow",
+                                               "lightestShadow",
+                                               "darkestShadow",
+                                               "gammaAmount",
+                                               "contrastAmount",
+                                               "saturationAmount",
+                                               "vignetteAmount",
+                                               "luminanceColour",
+                                               "colorMode",
+                                               "positionColouringScale",
+                                               "positionColourOne",
+                                               "positionColourTwo",
+                                               "iterationColourVarOne",
+                                               "iterationColourVarTwo",
+                                               "iterationColourVarThree",
+                                               "iterationColourVarFour",
+                                               "useScale",
+                                               "scaleAmount",
+                                               "useTwist",
+                                               "twistAmount",
+                                               "useBend",
+                                               "bendAmount",
+                                               "useWarp",
+                                               "warpAmount"};
 
     for (const auto& uniformName : globalUniforms) {
-        int loc = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(), uniformName.c_str());
+        int loc = glGetUniformLocation(shaderManager.getShaderProgram()->getShaderID(),
+                                       uniformName.c_str());
         if (loc != -1) {
             uniformLocations[uniformName] = loc;
         } else {
@@ -83,37 +116,36 @@ void SceneRenderer::setCameraPosUniform(Eigen::Vector3f cameraPos) {
     glUniform3f(uniformLocations["cameraPos"], cameraPos.x(), cameraPos.y(), cameraPos.z());
 }
 
-
 void SceneRenderer::setTargetUniform(Eigen::Vector3f target) {
     auto it = uniformLocations.find("target");
     if (it != uniformLocations.end()) {
         glUniform3f(it->second, target.x(), target.y(), target.z());
-    }
-    else {
+    } else {
         std::cerr << "Uniform 'target' not found." << std::endl;
     }
 }
 
 void SceneRenderer::setGlobalUniforms() {
-    if (defaultsSet) return;
+    if (defaultsSet)
+        return;
 
     glUseProgram(shaderManager.getShaderProgram()->getShaderID());
 
-    auto setUniform1f = [&](const std::string &name, float val) {
+    auto setUniform1f = [&](const std::string& name, float val) {
         auto it = uniformLocations.find(name);
         if (it != uniformLocations.end()) {
             glUniform1f(it->second, val);
         }
     };
 
-    auto setUniform1i = [&](const std::string &name, int val) {
+    auto setUniform1i = [&](const std::string& name, int val) {
         auto it = uniformLocations.find(name);
         if (it != uniformLocations.end()) {
             glUniform1i(it->second, val);
         }
     };
 
-    auto setUniform3f = [&](const std::string &name, float x, float y, float z) {
+    auto setUniform3f = [&](const std::string& name, float x, float y, float z) {
         auto it = uniformLocations.find(name);
         if (it != uniformLocations.end()) {
             glUniform3f(it->second, x, y, z);
@@ -123,11 +155,11 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform1f("MAX_DIST", 200.0f);
     setUniform1f("MAX_STEPS", 200.0f);
     setUniform1f("EPSILON", 0.001f);
-    setUniform1i("repeatFractal", 0); //false
+    setUniform1i("repeatFractal", 0); // false
     setUniform1f("repeatCellSize", 6.7f);
 
     setUniform3f("backgroundColour", 0.11f, 0.28f, 0.28f);
-    setUniform1i("useHalo", 1); // true
+    setUniform1i("useHalo", 1);     // true
     setUniform1i("useGradient", 1); // true
     setUniform1f("haloRadius", 17.0f);
     setUniform3f("haloColour", 1.0f, 0.8f, 0.4f);
@@ -139,7 +171,7 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform1f("shininess", 4.0f);
 
     setUniform1i("ambientOcclusion", 1); // true
-    setUniform1i("softShadows", 1); // true
+    setUniform1i("softShadows", 1);      // true
     setUniform1f("shadowMaxSteps", 100);
     setUniform1f("kSoftShadow", 8.0f);
     setUniform1f("lightestShadow", 0.7f);
@@ -171,13 +203,14 @@ void SceneRenderer::setGlobalUniforms() {
     setUniform1f("warpAmount", 0.0001f);
 
     defaultsSet = true;
-
 }
 
 void SceneRenderer::setFractalUniforms() {
-    if (!currentFractal) return;
-    else if (fractalsSet) return;
-    
+    if (!currentFractal)
+        return;
+    else if (fractalsSet)
+        return;
+
     for (const auto& name : currentFractal->getUniformNames()) {
         float value = currentFractal->getUniformValue(name);
         auto it = uniformLocations.find(name);
@@ -196,8 +229,7 @@ void SceneRenderer::resetUniformBools() {
     fractalsSet = false;
 }
 
-void SceneRenderer::setUniformValue(const std::string& name, float value)
-{
+void SceneRenderer::setUniformValue(const std::string& name, float value) {
     auto it = uniformLocations.find(name);
     if (it != uniformLocations.end()) {
         glUniform1f(it->second, value);
@@ -206,8 +238,7 @@ void SceneRenderer::setUniformValue(const std::string& name, float value)
     }
 }
 
-void SceneRenderer::setUniformValue(const std::string& name, float x, float y, float z)
-{
+void SceneRenderer::setUniformValue(const std::string& name, float x, float y, float z) {
     auto it = uniformLocations.find(name);
     if (it != uniformLocations.end()) {
         glUniform3f(it->second, x, y, z);
@@ -217,8 +248,7 @@ void SceneRenderer::setUniformValue(const std::string& name, float x, float y, f
 }
 
 // Getter methods for uniforms
-float SceneRenderer::getUniformValue(const std::string& name) const
-{
+float SceneRenderer::getUniformValue(const std::string& name) const {
     glUseProgram(shaderManager.getShaderProgram()->getShaderID());
 
     auto it = uniformLocations.find(name);
@@ -233,8 +263,7 @@ float SceneRenderer::getUniformValue(const std::string& name) const
     }
 }
 
-Eigen::Vector3f SceneRenderer::getUniformVec3(const std::string& name) const
-{
+Eigen::Vector3f SceneRenderer::getUniformVec3(const std::string& name) const {
     glUseProgram(shaderManager.getShaderProgram()->getShaderID());
 
     auto it = uniformLocations.find(name);
@@ -250,14 +279,9 @@ Eigen::Vector3f SceneRenderer::getUniformVec3(const std::string& name) const
 }
 
 // Get current fractal
-Fractal* SceneRenderer::getCurrentFractal() const
-{
-    return currentFractal.get();
-}
+Fractal* SceneRenderer::getCurrentFractal() const { return currentFractal.get(); }
 
-void SceneRenderer::startLoop() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
+void SceneRenderer::startLoop() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 void SceneRenderer::endLoop() {
     glBindVertexArray(VAO);

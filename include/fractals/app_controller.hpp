@@ -1,13 +1,12 @@
 #pragma once
 
-#include <fractals/glfw_manager.hpp>
-#include <fractals/glsl_manager.hpp>
-#include <fractals/shader_manager.hpp>
 #include <fractals/camera.hpp>
 #include <fractals/camera_controller.hpp>
+#include <fractals/glfw_manager.hpp>
+#include <fractals/glsl_manager.hpp>
 #include <fractals/scene_renderer.hpp>
+#include <fractals/shader_manager.hpp>
 #include <fractals/ui_manager.hpp>
-
 
 class AppController {
 public:
@@ -18,7 +17,7 @@ public:
 private:
     GLFWManager glfwManager;
     GLSLManager glslManager;
-    std::unique_ptr<ShaderManager> shaderManager; 
+    std::unique_ptr<ShaderManager> shaderManager;
     Camera camera;
     CameraController cameraController;
     std::unique_ptr<SceneRenderer> sceneRenderer;

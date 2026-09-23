@@ -2,14 +2,14 @@
 #include <glad.h>
 #include <iostream>
 
-
-std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
+std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource,
+                                                 const std::string& fragmentSource) {
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     const char* vShaderCode = vertexSource.c_str();
     glShaderSource(vertexShader, 1, &vShaderCode, NULL);
     glCompileShader(vertexShader);
-    
-    //checking for vertex shader compile errors
+
+    // checking for vertex shader compile errors
     int success;
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
@@ -24,8 +24,8 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     const char* fShaderCode = fragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
     glCompileShader(fragmentShader);
-    
-    //checking for fragment shader compile errors
+
+    // checking for fragment shader compile errors
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         char infoLog[1024];
@@ -35,14 +35,14 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
         glDeleteShader(fragmentShader);
         return nullptr;
     }
-    
-    //link shaders into a shader program
+
+    // link shaders into a shader program
     unsigned int shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
-    
-    //check for linking errors
+
+    // check for linking errors
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         char infoLog[1024];
@@ -53,24 +53,19 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
         glDeleteProgram(shaderProgram);
         return nullptr;
     }
-    
-    //delete the shader objects now that they're linked into the program
+
+    // delete the shader objects now that they're linked into the program
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    
-    //creat eShader object
+
+    // creat eShader object
     std::unique_ptr<Shader> shader(new Shader());
     shader->shaderID = shaderProgram;
 
-    
     return shader;
 }
 
-const unsigned int Shader::getShaderID() const {
-    return shaderID;
-}
-
-
+const unsigned int Shader::getShaderID() const { return shaderID; }
 
 void Shader::deleteShader() {
     if (shaderID != 0) {
@@ -78,5 +73,3 @@ void Shader::deleteShader() {
         shaderID = 0;
     }
 }
-
-

@@ -1,23 +1,16 @@
 #include <fractals/camera.hpp>
 
-
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-
 Camera::Camera()
-    :   front(Eigen::Vector3f(0.0f, 0.0f, -1.0f)),
-        worldUp(Eigen::Vector3f(0.0f, 1.0f, 0.0f)) {
-        position = Eigen::Vector3f(0.0f, 0.0f, 3.0f);
+    : front(Eigen::Vector3f(0.0f, 0.0f, -1.0f)), worldUp(Eigen::Vector3f(0.0f, 1.0f, 0.0f)) {
+    position = Eigen::Vector3f(0.0f, 0.0f, 3.0f);
 }
 
-void Camera::setPosition(const Eigen::Vector3f& pos) {
-    position = pos;
-}
+void Camera::setPosition(const Eigen::Vector3f& pos) { position = pos; }
 
-const Eigen::Vector3f& Camera::getPosition() const {
-    return position;
-}
+const Eigen::Vector3f& Camera::getPosition() const { return position; }
 
 void Camera::rotateAroundPoint(float angle, const Eigen::Vector3f& point, float radius) {
     float camX = sin(angle) * radius;
@@ -36,23 +29,10 @@ void Camera::updateCameraVectors(float yaw, float pitch) {
     up = right.cross(front).normalized();
 }
 
+const Eigen::Vector3f& Camera::getFront() const { return front; }
 
-const Eigen::Vector3f& Camera::getFront() const {
-    return front;
-}
+const Eigen::Vector3f& Camera::getRight() const { return right; }
 
-const Eigen::Vector3f& Camera::getRight() const {
-    return right;
-}
+const Eigen::Vector3f& Camera::getUp() const { return up; }
 
-const Eigen::Vector3f& Camera::getUp() const {
-    return up;
-}
-
-const Eigen::Vector3f& Camera::getWorldUp() const {
-    return worldUp;
-}
-
-
-
-
+const Eigen::Vector3f& Camera::getWorldUp() const { return worldUp; }

@@ -4,14 +4,13 @@
 #include <vector>
 
 struct AutoChangeConfig {
-    float rate;           // Units per second
+    float rate; // Units per second
     float minValue;
     float maxValue;
 };
 
 class Fractal {
 public:
-    
     const std::vector<std::string>& getUniformNames() const;
     float getUniformValue(const std::string& name) const;
     void setUniformValue(const std::string& name, float value);
