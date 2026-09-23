@@ -17,15 +17,26 @@ FetchContent_MakeAvailable(glfw)
 
 file(GLOB_RECURSE SRC
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
-    "${CMAKE_SOURCE_DIR}/external/dearimgui/*.cpp"
-    "${CMAKE_SOURCE_DIR}/external/dearimgui/backends/imgui_impl_glfw*.cpp"
-    "${CMAKE_SOURCE_DIR}/external/dearimgui/backends/imgui_impl_opengl3*.cpp"
 )
 
 add_executable(${PROJECT_NAME} ${SRC})
 
 add_library(glad STATIC external/glad/glad.c)
 target_include_directories(glad PUBLIC external)
+
+add_library(imgui STATIC
+    external/dearimgui/imgui.cpp
+    external/dearimgui/imgui_draw.cpp
+    external/dearimgui/imgui_tables.cpp
+    external/dearimgui/imgui_widgets.cpp
+    external/dearimgui/imgui_impl_glfw.cpp
+    external/dearimgui/imgui_impl_opengl3.cpp
+)
+target_include_directories(imgui
+    PUBLIC external/dearimgui external/dearimgui/backends
+    PRIVATE external "${glfw_SOURCE_DIR}/include/GLFW"
+)
+target_link_libraries(imgui PUBLIC glfw)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_SOURCE_DIR}/include"
@@ -45,6 +56,7 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glad
     glfw
+    imgui
     OpenGL::GL
 )
 
