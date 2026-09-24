@@ -1,7 +1,6 @@
-#include <filesystem>
+#include <GLFW/glfw3.h>
 #include <fractals/app_controller.hpp>
 #include <fractals/fractals.hpp>
-#include <GLFW/glfw3.h>
 #include <memory>
 
 #include <iostream>
@@ -12,8 +11,6 @@ AppController::AppController()
 }
 
 void AppController::init() {
-    std::filesystem::current_path("C:/Users/felip/Desktop/dev/NEA");
-
     GLFWwindow* window = glfwManager.getWindow();
     if (!window) {
         std::cerr << "Failed to create GLFW window in AppController init." << std::endl;

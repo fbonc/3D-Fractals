@@ -61,6 +61,14 @@ target_include_directories(imgui
 target_link_libraries(imgui PUBLIC glfw)
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    FRACTALS_ASSET_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets"
+)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+)
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)
