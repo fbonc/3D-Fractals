@@ -1,6 +1,11 @@
+
 # 3D Fractals
 
 A real-time C++20 and OpenGL 3.3 raymarcher for the Mandelbulb, Menger sponge, Julia, Kleinian, and Mandelbox fractals. Use the Dear ImGui controls to switch fractals and adjust the camera, lighting, color, and distance-estimation settings while the scene renders.
+
+<p align="middle">
+<img width="400" alt="fractals" src="https://github.com/user-attachments/assets/690b1b4c-df3f-43cd-b777-707b9a525c74" />
+</p>
 
 ## How it works
 
