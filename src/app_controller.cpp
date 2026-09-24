@@ -1,4 +1,5 @@
 #include <GLFW/glfw3.h>
+#include <chrono>
 #include <fractals/app_controller.hpp>
 #include <fractals/fractals.hpp>
 #include <memory>

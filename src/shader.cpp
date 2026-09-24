@@ -88,7 +88,7 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     return shader;
 }
 
-const unsigned int Shader::getShaderID() const { return shaderID; }
+unsigned int Shader::getShaderID() const { return shaderID; }
 
 void Shader::deleteShader() {
     if (shaderID != 0) {

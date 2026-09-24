@@ -4,7 +4,7 @@
 #include <iostream>
 
 SceneRenderer::SceneRenderer(const ShaderManager& shaderManager, CameraController& cameraController)
-    : shaderManager(shaderManager), cameraController(cameraController), currentFractal(nullptr),
+    : currentFractal(nullptr), shaderManager(shaderManager), cameraController(cameraController),
       VAO(0), VBO(0) {}
 
 SceneRenderer::~SceneRenderer() {
