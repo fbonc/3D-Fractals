@@ -10,7 +10,7 @@ float GLFWManager::lastX = 1920.0f / 2.0f;
 float GLFWManager::lastY = 1920.0f / 2.0f;
 bool GLFWManager::firstMouse = true;
 GLFWwindow* GLFWManager::window = nullptr;
-bool GLFWManager::isCursorShown = false;
+bool GLFWManager::isCursorShown = true;
 
 GLFWManager::GLFWManager() : modeSwitchPressed(false), deltaTime(0.0f), lastFrame(0.0f) {
     if (initialiseGLFW() != 0) {
@@ -25,7 +25,7 @@ GLFWwindow* GLFWManager::getWindow() { return window; }
 void GLFWManager::setInputFunctions(CameraController& cameraController) {
     glfwSetWindowUserPointer(window, &cameraController);
     glfwSetCursorPosCallback(window, GLFWManager::mouseCallback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 int GLFWManager::initialiseGLFW() {
@@ -120,6 +120,7 @@ void GLFWManager::processInput(CameraController& cameraController) {
         if (isCursorShown) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             isCursorShown = false;
+            firstMouse = true;
         } else {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             isCursorShown = true;

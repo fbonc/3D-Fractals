@@ -125,7 +125,6 @@ void UIManager::renderAutoChangeControls(const std::string& uniformName) {
 void UIManager::renderRayMarchingSettings() {
     ImGui::SetNextWindowPos(ImVec2(152, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(190, 146), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Ray Marching Settings");
 
@@ -164,7 +163,6 @@ void UIManager::renderRayMarchingSettings() {
 void UIManager::renderCameraSettings() {
     ImGui::SetNextWindowPos(ImVec2(1238, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(190, 146), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Camera Settings");
 
@@ -206,7 +204,6 @@ void UIManager::renderCameraSettings() {
 void UIManager::renderSceneSettings() {
     ImGui::SetNextWindowPos(ImVec2(550, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(144, 146), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Scene Settings");
 
@@ -249,7 +246,6 @@ void UIManager::renderSceneSettings() {
 void UIManager::renderLightingSettings() {
     ImGui::SetNextWindowPos(ImVec2(862, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(163, 330), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Lighting Settings");
 
@@ -318,7 +314,6 @@ void UIManager::renderLightingSettings() {
 void UIManager::renderPostProcessingSettings() {
     ImGui::SetNextWindowPos(ImVec2(1024, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(215, 146), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Post Processing Settings");
 
@@ -356,7 +351,6 @@ void UIManager::renderPostProcessingSettings() {
 void UIManager::renderColouringSettings() {
     ImGui::SetNextWindowPos(ImVec2(693, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(170, 215), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Colouring Settings");
 
@@ -430,7 +424,6 @@ void UIManager::renderColouringSettings() {
 void UIManager::renderTransformationsSettings() {
     ImGui::SetNextWindowPos(ImVec2(341, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(210, 215), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Transformations Settings");
 
@@ -492,7 +485,6 @@ void UIManager::renderTransformationsSettings() {
 void UIManager::renderFractalSettings() {
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(154, 77), ImGuiCond_FirstUseEver); // Adjusted size for ComboBox
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
     ImGui::Begin("Fractal Settings");
 
@@ -534,7 +526,10 @@ void UIManager::renderFractalSettings() {
 
                 sceneRenderer.resetUniformBools();
                 sceneRenderer.initialiseUniformLocations();
-                sceneRenderer.setResolutionUniform((float)1920, (float)1080);
+                int framebufferWidth, framebufferHeight;
+                glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+                sceneRenderer.setResolutionUniform(static_cast<float>(framebufferWidth),
+                                                   static_cast<float>(framebufferHeight));
                 sceneRenderer.setFractal(std::move(newFractal));
                 sceneRenderer.setFractalUniforms();
 
