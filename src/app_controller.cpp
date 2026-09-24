@@ -1,7 +1,9 @@
-#include <filesystem>
+#include <glad/glad.h>
+
+#include <GLFW/glfw3.h>
+#include <chrono>
 #include <fractals/app_controller.hpp>
 #include <fractals/fractals.hpp>
-#include <glfw3.h>
 #include <memory>
 
 #include <iostream>
@@ -12,8 +14,6 @@ AppController::AppController()
 }
 
 void AppController::init() {
-    std::filesystem::current_path("C:/Users/felip/Desktop/dev/NEA");
-
     GLFWwindow* window = glfwManager.getWindow();
     if (!window) {
         std::cerr << "Failed to create GLFW window in AppController init." << std::endl;
@@ -33,7 +33,10 @@ void AppController::init() {
     sceneRenderer->initialiseQuad();
     sceneRenderer->initialiseUniformLocations();
 
-    sceneRenderer->setResolutionUniform((float)resolutionX, (float)resolutionY);
+    int framebufferWidth, framebufferHeight;
+    glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+    sceneRenderer->setResolutionUniform(static_cast<float>(framebufferWidth),
+                                        static_cast<float>(framebufferHeight));
 
     std::unique_ptr<Fractal> initialFractal = std::make_unique<Mandelbulb>();
     sceneRenderer->setFractal(std::move(initialFractal));
@@ -58,6 +61,10 @@ void AppController::run() {
     auto lastTimePoint = clock::now();
 
     while (!shouldClose()) {
+        int framebufferWidth, framebufferHeight;
+        glfwGetFramebufferSize(glfwManager.getWindow(), &framebufferWidth, &framebufferHeight);
+        glViewport(0, 0, framebufferWidth, framebufferHeight);
+
         auto currentTimePoint = clock::now();
         deltaTime = std::chrono::duration<float>(currentTimePoint - lastTimePoint).count();
         lastTimePoint = currentTimePoint;
@@ -74,6 +81,8 @@ void AppController::run() {
 
         Eigen::Vector3f cameraPos = camera.getPosition();
         sceneRenderer->setCameraPosUniform(cameraPos);
+        sceneRenderer->setResolutionUniform(static_cast<float>(framebufferWidth),
+                                            static_cast<float>(framebufferHeight));
         Eigen::Vector3f target = (cameraController.getMode() == 0)
                                      ? Eigen::Vector3f(0.0f, 0.0f, 0.0f)
                                      : cameraPos + camera.getFront();

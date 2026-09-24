@@ -2,6 +2,32 @@
 #include <glad.h>
 #include <iostream>
 
+namespace {
+std::string shaderInfoLog(GLuint shader) {
+    GLint length = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+    if (length <= 1)
+        return "(no info log)";
+    std::string log(length, '\0');
+    GLsizei written = 0;
+    glGetShaderInfoLog(shader, length, &written, log.data());
+    log.resize(written);
+    return log;
+}
+
+std::string programInfoLog(GLuint program) {
+    GLint length = 0;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+    if (length <= 1)
+        return "(no info log)";
+    std::string log(length, '\0');
+    GLsizei written = 0;
+    glGetProgramInfoLog(program, length, &written, log.data());
+    log.resize(written);
+    return log;
+}
+} // namespace
+
 std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource,
                                                  const std::string& fragmentSource) {
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -13,9 +39,8 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     int success;
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        char infoLog[1024];
-        glGetShaderInfoLog(vertexShader, 1024, NULL, infoLog);
-        std::cerr << "ERROR: SHADER VERTEX COMPILATION FAILED\n" << infoLog << std::endl;
+        std::cerr << "ERROR: SHADER VERTEX COMPILATION FAILED\n"
+                  << shaderInfoLog(vertexShader) << std::endl;
         glDeleteShader(vertexShader);
         return nullptr;
     }
@@ -28,9 +53,8 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     // checking for fragment shader compile errors
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        char infoLog[1024];
-        glGetShaderInfoLog(fragmentShader, 1024, NULL, infoLog);
-        std::cerr << "ERROR: SHADER FRAGMENT COMPILATION FAILED\n" << infoLog << std::endl;
+        std::cerr << "ERROR: SHADER FRAGMENT COMPILATION FAILED\n"
+                  << shaderInfoLog(fragmentShader) << std::endl;
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
         return nullptr;
@@ -45,9 +69,8 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     // check for linking errors
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
-        char infoLog[1024];
-        glGetProgramInfoLog(shaderProgram, 1024, NULL, infoLog);
-        std::cerr << "ERROR: SHADER PROGRAM LINKING FAILED\n" << infoLog << std::endl;
+        std::cerr << "ERROR: SHADER PROGRAM LINKING FAILED\n"
+                  << programInfoLog(shaderProgram) << std::endl;
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
         glDeleteProgram(shaderProgram);
@@ -65,7 +88,7 @@ std::unique_ptr<Shader> Shader::CreateFromSource(const std::string& vertexSource
     return shader;
 }
 
-const unsigned int Shader::getShaderID() const { return shaderID; }
+unsigned int Shader::getShaderID() const { return shaderID; }
 
 void Shader::deleteShader() {
     if (shaderID != 0) {

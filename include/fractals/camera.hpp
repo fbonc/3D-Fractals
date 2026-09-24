@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Dense>
+#include <Eigen/Dense>
 
 class Camera {
 public:

@@ -1,12 +1,12 @@
 #include <fractals/camera_controller.hpp>
 
-#include <Dense>
-#include <glfw3.h>
+#include <Eigen/Dense>
+#include <GLFW/glfw3.h>
 
 CameraController::CameraController(Camera& camera)
-    : camera(camera), movementSpeed(1.0f), mouseSensitivity(0.125f), rotationSpeed(0.2f), mode(0),
-      yaw(-90.0f), // pointing towards -Z
-      rotationRadius(3.0f), rotationHeight(0.0f), pitch(0.0f) {}
+    : camera(camera), movementSpeed(1.0f), mouseSensitivity(0.125f), rotationSpeed(0.2f),
+      rotationRadius(3.0f), rotationHeight(0.0f), yaw(-90.0f), // pointing towards -Z
+      pitch(0.0f), mode(0) {}
 
 void CameraController::setMode(int newMode) { mode = newMode; }
 

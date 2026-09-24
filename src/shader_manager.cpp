@@ -1,12 +1,12 @@
 #include <fractals/shader_manager.hpp>
 #include <glad.h>
 #include <iostream>
+#include <stdexcept>
 
 ShaderManager::ShaderManager(const std::string& vertexSource, const std::string& fragmentSource) {
     shaderProgram = Shader::CreateFromSource(vertexSource, fragmentSource);
     if (!shaderProgram) {
-        std::cerr << "Failed to create initial shader program from source." << std::endl;
-        return;
+        throw std::runtime_error("Failed to create initial shader program from source");
     }
     glUseProgram(shaderProgram->getShaderID());
 }
@@ -24,8 +24,7 @@ void ShaderManager::changeShader(const std::string& vertexSource,
     deleteShader();
     shaderProgram = Shader::CreateFromSource(vertexSource, fragmentSource);
     if (!shaderProgram) {
-        std::cerr << "Failed to create shader from source." << std::endl;
-        return;
+        throw std::runtime_error("Failed to create shader from source");
     }
 
     glUseProgram(shaderProgram->getShaderID());

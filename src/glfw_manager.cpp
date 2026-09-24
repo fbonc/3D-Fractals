@@ -4,15 +4,18 @@
 #include <fractals/glfw_manager.hpp>
 
 #include <iostream>
+#include <stdexcept>
 
 float GLFWManager::lastX = 1920.0f / 2.0f;
 float GLFWManager::lastY = 1920.0f / 2.0f;
 bool GLFWManager::firstMouse = true;
 GLFWwindow* GLFWManager::window = nullptr;
-bool GLFWManager::isCursorShown = false;
+bool GLFWManager::isCursorShown = true;
 
 GLFWManager::GLFWManager() : modeSwitchPressed(false), deltaTime(0.0f), lastFrame(0.0f) {
-    initialiseGLFW();
+    if (initialiseGLFW() != 0) {
+        throw std::runtime_error("Failed to initialize the OpenGL window");
+    }
 }
 
 GLFWManager::~GLFWManager() { glfwTerminate(); }
@@ -22,7 +25,7 @@ GLFWwindow* GLFWManager::getWindow() { return window; }
 void GLFWManager::setInputFunctions(CameraController& cameraController) {
     glfwSetWindowUserPointer(window, &cameraController);
     glfwSetCursorPosCallback(window, GLFWManager::mouseCallback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 int GLFWManager::initialiseGLFW() {
@@ -30,13 +33,20 @@ int GLFWManager::initialiseGLFW() {
     const int resolutionY = 1080;
 
     if (!glfwInit()) {
-        std::cout << "Failed to initialize GLFW" << std::endl;
+        std::cerr << "Failed to initialize GLFW" << std::endl;
         return -1;
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
     window = glfwCreateWindow(resolutionX, resolutionY, "3D Fractal Generation", NULL, NULL);
     if (!window) {
-        std::cout << "Failed to create GFLW window" << std::endl;
+        std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
@@ -44,8 +54,9 @@ int GLFWManager::initialiseGLFW() {
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to load opengl" << std::endl;
+        std::cerr << "Failed to load OpenGL" << std::endl;
         glfwTerminate();
+        window = nullptr;
         return -1;
     }
 
@@ -109,6 +120,7 @@ void GLFWManager::processInput(CameraController& cameraController) {
         if (isCursorShown) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             isCursorShown = false;
+            firstMouse = true;
         } else {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             isCursorShown = true;

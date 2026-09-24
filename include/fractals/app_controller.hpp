@@ -23,9 +23,6 @@ private:
     std::unique_ptr<SceneRenderer> sceneRenderer;
     std::unique_ptr<UIManager> uiManager;
 
-    int resolutionX = 1920;
-    int resolutionY = 1080;
-
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
