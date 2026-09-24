@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -85,8 +86,7 @@ std::string GLSLManager::readShaderFile(const std::string& filepath) const {
     const auto fullPath = std::filesystem::exists(packagedPath) ? packagedPath : sourcePath;
     std::ifstream fileStream(fullPath);
     if (!fileStream.is_open()) {
-        std::cerr << "Error: Could not open shader file " << fullPath << std::endl;
-        return "";
+        throw std::runtime_error("Could not open shader file: " + fullPath.string());
     }
 
     std::ostringstream buffer;
